@@ -278,7 +278,8 @@ void TArtRecoBeam::ReconstructData()   { // call after the raw data are loaded
 
     Double_t ionpair = ic->GetIonPair();
     Double_t de_v = TMath::Log(ionpair*beta*beta) - TMath::Log((1-beta*beta)) - beta*beta;
-    zet = ic->GetZCoef(0)*TMath::Sqrt(ic->GetEnergySqSum()/de_v)*beta + ic->GetZCoef(1);
+    zet = (ic->GetZCoef(0)*(ic->GetEnergySqSum()/de_v)*beta*beta) + (ic->GetZCoef(1)*TMath::Sqrt(ic->GetEnergySqSum()/de_v)*beta) + ic->GetZCoef(2);
+    
 
     beam->SetBrho(brho);
     beam->SetAoQ(aoq);

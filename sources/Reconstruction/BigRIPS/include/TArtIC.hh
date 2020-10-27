@@ -46,12 +46,13 @@ class TArtIC : public TArtDataObject {
   virtual Double_t GetTime(Int_t ch){return fTime[ch];}
   virtual Double_t GetZet(double beta){
     double de_v = TMath::Log(ionpair*beta*beta) - TMath::Log((1-beta*beta)) - beta*beta;
-    return zcoef[0]*TMath::Sqrt(fCalMeVSqSum/de_v)*beta + zcoef[1];
+    //return zcoef[0]*TMath::Sqrt(fCalMeVSqSum/de_v)*beta + zcoef[1];
+    return zcoef[0]*(fCalMeVSqSum/de_v)*beta*beta + zcoef[1]*TMath::Sqrt(fCalMeVSqSum/de_v)*beta + zcoef[2];
   }
 
  private:
 
-  Double_t zcoef[2];
+  Double_t zcoef[3];
   Double_t ionpair;
 
   Int_t nhitchannel;

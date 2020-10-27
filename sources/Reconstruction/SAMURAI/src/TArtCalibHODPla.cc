@@ -22,7 +22,7 @@ TArtCalibHODPla::TArtCalibHODPla(const TString outdataname)
     throw;
   }
 
-  fHODPlaArray = new TClonesArray("TArtHODPla",10);
+  fHODPlaArray = new TClonesArray("TArtHODPla",10);//10
   fHODPlaArray->SetName("SAMURAIHODPla");
   fHODPlaArray->SetOwner();
   sman->AddDataContainer(fHODPlaArray);
@@ -145,6 +145,7 @@ void TArtCalibHODPla::ReconstructData()   { // call after the raw data are loade
     Double_t QAveRaw = -1;
     Double_t QAvePed = -1;
     Double_t QAveCal = -1;
+    Double_t Q_Zet = -1; //
 
     if(TURaw>0 && TURaw<4000) {
       UFired = true;
@@ -152,7 +153,7 @@ void TArtCalibHODPla::ReconstructData()   { // call after the raw data are loade
       if(QURaw>0){
 	//	TimeUSlew = TURaw + para->GetTUSlewA()/(TMath::Sqrt(QURaw)) + para->GetTUSlewB();
 	//	TimeUSlew = TimeUSlew * para->GetTCalUp();
-	TimeUSlew = TimeU - para->GetTUSlewA()/TMath::Sqrt(QUPed);
+	TimeUSlew = TimeU - ((para->GetTUSlewA()/TMath::Sqrt(QUCal))+(para->GetTUSlewB()));
       }
 //      else{
 //	TimeUSlew = TimeU;
@@ -165,7 +166,7 @@ void TArtCalibHODPla::ReconstructData()   { // call after the raw data are loade
       if(QDRaw>0){
 	//	TimeDSlew = TDRaw + para->GetTDSlewA()/(TMath::Sqrt(QDRaw)) + para->GetTDSlewB();
 	//	TimeDSlew = TimeDSlew * para->GetTCalDown();
-	TimeDSlew = TimeD - para->GetTDSlewA()/TMath::Sqrt(QDPed);
+	TimeDSlew = TimeD - ((para->GetTDSlewA()/TMath::Sqrt(QDCal))+(para->GetTDSlewB()));
       }
 //      else{
 //	TimeD = TimeDSlew;
@@ -186,6 +187,7 @@ void TArtCalibHODPla::ReconstructData()   { // call after the raw data are loade
       QAveRaw = sqrt(QURaw*QDRaw);
       QAvePed = sqrt(QUPed*QDPed);
       QAveCal = sqrt(QUCal*QDCal);
+      Q_Zet = (para->GetQ_Zet_A()*QAveCal) + para->GetQ_Zet_B(); //
     }
 
     pla->SetQAveRaw(QAveRaw);
@@ -195,6 +197,7 @@ void TArtCalibHODPla::ReconstructData()   { // call after the raw data are loade
     pla->SetQUCal(QUCal);		   
     pla->SetQDCal(QDCal);
     pla->SetQAveCal(QAveCal);
+    pla->SetQ_Zet(Q_Zet);
 
     pla->SetTimeU(TimeU);
     pla->SetTimeD(TimeD);

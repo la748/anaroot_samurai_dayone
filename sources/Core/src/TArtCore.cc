@@ -20,7 +20,7 @@ TList* TArtCore::warns = 0;
 
 TArtCore::TArtCore()
 {
-  //isDebug=true;
+  //isDebug=true; 
 }
 TArtCore::~TArtCore()
 {
@@ -37,7 +37,7 @@ void TArtCore::Info(const char* cname,const char* fmt, ...)
 {
    static int nmesseage = 0;
 
-   if(nmesseage>1000) return;
+   if(nmesseage>1000) return; //1000
 
    va_list argv;
    va_start(argv,fmt);
@@ -48,11 +48,11 @@ void TArtCore::Info(const char* cname,const char* fmt, ...)
    va_end(argv);
    std::cout << omsg;
 
-   if(nmesseage==1000)
+   if(nmesseage==1000) //1000
      printf("  RIBFROOT-Info : too many info. suppress the information.\n");
 
    nmesseage ++;
-
+  
 }
 
 //
@@ -109,7 +109,7 @@ void TArtCore::Warning(const char* cname,const char* fmt, ...)
       warn = NULL;
 
       if(w->nprint<th_nmes)  std::cout << omsg;
-      if(w->nprint==th_nmes-1)   printf("  RIBFROOT-Warn : too many warn. suppress this warning.\n");
+	if(w->nprint==th_nmes-1)  printf("  RIBFROOT-Warn : too many warn. suppress this warning.\n");
       w->nprint ++;
 
       return;
@@ -119,7 +119,7 @@ void TArtCore::Warning(const char* cname,const char* fmt, ...)
   // if same mes is not find in the list. regist the mes in list.
   std::cout << omsg;
   warns->Add(warn);
-
+ 
 }
 
 //__________________________________________________________

@@ -39,6 +39,7 @@ TArtCalibIC::TArtCalibIC(const TString outdataname)
     ic->SetFpl(p->GetFpl());
     ic->SetZCoef(0,p->GetZCoef(0));
     ic->SetZCoef(1,p->GetZCoef(1));
+    ic->SetZCoef(2,p->GetZCoef(2));
     ic->SetIonPair(p->GetIonPair());
 
     fICParaArray.push_back(p);

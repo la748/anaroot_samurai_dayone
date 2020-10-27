@@ -12,12 +12,12 @@ TArtRecoFragment::TArtRecoFragment(const TString outdataname)
     BDC1_Tgt_dist(2016.62),
     Tgt_FDC1_dist(1188.38),
     BDC2X0(0), BDC2Y0(0),
-    QtoZ_a(0), QtoZ_b(0),
+    QtoZ_a(0.0162), QtoZ_b(1.6647), //0.0168, 1.4647
     clight(299.79246),
     mnucleon(931.494028),
-    fMatReady(false), 
-    fRKtraceReady(true),
-    fMultDimReady(false)
+    fMatReady(false), //false
+    fRKtraceReady(true), //true
+    fMultDimReady(false) //false
 {
 
   // default value from samurai dayone //////
@@ -26,30 +26,39 @@ TArtRecoFragment::TArtRecoFragment(const TString outdataname)
   center_brho = 7.2751;
   l_pla2target = 2824.; // mm
   ////////////////////////
-
-
+  
   TArtCore::Info(__FILE__,"Creating the Reco Fragment objects...");
-  sman = TArtStoreManager::Instance();
-
-  fFragmentArray = new TClonesArray("TArtFragment",4);
+  sman = TArtStoreManager::Instance(); 
+  
+  fFragmentArray = new TClonesArray("TArtFragment",16); //16
   fFragmentArray->SetName("SAMURAIFragment");
   fFragmentArray->SetOwner();
   sman->AddDataContainer(fFragmentArray);
-
+  
   TString mat0thfile = std::getenv("SAMURAI_MATRIX0TH_FILE");
   TString mat1stfile = std::getenv("SAMURAI_MATRIX1ST_FILE");
   TString magfieldfile = std::getenv("SAMURAI_BFIELD_FILE");
   TString dcgeomfile = std::getenv("SAMURAI_DCGEOM_FILE");
-
+  TArtCore::Debug(__FILE__,"fRKtraceReady1: %s",fRKtraceReady?"true":"false");
   if(!dcgeomfile.IsNull() && !magfieldfile.IsNull()){
-    if(!(DCConfMan::GetInstance().Initialize(dcgeomfile.Data())))
-      fRKtraceReady = false;
-    if(!(FieldMan::GetInstance().Initialize(magfieldfile.Data(),1.0)))
-      fRKtraceReady = false;
-  } else {
+    TArtCore::Debug(__FILE__,"fRKtraceReady2: %s",fRKtraceReady?"true":"false");
+    TArtCore::Debug(__FILE__,"test1");
+    if((DCConfMan::GetInstance().Initialize(dcgeomfile.Data())))
+      TArtCore::Debug(__FILE__,"test2");
+    //TArtCore::Error(__FILE__,"fail to read dcgeom field file: %s",dcgeomfile.Data());
+      TArtCore::Debug(__FILE__,"fRKtraceReady3: %s",fRKtraceReady?"true":"false");
+      //fRKtraceReady = false;
+      TArtCore::Debug(__FILE__,"fRKtraceReady4: %s",fRKtraceReady?"true":"false");
+    if((FieldMan::GetInstance().Initialize(magfieldfile.Data(),1.0)))
+      TArtCore::Debug(__FILE__,"test3");
+    //TArtCore::Error(__FILE__,"fail to read mag field file: %s",magfieldfile.Data());
+    //fRKtraceReady = false;
+      }
+  
+  else {
+    TArtCore::Debug(__FILE__,"test4");
     fRKtraceReady = false;
-  }
-
+    }
   
   if(!mat0thfile.IsNull() && !mat1stfile.IsNull()){
 
@@ -57,7 +66,6 @@ TArtRecoFragment::TArtRecoFragment(const TString outdataname)
     std::ifstream mat1stin(mat1stfile.Data());
 
     if(mat0thin.is_open() && mat1stin.is_open()){
-
       mat0.ResizeTo(2,1);
       mat0thin >> mat0(0,0) >> mat0(1,0);
 
@@ -91,23 +99,28 @@ TArtRecoFragment::TArtRecoFragment(const TString outdataname)
 
     mat0thin.close();
     mat1stin.close();
-  }
+    }
 
-
-
+  TArtCore::Debug(__FILE__,"fRKtraceReady: %s",fRKtraceReady?"true":"false");
+  TArtCore::Debug(__FILE__,"test5");
   if(fRKtraceReady){
+    TArtCore::Debug(__FILE__,"test6");
     TClonesArray * pla_array = (TClonesArray *)sman->FindDataContainer("BigRIPSPlastic");
     if(pla_array){
+      TArtCore::Debug(__FILE__,"test7");
       pla_tzero = (TArtPlastic *)TArtUtil::FindDataObject(pla_array,(char*)"F13pl-2");
       if(!pla_tzero){
+	TArtCore::Debug(__FILE__,"test8");
 	TArtCore::Error(__FILE__,"Failed to find plastic F13pl-2");
       }
     } else {
+      TArtCore::Debug(__FILE__,"test9");
       fRKtraceReady = false;
       TArtCore::Error(__FILE__,"Failed to find plastic F13pl-2");     
     }
     hod_array = (TClonesArray *)sman->FindDataContainer("SAMURAIHODPla");
     if(!hod_array){
+      TArtCore::Debug(__FILE__,"test10");
       fRKtraceReady = false;
       TArtCore::Error(__FILE__,"Failed to find SAMURAIHODPla");     
     }
@@ -133,7 +146,7 @@ TArtRecoFragment::TArtRecoFragment(const TString outdataname)
       TArtCore::Error(__FILE__,"Failed to find plastic SAMURAIHODPla for MultiDimFit");     
     }
 
-  }
+    }
 }
 
 //__________________________________________________________
@@ -192,7 +205,7 @@ void TArtRecoFragment::ReconstructData() {
     Int_t bdc2n = bdc2trks->GetEntriesFast();
     Bool_t bdc1_X_ok=kFALSE, bdc1_Y_ok=kFALSE, bdc2_X_ok=kFALSE, bdc2_Y_ok=kFALSE;
 
-    //    std::cout << bdc1n << " " << bdc2n << std::endl;
+    std::cout << bdc1n << " " << bdc2n << std::endl;//
     for(int i=0;i<TMath::Max(bdc1n,bdc2n);i++){
       if(i<bdc1n){
 	trk1 = (TArtDCTrack *)bdc1trks->At(i);
@@ -234,7 +247,7 @@ void TArtRecoFragment::ReconstructData() {
       }
     }
     
-    //    std::cout << bdc1_X_ok << " " <<  bdc1_Y_ok << " " <<  bdc2_X_ok << " " <<  bdc2_Y_ok << std::endl;
+    //std::cout << bdc1_X_ok << " " <<  bdc1_Y_ok << " " <<  bdc2_X_ok << " " <<  bdc2_Y_ok << std::endl;
     if(!(bdc1_X_ok && bdc1_Y_ok && bdc2_X_ok && bdc2_Y_ok)){
       fReconstructed = true;
       return;
@@ -243,26 +256,28 @@ void TArtRecoFragment::ReconstructData() {
     tgttr[0] = bdc1tr[0] + (bdc2tr[0]-bdc1tr[0])/(BDCs_dist)*BDC1_Tgt_dist;
     tgttr[1] = bdc1tr[1] + (bdc2tr[1]-bdc1tr[1])/(BDCs_dist)*BDC1_Tgt_dist;
 
-  }
+    }
 
   // as of 2013/10/10 one charged particle is assumed
 
   TArtDCTrack * fdc1tr = (TArtDCTrack*)fdc1trks->At(0); // chi2 minimum track
   TArtDCTrack * fdc2tr = (TArtDCTrack*)fdc2trks->At(0); // chi2 minimum track
-  TArtCore::Debug(__FILE__,"fdcnhit: %d, %d",fdc1tr->GetNumHitLayer(),fdc2tr->GetNumHitLayer());
+  /*TArtCore::Debug(__FILE__,"fdcnhit: %d, %d",fdc1tr->GetNumHitLayer(),fdc2tr->GetNumHitLayer());
   TArtCore::Debug(__FILE__,"fdcchi2: %f, %f",fdc1tr->GetChi2(),fdc2tr->GetChi2());
   TArtCore::Debug(__FILE__,"fdc1x: %f, fdc1a: %f",fdc1tr->GetPosition(0),fdc1tr->GetAngle(0));
   TArtCore::Debug(__FILE__,"fdc2x: %f, fdc2a: %f",fdc2tr->GetPosition(0),fdc2tr->GetAngle(0));
+  TArtCore::Debug(__FILE__,"inv_mat2: %a, mat1: %a",inv_mat2(0,0), mat1(0,0));*/
 
   new ((*fFragmentArray)[0]) TArtFragment();
   TArtFragment * frag = (TArtFragment *)fFragmentArray->At(0);
-  Double_t toflength = -1 ;
+  Double_t toflength = -1;
   Double_t brho = -1;
 
-  TArtCore::Debug(__FILE__,"fMultDimReady ",fMultDimReady);
+  //TArtCore::Debug(__FILE__,"fMultDimReady: %s",fMultDimReady?"true":"false");
+  TArtCore::Debug(__FILE__,"fRKtraceReady: %s",fRKtraceReady?"true":"false");
   if(fRKtraceReady || fMultDimReady){
-    if(fRKtraceReady) {
-      //  TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*(1.+rvec(1,0))*0.3);
+    if(fRKtraceReady){ 
+      //TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*(1.+rvec(1,0))*0.3);
       TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*0.3);
       gtr.doFit();
       frag->SetRKtraceStatus(gtr.Status());
@@ -274,14 +289,14 @@ void TArtRecoFragment::ReconstructData() {
       toflength = gtr.PathLengthToTOF() + l_pla2target; // mm;
       frag->SetPathLengthToHOD(toflength); // target - HOD path length
       for(int i=0;i<100;i++) frag->SetDiff(i,gtr.diff(i));
-    }
+      } //commented by liam 11/09/20 remove after test
     TArtCore::Debug(__FILE__,"fMultDimReady ",fMultDimReady);
-    if(fMultDimReady) {
+    /*if(fMultDimReady) {
       TArtCore::Debug(__FILE__,"Start procedure");
-      frag->SetRKtraceStatus(false); // for compatibility
-      frag->SetChi2(1);		    // for compatibility
-      frag->SetNHit(1);		    // for compatibility
-      frag->SetNIteration(1);       // for compatibility
+      frag->SetRKtraceStatus(true); // for compatibility
+      frag->SetChi2(1);		    // for compatibility 1
+      frag->SetNHit(1);		    // for compatibility 1
+      frag->SetNIteration(1);       // for compatibility 1
       frag->SetPrimaryPosition(TVector3(fdc1tr->GetPosition(0),fdc1tr->GetPosition(1),0));
       
       TArtDCTrack * bdc1tr_v = (TArtDCTrack*)bdc1trks->At(0); // chi2 minimum track
@@ -291,63 +306,79 @@ void TArtRecoFragment::ReconstructData() {
       TArtCore::Debug(__FILE__,"bdc1x: %f, bdc1a: %f",bdc1tr_v->GetPosition(0),bdc1tr_v->GetAngle(0));
       TArtCore::Debug(__FILE__,"bdc2x: %f, bdc2a: %f",bdc2tr_v->GetPosition(0),bdc2tr_v->GetAngle(0));
 
-
+       } //
 
       Double_t xin[6];
       xin[0] = fdc1tr->GetPosition(0);
       xin[1] = -fdc1tr->GetPosition(1);// still inverted ?
-      xin[2] = TMath::ATan2(fdc1tr->GetPosition(0)-tgttr[0],Tgt_FDC1_dist); // from BDCs + Target 
-      xin[3] = TMath::ATan2(-/*?*/fdc1tr->GetPosition(1)-tgttr[1],Tgt_FDC1_dist); // from BDCs + Target 
-      xin[4] = fdc2tr->GetPosition(0);
-      xin[5] = TMath::ATan(fdc2tr->GetAngle(0));
+      xin[2] = TMath::ATan2(fdc1tr->GetPosition(0)-tgttr[0],Tgt_FDC1_dist); // from BDCs + Target*/ 
+    //xin[3] = TMath::ATan2(-/*?*/fdc1tr->GetPosition(1)-tgttr[1],Tgt_FDC1_dist); // from BDCs + Target 
+    //xin[4] = fdc2tr->GetPosition(0);
+    //xin[5] = TMath::ATan(fdc2tr->GetAngle(0));
 
-//      std::cout << BDCs_dist << " " << BDC1_Tgt_dist << " " << Tgt_FDC1_dist <<  std::endl;
-//      std::cout << tgttr[0] << " " << tgttr[1] << std::endl;
-//      std::cout << bdc1tr[0] << " " << bdc1tr[1] << std::endl;
-//      std::cout << bdc2tr[0] << " " << bdc2tr[1] << std::endl;
-//      for(int i=0;i<6;i++){
-//	std::cout << " (" << i << ") " << xin[i] ;
-//      }
-//      std::cout << std::endl;
+      //
+      /*std::cout << BDCs_dist << "test1 " << BDC1_Tgt_dist << " " << Tgt_FDC1_dist <<  std::endl;
+      std::cout << tgttr[0] << "test2 " << tgttr[1] << std::endl;
+      std::cout << bdc1tr[0] << "test3 " << bdc1tr[1] << std::endl;
+      std::cout << bdc2tr[0] << "test4 " << bdc2tr[1] << std::endl;
+      for(int i=0;i<6;i++){
+	std::cout << " (" << i << ") " << xin[i] ;
+	}
+	std::cout << std::endl;
 
-      toflength = GetPathLengthFitResult(xin);
-      frag->SetPathLengthToHOD(toflength);
+	toflength = GetPathLengthFitResult(xin);
+	frag->SetPathLengthToHOD(toflength);
       
       brho = GetRigidityFitResult(xin);
-      frag->SetBrho(brho);
-      //    frag->SetPrimaryMomentum(gtr.PrimaryMomentum());
+      frag->SetBrho(brho);*/
+      //frag->SetPrimaryMomentum(gtr.PrimaryMomentum());
+      //std::cout << "brho:" << brho <<std::endl;
       TArtCore::Debug(__FILE__,"Brho: %f",brho);
-    }
+      }
 
-    if(hod_array && pla_tzero && (fRKtraceReady||fMultDimReady)){
-      if(hod_array->GetEntries()>0){
-	TArtHODPla *pla = (TArtHODPla *)hod_array->At(0); // pickup qmax-hod	
-	Double_t tzero = pla_tzero->GetTime();
-	frag->SetTzero(tzero);
-	frag->SetTzeroQ(pla_tzero->GetQAveRaw());
-	Double_t hodt = pla->GetTime();
-	//	std::cout << "HID: " << pla->GetID() << std::endl;
-	frag->SetHODTime(hodt);
-	frag->SetHODQ(pla->GetQAveCal());
-	frag->SetZ(QtoZ_a*pla->GetQAveCal()+QtoZ_b);
-	Double_t tof = hodt-tzero + tof_offset[pla->GetID()];
-	//TArtCore::Debug(__FILE__,"tzero: %f , hodt: %f",tzero,hodt);
-	frag->SetTOF(tof);
-	Double_t beta = toflength/tof/clight;
-	frag->SetBeta(beta);
-	Double_t gamma = 1/TMath::Sqrt(1-beta*beta);
-	if(brho<0){
+      if(hod_array && pla_tzero && (fRKtraceReady||fMultDimReady)){
+	if(hod_array->GetEntries()>0){
+	  TArtHODPla *pla = (TArtHODPla *)hod_array->At(0); // pickup qmax-hod	
+	  Double_t tzero = pla_tzero->GetTime();
+	  frag->SetTzero(tzero);
+	  frag->SetTzeroQ(pla_tzero->GetQAveRaw());
+	  Double_t hodt = pla->GetTime();
+	  //	std::cout << "HID: " << pla->GetID() << std::endl;
+	  frag->SetHODTime(hodt);
+	  Double_t hodt_slew = pla->GetTimeSlew();
+	  frag->SetHODTime_slew(hodt_slew);
+	  frag->SetHODQ(pla->GetQAveCal());
+	  frag->SetZ(QtoZ_a*(pla->GetQAveCal())+QtoZ_b);
+	  frag->SetZ_test((0.00001*(pla->GetQAveCal()*pla->GetQAveCal()))+(0.0103*(pla->GetQAveCal()))+2.5045);
+	  Double_t tof = hodt-tzero + 107.5; //tof_offset[pla->GetID()]; //107.5 111.5
+	  std::cout << "tzero: " << tzero << "hodt: " << hodt << "tof: " << tof << std::endl;
+	  TArtCore::Debug(__FILE__,"tzero: %f , hodt: %f , tof_offset: %f",tzero,hodt,tof_offset);//
+	  frag->SetTOF(tof);
+	  Double_t tof_test = hodt_slew-tzero + 107; //107
+	  frag->SetTOF_test(tof_test);
+	  Double_t beta = toflength/tof/clight;
+	  frag->SetBeta(beta);
+	  Double_t beta_test = toflength/tof_test/clight;
+	  frag->SetBeta_test(beta_test);
+	  Double_t gamma = 1/TMath::Sqrt(1-beta*beta);
+	  Double_t gamma_test = 1/TMath::Sqrt(1-beta_test*beta_test);
+	  if(brho<0){
 	  brho = frag->GetBrho();
 	}
+	  std::cout << "toflength: " << toflength <<std::endl;  
+	  std::cout << "brho:" << brho <<std::endl;
 	Double_t aoq = brho * clight / mnucleon / beta / gamma;
 	frag->SetAoQ(aoq);
-	//std::cout << aoq << std::endl;
-	//	TArtCore::Info(__FILE__,"beta: %f , aoq: %f",beta,aoq);
+	Double_t aoq_test = brho * clight / mnucleon / beta_test / gamma_test;
+	frag->SetAoQ_test(aoq_test);
+	std::cout << "aoq: " << aoq << std::endl;
+	//TArtCore::Info(__FILE__,"beta: %f , aoq: %f",beta,aoq);
       }
-    } else {
+      else {
       TArtCore::Info(__FILE__,"cannot find pla %x %x",hod_array,pla_tzero);
     }
-  } else if(fMatReady) {
+      }
+  else if(fMatReady) {
     TMatrixD outxvec(2,1);
     outxvec(0,0) = fdc2tr->GetPosition(0);
     outxvec(1,0) = fdc2tr->GetAngle(0);
@@ -355,7 +386,7 @@ void TArtRecoFragment::ReconstructData() {
     TMatrixD rvec = inv_mat2 * (outxvec - fdc1tr->GetPosition(0) * mat1);
     frag->SetDelta(rvec(1,0));
     TArtCore::Debug(__FILE__,"Delta: %f",rvec(1,0));
-  }
+    }
 
   fReconstructed = true;
   return;
@@ -619,7 +650,7 @@ Bool_t TArtRecoFragment::ReadParameterMultiDimFit(){
 
 Double_t TArtRecoFragment::GetRigidityFitResult(Double_t *x) {
   __GetFitResult__Macro__(r)
-    }
+    } 
 
 Double_t TArtRecoFragment::GetPathLengthFitResult(Double_t *x) {
   __GetFitResult__Macro__(l)
@@ -662,7 +693,7 @@ void TArtRecoFragment::ParseParaList(TXMLNode *node)
 	}
  	if(strcmp(subnode->GetNodeName(), "TOFFSET")==0){
 	  dt = atof(subnode->GetText()) ;
-	  tof_offset[id] = dt ;
+	  tof_offset[id] = dt ;//tof_offset
 	}
       }
     } else if(strcmp(node->GetNodeName(), "BDCs_dist") == 0){

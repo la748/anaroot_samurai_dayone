@@ -10,7 +10,7 @@ class TArtDALINaI: public TArtDataObject {
  TArtDALINaI()
    : TArtDataObject(), fADC(0), fTDC(0), layer(-1), theta(-1), costheta(-1),
      fEnergy(-1), fDoppCorEnergy(-1), fEnergyWithoutT(-1),
-     fTime(-1), fTimeOffseted(-1)
+     fTime(-9999), fTimeOffseted(-1), fTimeTrueMult(-1), dummyEnergy(-1)
     {;}
   virtual ~TArtDALINaI(){}
 
@@ -42,10 +42,13 @@ class TArtDALINaI: public TArtDataObject {
   virtual void  SetTime(Double_t val){fTime = val;}
   virtual void  SetTimeOffseted(Double_t val){fTimeOffseted = val;}
   virtual void  SetTimeTrueEnergy(Double_t val){fTimeTrueEnergy = val;}
+  virtual void  SetBeta(Double_t val){beta = val;}
   virtual void  SetTimeTrueDoppCorEnergy(Double_t val){fTimeTrueDoppCorEnergy = val;}
   virtual void  SetTimeTrueDoppCorVertexEnergy(Double_t val){fTimeTrueDoppCorVertexEnergy = val;}
   virtual void  SetTimeTrueTime(Double_t val){fTimeTrueTime = val;}
   virtual void  SetTimeTrueTimeOffseted(Double_t val){fTimeTrueTimeOffseted = val;}
+  virtual void  SetMultiplicity(Double_t val){fTimeTrueMult = val;} //added
+  virtual void  SetAddBackEnergy(Double_t val){dummyEnergy = val;} //added
 
   // function to get reco data
   virtual Double_t GetCosTheta(){return costheta;}
@@ -59,16 +62,19 @@ class TArtDALINaI: public TArtDataObject {
   virtual Double_t GetTime(){return fTime;}
   virtual Double_t GetTimeOffseted(){return fTimeOffseted;}
   virtual Double_t GetTimeTrueEnergy(){return fTimeTrueEnergy;}
+  virtual Double_t GetBeta(){return beta;}
   virtual Double_t GetTimeTrueDoppCorEnergy(){return fTimeTrueDoppCorEnergy;}
   virtual Double_t GetTimeTrueDoppCorVertexEnergy(){return fTimeTrueDoppCorVertexEnergy;}
   virtual Double_t GetTimeTrueTime(){return fTimeTrueTime;}
   virtual Double_t GetTimeTrueTimeOffseted(){return fTimeTrueTimeOffseted;}
+  virtual Double_t GetMultiplicity(){return fTimeTrueMult;} //added
+  virtual Double_t GetAddBackEnergy(){return dummyEnergy;} //added
 
  private:
 
   Int_t fADC;  
   Int_t fTDC;  
-  //Int_t fTRef;  
+  //Int_t fTRef;
 
   Int_t layer;  
   Double_t theta; // angle w.r.t. target
@@ -83,10 +89,13 @@ class TArtDALINaI: public TArtDataObject {
   Double_t fTime;
   Double_t fTimeOffseted;
   Double_t fTimeTrueEnergy;
+  Double_t beta;
   Double_t fTimeTrueDoppCorEnergy;
   Double_t fTimeTrueDoppCorVertexEnergy;
   Double_t fTimeTrueTime;
   Double_t fTimeTrueTimeOffseted;
+  Double_t fTimeTrueMult; //added
+  Double_t dummyEnergy; //added
 
   ClassDef(TArtDALINaI,1);
 

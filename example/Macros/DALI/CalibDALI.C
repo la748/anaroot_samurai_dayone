@@ -12,11 +12,11 @@ void CalibDALI(){
   setup->LoadParameter("db/DALI.xml");
 
   TArtEventStore *estore = new TArtEventStore();
-  estore->Open("test.ridf");
+  estore->Open("ridf/dayone0284.ridf");
 
   TArtCalibDALI *mydali= new TArtCalibDALI();
 
-  TFile *fdst = new TFile("calibdst.root","RECREATE");
+  TFile *fdst = new TFile("calibdst_2.root","RECREATE");
   TTree *tree = new TTree("tree","anaroot tree");
   tree->Branch("CalibDALI",(TClonesArray *)mydali->GetNaIArray());
   gROOT->cd();

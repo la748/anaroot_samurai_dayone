@@ -46,7 +46,7 @@ class TArtBeam : public TArtDataObject
 
   // reconstructed zet
   Double_t zet;
-
+  
   // reconstructed beta
   Double_t beta;
 

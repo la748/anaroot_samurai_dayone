@@ -91,6 +91,7 @@ void TArtCalibSAMURAI::LoadDCTDCDistribution(char * file)  {
   TFile *fdcin = new TFile(file,"READ"); 
   gROOT->cd();
   TH1F *hist = NULL;
+  //TArtCore::Info(__FILE__,"LoadDCTDCDistribution (test): %s",file);
 
   for(int i=0;i<4;i++){
     sprintf(myname,"bdc1_ftdc_corr_%d",i);
@@ -111,6 +112,7 @@ void TArtCalibSAMURAI::LoadDCTDCDistribution(char * file)  {
     fCalibBDC2Track->SetTDCDistribution(hist,i*2+1);
     delete hist; hist = NULL;
 
+    /*
     sprintf(myname,"fdc0_ftdc_corr_%d",i);
 
     hist = (TH1F*)((TH2F*)fdcin->Get(myname))->ProjectionX();
@@ -119,6 +121,7 @@ void TArtCalibSAMURAI::LoadDCTDCDistribution(char * file)  {
     hist = (TH1F*)((TH2F*)fdcin->Get(myname))->ProjectionY();
     fCalibFDC0Track->SetTDCDistribution(hist,i*2+1);
     delete hist; hist = NULL;
+    */ // Removed by RT on 11 Mar 2020 as we didn't have in Day1 campaign.
   }
 
   for(int i=0;i<7;i++){

@@ -218,15 +218,19 @@ void TArtCalibPlastic::ReconstructData()   { // call after the raw data are load
     Double_t fTime = -9999; 
     Double_t fTimeLSlew = -9999; 
     Double_t fTimeRSlew = -9999; 
-    Double_t fTimeSlew = -9999; 
+    Double_t fTimeSlew = -9999;
+    Double_t fTimedtSlew = -9999; //
+    Double_t fTimeSlewPos = -9999; //
 
     //    if(fTLRaw>para->GetTDCUnderflow() && fTLRaw<para->GetTDCOverflow()) { // move to LoadData(), Dec. 02 2016 TI 
     if(fTLRaw>0) {
       fLFired = true;
       fTimeL = fTLRaw * para->GetTCalLeft();
       if(fQLRaw>0){
-	fTimeLSlew = fTLRaw + para->GetTLSlewA()/(TMath::Sqrt(fQLRaw)) + para->GetTLSlewB();
-	fTimeLSlew = fTimeLSlew * para->GetTCalLeft();
+	//fTimeLSlew = fTLRaw - (para->GetTLSlewA()/(TMath::Sqrt(fQLRaw)) + para->GetTLSlewB());
+	//fTimeLSlew = fTimeLSlew * para->GetTCalLeft();
+	fTimeLSlew = fTimeL - (para->GetTLSlewA()/(TMath::Sqrt(fQLRaw)) + para->GetTLSlewB());
+	//fTimeSlewPos = fTimeSlew + ((para->GetPosA()*fTimedtSlew*fTimedtSlew)+(para->GetPosB()*fTimedtSlew)+para->GetPosC());
       }
       else{
 	fTimeLSlew = fTimeL;
@@ -238,8 +242,10 @@ void TArtCalibPlastic::ReconstructData()   { // call after the raw data are load
       fRFired = true;
       fTimeR = fTRRaw * para->GetTCalRight();
       if(fQRRaw>0){
-	fTimeRSlew = fTRRaw + para->GetTRSlewA()/(TMath::Sqrt(fQRRaw)) + para->GetTRSlewB();
-	fTimeRSlew = fTimeRSlew * para->GetTCalRight();
+	//fTimeRSlew = fTRRaw - (para->GetTRSlewA()/(TMath::Sqrt(fQRRaw)) + para->GetTRSlewB());
+	//fTimeRSlew = fTimeRSlew * para->GetTCalRight();
+	fTimeRSlew = fTimeR - (para->GetTRSlewA()/(TMath::Sqrt(fQRRaw)) + para->GetTRSlewB());
+	//fTimeSlewPos = fTimeSlew + ((para->GetPosA()*fTimedtSlew*fTimedtSlew)+(para->GetPosB()*fTimedtSlew())+para->GetPosC());
       }
       else{
 	fTimeRSlew = fTimeR;
@@ -250,6 +256,8 @@ void TArtCalibPlastic::ReconstructData()   { // call after the raw data are load
     if(fFired) {
       fTime = (fTimeL+fTimeR)/2.;
       fTimeSlew = (fTimeLSlew+fTimeRSlew)/2.;
+      fTimedtSlew = (fTimeLSlew - fTimeRSlew); //
+      fTimeSlewPos = fTimeSlew + ((para->GetPosA()*fTimedtSlew*fTimedtSlew)+(para->GetPosB()*fTimedtSlew)+para->GetPosC()); //
       //TArtCore::Info(__FILE__,"ch %d: fpl: %d, tlraw: %d, trraw: %d, tl: %f, tr: %f, t:%f", i , fFocalPlane, fTLRaw,fTRRaw,(float)fTL,(float)fTR,(float)fTOF);
       //fTDiff = fTL-fTR;
       //fX     = fDT2X[0] * pow(fTDiff,2) + fDT2X[1] * fTDiff + fDT2X[2];
@@ -261,7 +269,8 @@ void TArtCalibPlastic::ReconstructData()   { // call after the raw data are load
     pla->SetTimeLSlew(fTimeLSlew);
     pla->SetTimeRSlew(fTimeRSlew);
     pla->SetTimeSlew(fTimeSlew);
-
+    pla->SetTimedtSlew(fTimedtSlew);
+    pla->SetTimeSlewPos(fTimeSlewPos);
   }
 
   fReconstructed = true;

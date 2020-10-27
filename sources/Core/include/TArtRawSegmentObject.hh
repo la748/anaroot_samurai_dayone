@@ -17,10 +17,11 @@ class TArtRawSegmentObject : public TNamed
 {
  public: 
   TArtRawSegmentObject(const unsigned int indev, const unsigned int infp, 
-		   const unsigned int indet, const unsigned int inmod){
+		       const unsigned int indet, /*const unsigned int inchn,*/ const unsigned int inmod){
     device=indev;
     fp=infp;
     detector=indet;
+    //channel=inchn;
     module=inmod;
     nmodule=0; ngoodmodule=0; size=0;
   }
@@ -29,16 +30,19 @@ class TArtRawSegmentObject : public TNamed
 
   virtual void SetSegmentID(const unsigned int indev, 
 			    const unsigned int infp, 
-			    const unsigned int indet, 
+			    const unsigned int indet,
+			    //const unsigned int inchn,
 			    const unsigned int inmod){
     device=indev;
     fp=infp;
     detector=indet;
+    //channel=inchn;
     module=inmod;
   }
   virtual int GetDevice(){return device;}
   virtual int GetFP(){return fp;}
   virtual int GetDetector(){return detector;}
+  //virtual int GetChannel(){return channel;}
   virtual int GetModule(){return module;}
   virtual void Clear();
 
@@ -98,6 +102,7 @@ class TArtRawSegmentObject : public TNamed
   int fp;
   // detector id, such as DALI, PPAC ...
   int detector;
+  //int channel;
   // module id, such as CAEN-V490
   int module;
 

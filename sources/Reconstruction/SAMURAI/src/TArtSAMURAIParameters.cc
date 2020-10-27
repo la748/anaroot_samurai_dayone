@@ -1157,6 +1157,8 @@ TArtHODPlaPara *TArtSAMURAIParameters::ParseHODPlaPara(TXMLNode *node)
   Double_t  qped_down = 0;
   Double_t  qcal_up = 0;
   Double_t  qcal_down = 0;
+  Double_t  qzet_a = 0;
+  Double_t  qzet_b = 0;
   Double_t  tslew_up_a = 0;
   Double_t  tslew_up_b = 0;
   Double_t  tslew_down_a = 0;
@@ -1189,6 +1191,10 @@ TArtHODPlaPara *TArtSAMURAIParameters::ParseHODPlaPara(TXMLNode *node)
         qped_up = (Double_t)atof(node->GetText());
       if (strcmp(node->GetNodeName(), "qped_down") == 0)
         qped_down = (Double_t)atof(node->GetText());
+      if (strcmp(node->GetNodeName(), "qzet_a") == 0)
+	qzet_a = (Double_t)atof(node->GetText());
+      if (strcmp(node->GetNodeName(), "qzet_b") == 0)
+	qzet_b = (Double_t)atof(node->GetText());
       if (strcmp(node->GetNodeName(),"tslew_up_a")==0)
         tslew_up_a = (Double_t)atof(node->GetText());
       if (strcmp(node->GetNodeName(),"tslew_up_b")==0)
@@ -1226,7 +1232,7 @@ TArtHODPlaPara *TArtSAMURAIParameters::ParseHODPlaPara(TXMLNode *node)
     new TArtHODPlaPara(id, name, fpl, 
         tup_ch2ns, tdown_ch2ns,
         tup_offset, tdown_offset,
-        qcal_up, qcal_down, qped_up, qped_down,
+	qcal_up, qcal_down, qped_up, qped_down, qzet_a, qzet_b,
         tslew_up_a, tslew_up_b, tslew_down_a, tslew_down_b);
   para->SetMap(tdet, tup_geo, tup_ch, tdown_geo, tdown_ch,
       qdet, qup_geo, qup_ch, qdown_geo, qdown_ch);

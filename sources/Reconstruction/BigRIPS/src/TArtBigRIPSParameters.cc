@@ -385,6 +385,9 @@ TArtPlasticPara *TArtBigRIPSParameters::ParsePlasticPara(TXMLNode *node) {
   Double_t  tslew_left_b = 0;
   Double_t  tslew_right_a = 0;
   Double_t  tslew_right_b = 0;
+  Double_t  tslew_pos_a = 0;
+  Double_t  tslew_pos_b = 0;
+  Double_t  tslew_pos_c = 0;
   Double_t  tdc_underflow = 0;
   Double_t  tdc_overflow = 4095;
   Double_t  qtc_underflow = 0;
@@ -429,6 +432,12 @@ TArtPlasticPara *TArtBigRIPSParameters::ParsePlasticPara(TXMLNode *node) {
 	tslew_right_a = (Double_t)atof(node->GetText());
       if (strcmp(node->GetNodeName(),"tslew_right_b")==0)
 	tslew_right_b = (Double_t)atof(node->GetText());
+      if (strcmp(node->GetNodeName(),"tslew_pos_a")==0)
+	tslew_pos_a = (Double_t)atof(node->GetText());
+      if (strcmp(node->GetNodeName(),"tslew_pos_b")==0)
+	tslew_pos_b = (Double_t)atof(node->GetText());
+      if (strcmp(node->GetNodeName(),"tslew_pos_c")==0)
+	tslew_pos_c = (Double_t)atof(node->GetText());
       if (strcmp(node->GetNodeName(), "tdc_underflow") == 0)
 	tdc_underflow = (Double_t)atof(node->GetText());
       if (strcmp(node->GetNodeName(), "tdc_overflow") == 0){
@@ -523,7 +532,7 @@ TArtPlasticPara *TArtBigRIPSParameters::ParsePlasticPara(TXMLNode *node) {
     tdc_overflow = 1000000; 
 
   TArtCore::Info(__FILE__,"Reading database for %s Plastic",name.Data());
-  TArtPlasticPara * para = new TArtPlasticPara(id, name, fpl, tcal_left, tcal_right, qped_left, qped_right, tslew_left_a, tslew_left_b, tslew_right_a, tslew_right_b, tdc_underflow, tdc_overflow, zpos);
+  TArtPlasticPara * para = new TArtPlasticPara(id, name, fpl, tcal_left, tcal_right, qped_left, qped_right, tslew_left_a, tslew_left_b, tslew_right_a, tslew_right_b, tslew_pos_a, tslew_pos_b, tslew_pos_c, tdc_underflow, tdc_overflow, zpos);
   para->SetQTCWindow(qtc_underflow, qtc_overflow);
   para->SetMulHitTDCWindow(multdc_underflow, multdc_overflow);
   para->SetMap(t_dev>0 ? t_dev : dev,

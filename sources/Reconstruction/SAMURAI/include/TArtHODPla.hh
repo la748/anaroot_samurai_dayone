@@ -21,7 +21,8 @@ class TArtHODPla : public TArtDataObject {
   void  SetQAveRaw(Double_t val){fQAveRaw = val;}
   void  SetQAvePed(Double_t val){fQAvePed = val;}
   void  SetQAveCal(Double_t val){fQAveCal = val;}
-
+  void  SetQ_Zet(Double_t val){fQ_Zet = val;}
+  
   // function to get Q data
   Int_t GetTURaw(){return fTURaw;}
   Int_t GetTDRaw(){return fTDRaw;}
@@ -34,6 +35,7 @@ class TArtHODPla : public TArtDataObject {
   Double_t GetQAveRaw(){return fQAveRaw;}
   Double_t GetQAvePed(){return fQAvePed;}
   Double_t GetQAveCal(){return fQAveCal;}
+  Double_t GetQ_Zet(){return fQ_Zet;}
  
   // get reconstructed values
   virtual void SetTime(Double_t val){fTime=val;}
@@ -65,6 +67,7 @@ class TArtHODPla : public TArtDataObject {
   Double_t     fQAveRaw;
   Double_t     fQAvePed;
   Double_t     fQAveCal;
+  Double_t     fQ_Zet;
 
   // reconstructed data
   Double_t   fTime;

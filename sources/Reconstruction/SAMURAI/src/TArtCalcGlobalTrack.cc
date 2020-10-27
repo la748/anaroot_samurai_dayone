@@ -33,8 +33,8 @@ TArtCalcGlobalTrack::~TArtCalcGlobalTrack()
 {
   clearHitArray();
 }
-/*
-TrackHit *TArtCalcGlobalTrack::GetHit( std::size_t nth ) const
+///////
+/*TrackHit *TArtCalcGlobalTrack::GetHit( std::size_t nth ) const
 {
   if( nth<hitArray_.size() ){
     return (TrackHit*)hitArray_[nth];
@@ -49,8 +49,8 @@ TrackHit *TArtCalcGlobalTrack::GetHitOfLayerNumber( int lnum ) const
     if( hitArray_[i]->GetLayer()==lnum )
       return (TrackHit*)hitArray_[i];
   return 0;
-}
-*/
+  }*/
+////////
 void TArtCalcGlobalTrack::fillHitArray( void )
 {
   std::size_t nIn = In_->GetNumHitLayer();

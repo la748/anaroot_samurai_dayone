@@ -16,10 +16,11 @@ class TArtPlasticPara : public TNamed {
   TArtPlasticPara(Int_t i, TString n, Int_t f, 
 		  Double_t tcl, Double_t tcr, 
 		  Double_t qpedl, Double_t qpedr, 
-		  Double_t ts_al, Double_t ts_bl, Double_t ts_ar, Double_t ts_br, 
-		  Double_t tdc_uf, Double_t tdc_of, 
+		  Double_t ts_al, Double_t ts_bl, Double_t ts_ar, Double_t ts_br,
+		  Double_t tsp_a, Double_t tsp_b, Double_t tsp_c,
+		  Double_t tdc_uf, Double_t tdc_of,
 		  Double_t z) :
-    id(i), detname(n), fpl(f), tcal_left(tcl), tcal_right(tcr), qped_left(qpedl), qped_right(qpedr), tslew_left_a(ts_al), tslew_left_b(ts_bl), tslew_right_a(ts_ar), tslew_right_b(ts_br), tdc_underflow(tdc_uf), tdc_overflow(tdc_of), zoffset(z){
+    id(i), detname(n), fpl(f), tcal_left(tcl), tcal_right(tcr), qped_left(qpedl), qped_right(qpedr), tslew_left_a(ts_al), tslew_left_b(ts_bl), tslew_right_a(ts_ar), tslew_right_b(ts_br), tslew_pos_a(tsp_a), tslew_pos_b(tsp_b), tslew_pos_c(tsp_c), tdc_underflow(tdc_uf), tdc_overflow(tdc_of), zoffset(z){
     qtc_underflow=0;
     qtc_overflow=10000000;
     multdc_underflow=0;
@@ -31,14 +32,15 @@ class TArtPlasticPara : public TNamed {
 		     Double_t tcl, Double_t tcr, 
 		     Double_t qpedl, Double_t qpedr, 
 		     Double_t ts_al, Double_t ts_bl, 
-		     Double_t ts_ar, Double_t ts_br, 
+		     Double_t ts_ar, Double_t ts_br,
+		     Double_t tsp_a, Double_t tsp_b, Double_t tsp_c,
 		     Double_t tdc_uf, 
-		     Double_t tdc_of, 
+		     Double_t tdc_of,
 		     Double_t z){
     id=i; detname=n; fpl=f; 
     tcal_left=tcl; tcal_right=tcr; qped_left=qpedl; qped_right=qpedr; 
-    tslew_left_a=ts_al; tslew_left_b=ts_bl; 
-    tslew_right_a=ts_ar; tslew_right_b=ts_br; tdc_underflow=tdc_uf; tdc_overflow=tdc_of; zoffset=z; }
+    tslew_left_a=ts_al; tslew_left_b=ts_bl;
+    tslew_right_a=ts_ar; tslew_right_b=ts_br; tslew_pos_a=tsp_a; tslew_pos_b=tsp_b; tslew_pos_c=tsp_c;tdc_underflow=tdc_uf; tdc_overflow=tdc_of; zoffset=z; }
 
   void SetQTCWindow(Double_t qtc_uf, Double_t qtc_of){
     qtc_underflow=qtc_uf; qtc_overflow=qtc_of;
@@ -138,7 +140,10 @@ class TArtPlasticPara : public TNamed {
   Double_t GetTLSlewA() const { return tslew_left_a; } 
   Double_t GetTLSlewB() const { return tslew_left_b; } 
   Double_t GetTRSlewA() const { return tslew_right_a; } 
-  Double_t GetTRSlewB() const { return tslew_right_b; } 
+  Double_t GetTRSlewB() const { return tslew_right_b; }
+  Double_t GetPosA() const { return tslew_pos_a; }
+  Double_t GetPosB() const { return tslew_pos_b; }
+  Double_t GetPosC() const { return tslew_pos_c; }
   Double_t GetTDCUnderflow() const {return tdc_underflow;}
   Double_t GetTDCOverflow() const {return tdc_overflow;}
   Double_t GetQTCUnderflow() const {return qtc_underflow;}
@@ -168,6 +173,9 @@ class TArtPlasticPara : public TNamed {
     out << "Time Slewing Corr. B of Left: " << p.tslew_left_b << ", ";
     out << "Time Slewing Corr. A of Right: " << p.tslew_right_a << ", ";
     out << "Time Slewing Corr. B of Right: " << p.tslew_right_b << ", ";
+    out << "Time Slew Pos Corr. A: " <<p.tslew_pos_a <<", ";
+    out << "Time Slew Pos Corr. B: " <<p.tslew_pos_b <<", ";
+    out << "Time Slew Pos Corr. C: " <<p.tslew_pos_c <<", ";
     out << "Time Calib Right: " << p.tcal_right << ", ";
     out << "TDC Underflow: " << p.tdc_underflow << std::endl;
     out << "TDC Overflow: " << p.tdc_overflow << std::endl;
@@ -207,6 +215,11 @@ private:
   // set a=0, b=0 to trun off slewing correction
   Double_t  tslew_right_a;
   Double_t  tslew_right_b;
+
+  //Pos correction parameters:
+  Double_t tslew_pos_a;
+  Double_t tslew_pos_b;
+  Double_t tslew_pos_c;
 
   // TDC range where timing hit will be seeked.
   Double_t  tdc_underflow;

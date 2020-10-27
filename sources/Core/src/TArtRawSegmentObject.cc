@@ -7,6 +7,7 @@ TArtRawSegmentObject::TArtRawSegmentObject() :
    fp(-1), 
    detector(-1), 
    module(-1)
+   //channel(-1)
 {
   nmodule = 0;
   ngoodmodule = 0;

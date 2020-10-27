@@ -17,23 +17,25 @@ class TArtHODPlaPara : public TNamed {
 		 Double_t tcu, Double_t tcd, 
 		 Double_t tou, Double_t tod, 
 		 Double_t qcalu, Double_t qcald, 
-		 Double_t qpedu, Double_t qpedd, 
+		 Double_t qpedu, Double_t qpedd,
+		 Double_t q_zet_a, Double_t q_zet_b,
 		 Double_t ts_au, Double_t ts_bu, Double_t ts_ad, Double_t ts_bd)
     : id(i), detname(n), fpl(f), tcal_up(tcu), tcal_down(tcd), toff_up(tou), toff_down(tod), 
-      qcal_up(qcalu), qcal_down(qcald), qped_up(qpedu), qped_down(qpedd),
-      tslew_up_a(ts_au), tslew_up_b(ts_bu), tslew_down_a(ts_ad), tslew_down_b(ts_bd){ }
+      qcal_up(qcalu), qcal_down(qcald), qped_up(qpedu), qped_down(qpedd), qzet_a(q_zet_a), qzet_b(q_zet_b), tslew_up_a(ts_au), tslew_up_b(ts_bu), tslew_down_a(ts_ad), tslew_down_b(ts_bd){ }
   ~TArtHODPlaPara(){}
 
   void SetPalameters(Int_t i, TString n, Int_t f, 
 		     Double_t tcu, Double_t tcd, 
 		     Double_t tou, Double_t tod,
-		     Double_t qpedu, Double_t qpedd, 
+		     Double_t qpedu, Double_t qpedd,
+		     Double_t q_zet_a, Double_t q_zet_b,
 		     Double_t ts_au, Double_t ts_bu, 
 		     Double_t ts_ad, Double_t ts_bd){
     id=i; detname=n; fpl=f; 
     tcal_up=tcu; tcal_down=tcd;
     toff_up=tou; toff_down=tod;
-    qped_up=qpedu; qped_down=qpedd; 
+    qped_up=qpedu; qped_down=qpedd;
+    qzet_a = q_zet_a; qzet_b = q_zet_b;
     tslew_up_a=ts_au; tslew_up_b=ts_bu; 
     tslew_down_a=ts_ad; tslew_down_b=ts_bd; }
 
@@ -55,7 +57,9 @@ class TArtHODPlaPara : public TNamed {
   Double_t GetQCalUp() const { return qcal_up; } 
   Double_t GetQCalDown() const { return qcal_down; } 
   Double_t GetQPedUp() const { return qped_up; } 
-  Double_t GetQPedDown() const { return qped_down; } 
+  Double_t GetQPedDown() const { return qped_down; }
+  Double_t GetQ_Zet_A() const { return qzet_a; }
+  Double_t GetQ_Zet_B() const { return qzet_b; }
   Double_t GetTUSlewA() const { return tslew_up_a; } 
   Double_t GetTUSlewB() const { return tslew_up_b; } 
   Double_t GetTDSlewA() const { return tslew_down_a; } 
@@ -78,6 +82,8 @@ class TArtHODPlaPara : public TNamed {
     out << "QDC Calib Down: " << p.qcal_down << ", ";
     out << "QDC Pedestal Up: " << p.qped_up << ", ";
     out << "QDC Pedestal Down: " << p.qped_down << ", ";
+    out << "Q_Zet conversion A: " << p.qzet_a << ", ";
+    out << "Q_Zet conversion B: " << p.qzet_b << ", "; 
     out << "Time Slewing Corr. A of Up: " << p.tslew_up_a << ", ";
     out << "Time Slewing Corr. B of Up: " << p.tslew_up_b << ", ";
     out << "Time Slewing Corr. A of Down: " << p.tslew_down_a << ", ";
@@ -103,6 +109,8 @@ private:
   Double_t  qcal_down;
   Double_t  qped_up;
   Double_t  qped_down;
+  Double_t  qzet_a;
+  Double_t  qzet_b;
 
   // Slew correction parameters for up, tslew = a/sqrt(t)+b
   // set a=0, b=0 to trun off slewing correction

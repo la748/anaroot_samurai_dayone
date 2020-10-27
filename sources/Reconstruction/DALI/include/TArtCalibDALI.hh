@@ -33,6 +33,9 @@ class TArtCalibDALI : public TArtReconstruction {
   void DopplerCorrect();
   void DopplerCorrect(Double_t beta);
   void DopplerCorrectVertex(Double_t beta,Double_t vertex=0.0);
+  void AddBackAnalysis(); //added
+  void CreateAddBackTable(Double_t maxDistance); //added
+  void DopplerCorrectAddBack(Double_t beta,Double_t theta,Double_t energy);
   // ****************
 
   // function to access data container
@@ -56,10 +59,12 @@ class TArtCalibDALI : public TArtReconstruction {
 
   Double_t GetVertex(){return fVertex;}
   Double_t GetBeta(){return fBeta;}
+  //Double_t GetAddBackEnergy(){return dummyEnergy;} //added
 
   Double_t SetPlTime(Double_t a){return fPlTOF=a;}
   Double_t SetVertex(Double_t a){return fVertex=a;}
   Double_t SetBeta(Double_t a){return fBeta=a;}
+  //Double_t SetAddBackEnergy(Double_t a){return dummyEnergy=a;} //added
 
  private:
 
@@ -79,6 +84,8 @@ class TArtCalibDALI : public TArtReconstruction {
 
   Double_t fPlTOF;
   Double_t fVertex;
+
+  //Double_t dummyEnergy; //added
 
   TRandom *r;
 

@@ -155,7 +155,7 @@ void TArtRecoTOF::ReconstructData()   { // call after the raw data are loaded
     // calculate time of fright
 
     //tof->SetTOF(downstream_pla->GetTimeSlew() - upstream_pla->GetTimeSlew() + tof->GetTimeOffset());
-    tof->SetTOF(fDownstreamPlaArrayBuffer[i]->GetTime() - fUpstreamPlaArrayBuffer[i]->GetTime() + tof->GetTimeOffset());
+    tof->SetTOF(fDownstreamPlaArrayBuffer[i]->GetTimeSlewPos() - fUpstreamPlaArrayBuffer[i]->GetTimeSlewPos() + tof->GetTimeOffset());
 
   } 
 

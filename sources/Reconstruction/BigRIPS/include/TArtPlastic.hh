@@ -10,7 +10,7 @@ class TArtPlastic : public TArtDataObject {
  public:
   TArtPlastic(){Clear();zposition=-1;zoffset=0;tcalL=0;tcalR=0;}
   virtual ~TArtPlastic(){}
-  virtual void Clear(){fTLRaw=-9999;fTRRaw=-9999;fQLRaw=-9999;fQRRaw=-9999;fQTCLRawWidth=-9999;fQTCRRawWidth=-9999;fQTCLRawStart=-9999;fQTCRRawStart=-9999;fTime=-9999;fTimeL=-9999;fTimeR=-9999;fTimeLSlew=-9999;fTimeRSlew=-9999;fTimeSlew=-9999;SetDataState(0);fTLRawArray.clear();fTRRawArray.clear();}
+  virtual void Clear(){fTLRaw=-9999;fTRRaw=-9999;fQLRaw=-9999;fQRRaw=-9999;fQTCLRawWidth=-9999;fQTCRRawWidth=-9999;fQTCLRawStart=-9999;fQTCRRawStart=-9999;fTime=-9999;fTimeL=-9999;fTimeR=-9999;fTimeLSlew=-9999;fTimeRSlew=-9999;fTimeSlew=-9999;fTimedtSlew=-9999;fTimeSlewPos=-9999;SetDataState(0);fTLRawArray.clear();fTRRawArray.clear();}
 
   virtual void SetZoffset(Double_t val){zoffset = val;}
   virtual void SetZposition(Double_t val){zposition = val;}
@@ -64,6 +64,8 @@ class TArtPlastic : public TArtDataObject {
   virtual void SetTimeLSlew(Double_t val){fTimeLSlew=val;}
   virtual void SetTimeRSlew(Double_t val){fTimeRSlew=val;}
   virtual void SetTimeSlew (Double_t val){fTimeSlew=val;}
+  virtual void SetTimedtSlew(Double_t val){fTimedtSlew=val;}
+  virtual void SetTimeSlewPos(Double_t val){fTimeSlewPos=val;}
 
   // get reconstructed values
   Double_t GetTime(){return fTime;}
@@ -72,6 +74,8 @@ class TArtPlastic : public TArtDataObject {
   Double_t GetTimeLSlew(){return fTimeLSlew;}
   Double_t GetTimeRSlew(){return fTimeRSlew;}
   Double_t GetTimeSlew (){return fTimeSlew;}
+  Double_t GetTimedtSlew(){return fTimedtSlew;}
+  Double_t GetTimeSlewPos(){return fTimeSlewPos;}
 
  private:
 
@@ -100,6 +104,8 @@ class TArtPlastic : public TArtDataObject {
   Double_t   fTimeLSlew; // after slewing correction
   Double_t   fTimeRSlew;
   Double_t   fTimeSlew;
+  Double_t   fTimedtSlew;
+  Double_t   fTimeSlewPos;
 
   ClassDef(TArtPlastic,1);
 

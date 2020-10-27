@@ -9,13 +9,16 @@ class TArtFragment : public TArtDataObject {
 
  public:
   TArtFragment(){fDelta=-9999;
-    rktrace_status=false;
+    rktrace_status=true; //false
     path_length2hod=-9999;
     fChi2=-9999;
     fnHit=0;
     fTof=-9999;
+    fTof_test=-9999;
     fBeta=-9999.;
+    fBeta_test=-9999.;
     fAoQ=-9999.;
+    fAoQ_test=-9999.;
     fZ  =-9999;
     fBrho=-9999;
     for(int i=0;i<100;i++)fDiff[i]=-9999;
@@ -40,15 +43,20 @@ class TArtFragment : public TArtDataObject {
   virtual void SetTzero(Double_t val){fTzero=val;}
   virtual void SetTzeroQ(Double_t val){fTzeroQ=val;}
   virtual void SetHODTime(Double_t val){fHODT=val;}
+  virtual void SetHODTime_slew(Double_t val){fHODT_slew=val;}
   virtual void SetHODQ(Double_t val){fHODQ=val;}
 
   // set reconstructed values
   virtual void SetTOF  (Double_t val){fTof=val;}
+  virtual void SetTOF_test  (Double_t val){fTof_test=val;}
   virtual void SetBrho (Double_t val){fBrho=val;}
   virtual void SetBeta (Double_t val){fBeta=val;}
+  virtual void SetBeta_test (Double_t val){fBeta_test=val;}
   virtual void SetAoQ  (Double_t val){fAoQ=val;}
+  virtual void SetAoQ_test  (Double_t val){fAoQ_test=val;}
   virtual void SetZ    (Double_t val){fZ  =val;}
-
+  virtual void SetZ_test    (Double_t val){fZ_test  =val;}
+  
   // get reconstructed values from 1st order analysis
   virtual Double_t GetDelta(){return fDelta;}
 
@@ -70,9 +78,13 @@ class TArtFragment : public TArtDataObject {
   virtual Double_t GetHODQ(){return fHODQ;}
 
   virtual Double_t GetTOF  (){return fTof;}
+  virtual Double_t GetTOF_test  (){return fTof_test;}
   virtual Double_t GetBeta (){return fBeta;}
+  virtual Double_t GetBeta_test (){return fBeta_test;}
   virtual Double_t GetAoQ  (){return fAoQ;}
+  virtual Double_t GetAoQ_test  (){return fAoQ_test;}
   virtual Double_t GetZ    (){return fZ  ;}
+  virtual Double_t GetZ_test    (){return fZ_test  ;} 
 
  private:
 
@@ -91,15 +103,20 @@ class TArtFragment : public TArtDataObject {
 
   // reconstructed value
   Double_t fTof;
+  Double_t fTof_test;
   Double_t fBeta;
+  Double_t fBeta_test;
   Double_t fAoQ;
+  Double_t fAoQ_test;
   Double_t fBrho;
   Double_t fZ;
+  Double_t fZ_test;
 
   // checking values for the reconstruction
   Double_t fTzero;
   Double_t fTzeroQ;
   Double_t fHODT;
+  Double_t fHODT_slew;
   Double_t fHODQ;
 
   ClassDef(TArtFragment,1)

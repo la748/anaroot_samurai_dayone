@@ -1,5 +1,5 @@
 #include "TArtCalibDALI.hh"
-//#include "TArtCalibCoin.hh"
+#include "TArtCalibCoin.hh"
 #include "TArtDALINaI.hh"
 #include "TArtDALINaIPara.hh"
 #include "TArtDALIParameters.hh"
@@ -82,7 +82,7 @@ void TArtCalibDALI::LoadFile(char s[]) {
     TArtCore::Error(__FILE__,"fail to load DALI configuration file: %s",s);
   }
   return;
-}
+  }
 
 //__________________________________________________________
 void TArtCalibDALI::LoadData(TArtRawSegmentObject *seg)   {
@@ -155,7 +155,6 @@ void TArtCalibDALI::ClearData()   {
   fTimeTrueMultThres = 0;   
   return;
 }
-
 //__________________________________________________________
 void TArtCalibDALI::ReconstructData()   { // call after the raw data are loaded
 
@@ -169,16 +168,17 @@ void TArtCalibDALI::ReconstructData()   { // call after the raw data are loaded
     nai->SetEnergyWithoutT(-999.);
     nai->SetCosTheta(0);
     nai->SetEnergy(-999.);
+    nai->SetTime(-9999.);
     nai->SetTimeOffseted(-10000.);
     nai->SetTimeTrueEnergy(-999.);
     nai->SetTimeTrueTime(-10000.);
     nai->SetTimeTrueTimeOffseted(-10000.);
 
     //ID depends on the definition in mapping file
-    if(nai->GetID()==226) trefdummy[0] = nai->GetRawTDC();
-    if(nai->GetID()==227) trefdummy[1] = nai->GetRawTDC();
-    if(nai->GetID()==228) trefdummy[2] = nai->GetRawTDC();
-  }
+    if(nai->GetID()==140) trefdummy[0] = nai->GetRawTDC();
+    if(nai->GetID()==141) trefdummy[1] = nai->GetRawTDC();
+    //if(nai->GetID()==228) trefdummy[2] = nai->GetRawTDC();
+    }
 
   for(Int_t i=0;i<GetNumNaI();i++){
 
@@ -189,21 +189,23 @@ void TArtCalibDALI::ReconstructData()   { // call after the raw data are loaded
     Int_t tdc = nai->GetRawTDC();
     Double_t theta = nai->GetTheta();
     Double_t costheta = TMath::Cos(theta*TMath::Pi()/180.);
-    //Double_t fEnergy = (adc - para->GetQPed()) * para->GetQCal();
+    Double_t fEnergy = (adc - para->GetQPed()) * para->GetQCal();
     Double_t random = (Double_t)r->Rndm();
-    Double_t fEnergy = (adc-0.5 + random) * para->GetQCal()  + para->GetQPed();
+    //Double_t fEnergy = (adc-0.5 + random) * para->GetQCal()  + para->GetQPed();
+    //cout << adc << fEnergy <<endl;
 
     //	Double_t fEnergy = adc * para->GetQCal() + para->GetQPed();
+    //nai->SetEnergy(fEnergy);
     nai->SetEnergyWithoutT(fEnergy);
     nai->SetCosTheta(costheta);
 
     if(fEnergy>0) fMultWithoutT++;
-
-    //	if(!(tdc>0 && adc>0 && tdc<100000 && adc<4000)) continue;
-    if(tdc>0 && adc>0 && tdc<100000 && adc<4000 && (trefdummy[0]||trefdummy[1]||trefdummy[2])>0){ }
-    else{ continue; }
-
     nai->SetEnergy(fEnergy);
+    //	if(!(tdc>0 && adc>0 && tdc<100000 && adc<4000)) continue;
+    //if(tdc>0 && adc>0 && tdc<100000 && adc<4000 && (trefdummy[0]||trefdummy[1])>0){ }
+    //else{ continue; }
+
+    //nai->SetEnergy(fEnergy);
 
     if(fEnergy>fMultiplicityThreshold) fMultThres++;
     if(fEnergy>0)fMult++;
@@ -222,7 +224,9 @@ void TArtCalibDALI::ReconstructData()   { // call after the raw data are loaded
 
     Double_t  fTime = -9999.;
     fTime = ((double)tdc - tref )* para->GetTCal();
-
+    //cout << "fTime" << fTime << endl;
+    //fTime = (double)tdc * para->GetTCal();
+    
     Double_t fTimeOffseted = -9999.;
     fTimeOffseted = fTime + para->GetTOffset() -fPlTOF ; //Subtract Plastic Time. This variable is set externally in the macro.
 
@@ -238,6 +242,7 @@ void TArtCalibDALI::ReconstructData()   { // call after the raw data are loaded
       nai->SetTimeTrueTimeOffseted(fTimeOffseted);
       if(fEnergy>fMultiplicityThreshold) fTimeTrueMultThres++;
       if(fEnergy>0)fTimeTrueMult++;
+      nai->SetMultiplicity(fTimeTrueMult); //added
     }
 
     // copy some information from para to data container
@@ -247,13 +252,15 @@ void TArtCalibDALI::ReconstructData()   { // call after the raw data are loaded
     //	nai->SetLayer(para->GetLayer());
     //	nai->SetTheta(para->GetNaITheta());
 
-  }
-
+    } 
   fReconstructed = true;
 
-  DopplerCorrect(fBeta);
-  DopplerCorrectVertex(fBeta,fVertex);
+  //DopplerCorrect(fBeta);
+  //DopplerCorrectVertex(fBeta,fVertex);
 
+  DopplerCorrect();
+  DopplerCorrectVertex(fVertex);
+    
   return;
 }
 
@@ -272,7 +279,7 @@ void TArtCalibDALI::DopplerCorrect()   {
   if(NULL != tofarray){
     for(Int_t i=0;i<tofarray->GetEntries();i++){
       TArtTOF *tof = (TArtTOF *)tofarray->At(i);
-      if( tof->GetUpstreamPlaFpl()<=fpl && tof->GetDownstreamPlaFpl()>=fpl ){
+      if( tof->GetUpstreamPlaFpl()==3 && tof->GetDownstreamPlaFpl()==13 ){
 	DopplerCorrect(tof->GetBeta());
 	break;
       }
@@ -299,6 +306,7 @@ void TArtCalibDALI::DopplerCorrect(Double_t beta)   {
 
     Double_t fDoppCorEnergy = nai->GetEnergy() * (1-beta*nai->GetCosTheta())/TMath::Sqrt((1.0-beta*beta));
     nai->SetDoppCorEnergy(fDoppCorEnergy);
+    nai->SetBeta(beta);
     if(nai->GetTimeTrueEnergy() > 0.){
       nai->SetTimeTrueDoppCorEnergy(fDoppCorEnergy);
     }else{
@@ -332,8 +340,285 @@ void TArtCalibDALI::DopplerCorrectVertex(Double_t beta, Double_t vertex) {
   }
 
   return;
+  }
+
+//__________________________________________________________
+//added
+
+//#include "/shared/storage/physnp/rt1091/share/SAMURAI-Day1/users/la748/Analysis/Event.h"
+#include "TChain.h"
+
+#include "TCutG.h"
+
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TFile.h"
+
+#include "TROOT.h"
+#include "TRint.h"
+#include "TVector3.h"
+
+#include "TMath.h"
+
+#include <iostream>
+#include <strstream>
+#include <stdlib.h> 
+
+#include <TFile.h>
+
+#include <search.h>
+
+using namespace std;
+
+const int NUMBEROFDALICRYSTALS = 140;
+const int NUMBEROFDALIADDBACKCRYSTALS = 30;
+//float ADDBACKDISTANCE = 10;
+
+//For addback
+int fAddbackTable[NUMBEROFDALICRYSTALS][NUMBEROFDALIADDBACKCRYSTALS];
+int fNumberOfAddbackPartners[NUMBEROFDALICRYSTALS];
+bool crystalUsedForAddback[NUMBEROFDALICRYSTALS] = {false};
+
+float fTheta[NUMBEROFDALICRYSTALS];
+float fPosX[NUMBEROFDALICRYSTALS];
+float fPosY[NUMBEROFDALICRYSTALS];
+float fPosZ[NUMBEROFDALICRYSTALS];
+
+int fDaliFold   = 0;//Fold
+int fDaliFoldTa = 0;//Fold at Target time
+int fDaliMult   = 0;//multiplicity
+int fDaliMultTa = 0;//multiplicity at target time
+
+//This is only for Add-back based analysis
+struct dali{
+  int id;
+  int layer;
+  float theta;   //Angle for Doppler Correction
+  float x;
+  float y;
+  float z;
+  float e;       //Energy
+  float t;       //Time
+  bool  ttrue;   //Bool if time is true
+  float dopp[1]; //Doppler energy. Three doppler corrections for the three betas  
+  float doppwa[1]; //Doppler energy with true multiplicity and addback.
+  float idwa;
+  //float twa;
+  //float ttruewa;
+}
+fDali[NUMBEROFDALICRYSTALS];
+
+//////////////////////////////////////////////////////////////////////////////////
+
+Double_t DopplerCorrectAddBack(Double_t beta1,Double_t theta,Double_t energy){
+  if(energy <=0.) return -1;
+  else return energy * (1-beta1*TMath::Cos(theta))/TMath::Sqrt((1.0-beta1*beta1));
 }
 
+//////////////////////////////////////////////////////////////////////////////////
+
+bool IncludeAddbackTable(int detid[2],Double_t maxDistance, TVector3 fPos[]) {
+
+  float distance = TMath::Sqrt(TMath::Power(fPos[detid[0]].X()-fPos[detid[1]].X(),2) +
+                               TMath::Power(fPos[detid[0]].Y()-fPos[detid[1]].Y(),2) + 
+                               TMath::Power(fPos[detid[0]].Z()-fPos[detid[1]].Z(),2));
+
+  //cout<<"Distance: "<<distance<<endl;
+  if( distance > maxDistance ) return false;
+  else return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+
+void TArtCalibDALI::CreateAddBackTable(Double_t maxDistance){
+
+  //cout<<"Creating the add-back table"<<endl;
+  
+  TVector3 detPos[NUMBEROFDALICRYSTALS];
+  float x,y,z;
+  int number;
+  float angle;
+  
+  FILE *fdetPos  = fopen("/shared/storage/physnp/rt1091/share/SAMURAI-Day1/users/la748/Analysis/input/AverageInteractionPoint.out","r");
+  char dummy[100];//100
+  for(int i=0;i<NUMBEROFDALICRYSTALS;i++){ 
+    fgets(dummy,100,fdetPos);//100
+    sscanf(dummy,"%f %f %f %i %i %f",&x,&y,&z,&number,&number,&angle);
+    detPos[i].SetX(x);
+    detPos[i].SetY(y);
+    detPos[i].SetZ(z);
+    fTheta[i] = angle*3.14159/180.;
+    fPosX[i] = x;
+    fPosY[i] = y;
+    fPosZ[i] = z;
+    //cout<<detPos[i].X()<<" "<<detPos[i].Y()<<" "<<detPos[i].Z()<<endl; 
+  }
+  FILE *fAddbackTableOut = fopen("/shared/storage/physnp/rt1091/share/SAMURAI-Day1/users/la748/Analysis/input/AddbackTable.out","w");
+
+  int detid[2];
+  bool inTable;
+  int counter = 0;
+  for(int i=0;i<NUMBEROFDALICRYSTALS;i++) {
+    fNumberOfAddbackPartners[i] = 0;   
+    fprintf(fAddbackTableOut," %i",i);
+
+    for(int j=i+1;j<NUMBEROFDALICRYSTALS;j++) {
+      detid[0] = i;
+      detid[1] = j;
+       
+      inTable = IncludeAddbackTable(detid,maxDistance,detPos);
+
+       if(inTable && counter< NUMBEROFDALIADDBACKCRYSTALS) {
+	fprintf(fAddbackTableOut," %i",j);
+        fAddbackTable[i][counter] = j;
+        fNumberOfAddbackPartners[i]++;
+        counter++;
+      }
+      if(counter == NUMBEROFDALIADDBACKCRYSTALS)  { //Too many detectors 
+        cout<<"You have to increase the variable NUMBEROFDALI2ADDBACKCRYSTALS!!!"<<endl;
+        //STD::abort();
+      }
+    }
+    counter = 0;
+    fprintf(fAddbackTableOut," \n");
+  }
+  fclose(fAddbackTableOut);
+}
+
+//__________________________________________________________
+int CompareByEnergy(const void *element1, const void *element2) {
+  return((dali*)element1)->e < ((dali*)element2)->e? 1: -1;
+}
+
+//__________________________________________________________
+void SortData(int count, dali fDali[]) {
+  qsort(fDali,count,sizeof(dali),CompareByEnergy);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+void TArtCalibDALI::AddBackAnalysis(){
+
+  double beta1 = 0.6273;
+  //CreateAddBackTable(20);
+  double betaDiffLow = 0.0123;
+  double betaDiffHigh = 0.0177;
+  cout<<"test1"<<endl;
+  //TFile *rootfile = new TFile("analysis_development/DALI_outputfile.root","RECREATE");
+  //rootfile->cd();
+
+  int minBin = 0;
+  int maxBin = 6000;
+  int binning = 25;
+  int numBin = (maxBin-minBin)/binning;
+
+  //Specific variables;
+  int daliMult;
+  int daliTimeTrueMult;
+  int daliFold;
+  int daliTimeTrueFold;
+
+  Double_t DopplerAngle;
+
+  int countingFilling = 0;
+
+  fDaliFold   = 0;//Fold
+  fDaliFoldTa = 0;//Fold
+  fDaliMultTa = 0;//multiplicity
+  for(int j=0;j<NUMBEROFDALICRYSTALS;j++) {
+    crystalUsedForAddback[j] = false;
+  }
+  cout<<"test2"<<endl;
+  for(Int_t i=0;i<GetNumNaI();i++){
+    TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
+    fDali[i].id         = nai->GetID()-1; 
+    fDali[i].layer      = nai->GetLayer();
+    fDali[i].theta      = fTheta[fDali[i].id];
+    fDali[i].x          = fPosX[fDali[i].id];
+    fDali[i].y          = fPosY[fDali[i].id];
+    fDali[i].z          = fPosZ[fDali[i].id];
+    fDali[i].e          = nai->GetEnergy();
+    fDali[i].t          = nai->GetTimeOffseted();
+    cout<<"test3"<<endl;
+    if(fDali[i].e>0){
+      cout<<"test4"<<endl;           
+      fDali[i].dopp[0] = fDali[i].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
+      cout<<"test5"<<endl;
+        if(fDali[i].t>fTimeTrueCutLow-500&&fDali[i].t<fTimeTrueCutHigh+500)fDaliFold++;
+        if(fDali[i].t>fTimeTrueCutLow && fDali[i].t<fTimeTrueCutHigh){
+	  fDali[i].ttrue = true;
+          fDaliFoldTa++;
+        }
+	//cout<<"test6"<<endl;
+        else fDali[i].ttrue = false;
+      }
+      else {
+        fDali[i].dopp[0] = -999.;
+        fDali[i].ttrue   = false;
+      }
+    cout<<"test7"<<endl;
+    //} //
+  for(int i=GetNumNaI();i<NUMBEROFDALICRYSTALS;i++){
+    fDali[i].id         = -1;
+    fDali[i].layer      = -1;
+    fDali[i].theta      = -1;
+    fDali[i].x          = -999;
+    fDali[i].y          = -999;
+    fDali[i].z          = -999;
+    fDali[i].e          = -999;
+    fDali[i].t          = -999;
+    fDali[i].ttrue      = false;
+    fDali[i].dopp[0]    = -999;
+    //cout<<"test8"<<endl;
+  }
+  cout<<"test9"<<endl;    
+    if(fDali[0].e>0)
+      SortData(fDaliFold,fDali);
+    cout<<"test10"<<endl;
+    //Going to the add-back:
+    float dummyEnergy[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    //Making add-back and true multiplicity:
+    //The Energy must be sorted already according to the highest detected one.
+    cout<<"Starting addback"<<endl;
+    for(int i=0;i<fDaliFold;i++){
+      cout<<"test11"<<endl;
+      if(crystalUsedForAddback[fDali[i].id] == true) continue; //|| fDali[i].ttrue == false) continue;
+
+      dummyEnergy[fDaliMultTa][0] = fDali[i].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
+      cout<<"test12"<<endl;  
+      crystalUsedForAddback[fDali[i].id]=true;
+      fDali[fDaliMultTa].idwa = fDali[i].id;
+      cout<<"test13"<<endl;  
+      for(int j = i+1;j<fDaliFold;j++)  {
+	cout<<"test14"<<endl;
+        if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	  cout<<"test15"<<endl;
+          for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	    cout<<"test16"<<endl;
+            if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+              cout<<"test17"<<endl;  
+              crystalUsedForAddback[fDali[j].id]=true;
+
+	      dummyEnergy[fDaliMultTa][0] += fDali[j].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
+	      cout<<"test18"<<endl;
+	    }
+	    //nai->SetAddBackEnergy(dummyEnergy);
+	  }
+	}
+      }
+      fDaliMultTa++;
+      cout<<"test19"<<endl;
+    }
+    for(int i = 0;i<fDaliMultTa;i++) {
+      fDali[i].doppwa[0] = dummyEnergy[i][0];
+    }
+    cout<<"test20"<<endl;
+    for(int i = fDaliMultTa;i<NUMBEROFDALICRYSTALS;i++) {
+      fDali[i].doppwa[0] = -999;
+      fDali[i].idwa      = -999;
+    }
+    cout<<"test21"<<endl;
+  }//
+}
 
 //__________________________________________________________
 TArtDALINaI * TArtCalibDALI::GetNaI(Int_t i) {
