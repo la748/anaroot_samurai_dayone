@@ -6,8 +6,12 @@ AUTOMAKE_OPTIONS = foreign
 
 INCLUDES = -Iinclude -I$(ROOTSYS)/include -I../../Core/include -I../../Reconstruction/BigRIPS/include  
 CXXFLAGS = -fPIC -Iinclude $(shell root-config --cflags) -I../../Core/include -I../../Reconstruction/BigRIPS/include
-#CXXFLAGS += -I$(ROOTSYS)/io/xmlparser/inc 
-LDFLAGS = $(shell root-config --glibs) -L/home/minos/app/minos-1.1.1-libs/install/pentium-linux-release/lib -lminos-fem
+LDFLAGS = $(shell root-config --glibs) $(shell pkg-config --libs minos-fem)
+
+if USE_MINOS
+CXXFLAGS += $(MINOS_FEM_CFLAGS) -DUSE_MINOS
+LDFLAGS += $(MINOS_FEM_LIBS)
+endif
 
 include_HEADERS = $(SUBHDR) $(SUBHDRF)
 

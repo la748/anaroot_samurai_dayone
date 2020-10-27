@@ -2,10 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(anaroot, 4.5.15, [isobe@riken.jp])
+AC_INIT(anaroot, 4.5.38, [isobe@riken.jp])
 AM_INIT_AUTOMAKE([foreign])
-AC_CONFIG_SRCDIR([sources/Core/include/TArtConfig.hh.in])
-AC_CONFIG_HEADER([sources/Core/include/TArtConfig.hh])
 AC_ENABLE_STATIC(no)
 AC_PROG_LIBTOOL
 

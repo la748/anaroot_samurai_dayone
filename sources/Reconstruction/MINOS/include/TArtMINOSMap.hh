@@ -44,11 +44,11 @@ class TArtMINOSMap : public TNamed {
   }
 
   virtual char * GetMapInfo(){ return mapinfo; }
-  friend ostream & operator << (ostream& out, const TArtMINOSMap& p) {
+  friend std::ostream & operator << (std::ostream& out, const TArtMINOSMap& p) {
     out << "Detector Fem, Asic, Ch: " 
 	<< p.fem << " " 
 	<< p.asic << " " 
-	<< p.ch << endl;
+	<< p.ch << std::endl;
     return out;
   }
 

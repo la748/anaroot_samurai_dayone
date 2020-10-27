@@ -15,7 +15,6 @@
 #include <TClonesArray.h>
 #include <TVector3.h>
 
-#include <string.h>
 #include <stdio.h>
 
 //__________________________________________________________

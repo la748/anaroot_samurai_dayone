@@ -43,8 +43,12 @@
 #pragma link C++ class TAlEncNINJAExampleFactory+;
 #pragma link C++ class TAlEncNEBULAHPCExample+;
 #pragma link C++ class TAlEncNEBULAHPCExampleFactory+;
+#pragma link C++ class TAlEncSILICONSExample+;
+#pragma link C++ class TAlEncSILICONSExampleFactory+;
 #pragma link C++ class TAlEncWINDSExample+;
 #pragma link C++ class TAlEncWINDSExampleFactory+;
+#pragma link C++ class TAlEncESPRIExample+;
+#pragma link C++ class TAlEncESPRIExampleFactory+;
 #pragma link C++ class TAlEncRPDCExample+;
 #pragma link C++ class TAlEncRPDCExampleFactory+;
 #pragma link C++ class TAlEncRPTOFExample+;

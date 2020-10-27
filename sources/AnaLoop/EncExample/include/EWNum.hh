@@ -315,15 +315,16 @@ namespace WNum{
 
   namespace SAMURAIDC{
     enum {
-      // ID 1:BPC, 2:BDC1, 3:BDC2, 4:FDC1, 5:FDC2 10:Image 11-:IDPlane (11,12:BPC  21-28:BDC1  31-38:BDC2  41-54:FDC1  61-74:FDC2)
+      // ID 1:BPC, 2:BDC1, 3:BDC2, 4:FDC1, 5:FDC2, 6:FDC0, 7:PDC,
+      // 10:Image 11-:IDPlane (11,12:BPC 21-28:BDC1 31-38:BDC2
+      // 41-54:FDC1 61-74:FDC2)
       ID=1,
-      XPos=10,   // for ID=1-5
+      XPos=10,   // for ID=1-7
       XAng,
       YPos,
       YAng,
       Chi2,
       NTr,
-
       Layer=51, // for ID=11-
       WireID,
       TRaw,
@@ -368,6 +369,13 @@ namespace WNum{
       TOF1313 = 50, //50
       TOF1313Cal,   //51
       TOF1313Slw,   //52
+      //ID 20
+      TOF313=60,//60
+      TOF3D13,//61
+      TOF513,//62
+      TOF35,//63
+      TOF3D5,//64
+      TOF37,//65
     };
   }
 
@@ -871,6 +879,43 @@ namespace WNum{
     };
   }
 
+  namespace ESPRI{
+    enum {
+      // ID 1-9: Left SIDE, ID 11-19: Right SIDE  
+      // #1:RDC, #2:PLAST, #3-9: NaI 
+      ID=1,   		// 1
+      Layer=2,		// 2
+      XPos=3, 		// 3 
+      XAng=4, 		// 4 // BDC only
+      YPos=5, 		// 5
+      YAng=6, 		// 6 // BDC only
+
+      // Convention : 0 -> U or L ; 1 -> D or R       
+      RawADC0=10,	//10 // NaI & Plastic 
+      RawADC1,          //11 // NaI & Plastic
+      Energy0,   	//12 // NaI & Plastic
+      Energy1,   	//13 // NaI & Plastic
+      AveEnergy,        //14 // NaI & Plastic
+
+      RawTDC0=30,	//30 // NaI & Plastic
+      RawTDC1,          //31 // NaI & Plastic
+      Time0,     	//32 // NaI & Plastic
+      Time1,    	//33 // NaI & Plastic
+      AveTime,          //34 // NaI & Plastic
+
+      // RDC Planes only (TODO):
+      PlaneLayer = 51,	// for ID=51-57 & ID=61-67 
+      WireID,
+      TRaw,
+      TCal,
+      TPos,
+      WirePos,
+      Delta,
+    };
+  }
+
+
+
   namespace MINOS{
     enum {
       // ID 1-96: ASIC number
@@ -901,6 +946,35 @@ namespace WNum{
       
     };
   }
+
+  namespace SILICONS{
+    enum {
+      // ID 1-128: Si det ID
+      // ID 129-136: CsI det ID
+      ID    = 1,
+      Layer =2, // to do 
+
+      PosX  = 4,
+      PosY  = 5,
+      PosZ  = 6,
+
+      RawADC = 10,
+      RawTDC = 11,
+      Energy = 12,
+      Time   = 13,
+      TimeOffseted=14,
+
+      Multiplicity=100,
+      ID_cond = 101,    // conditionned by Energy>thr
+      Layer_cond = 102, // conditionned by Energy>thr
+						  
+      PosX_cond = 104,  // conditionned by Energy>thr
+      PosY_cond = 105,  // conditionned by Energy>thr
+      PosZ_cond = 106,  // conditionned by Energy>thr
+      // note: to change threshold: export SAMURAI_SILICON_THR=value
+    };
+  }
+
 
 }
 

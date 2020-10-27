@@ -3,7 +3,11 @@
 
 #include "TObject.h"
 #include "TGraphErrors.h"
-
+#include "TRegexp.h"
+#include "TMath.h"
+#ifndef __CINT__
+#include "sys/ioctl.h"
+#endif
 class TH1;
 class TH1D;
 class TH2;
@@ -102,6 +106,8 @@ public:
   static void GraphTune(TGraph* graph, const char* title, int nxdiv = 505, int nydiv = 505,
 			int nzdiv = 505, double xmin=0, double xmax=-1, double ymin=0, double ymax=-1);
 
+  static void DrawDumb1D(TH1*,TString);
+  static void DrawDumb2D(TH2*);
 private:
   // Check whether the histograms have the same number of bins.
   static bool CheckConsistency(TH1* h1, TH1* h2);

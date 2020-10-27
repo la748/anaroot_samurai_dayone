@@ -15,8 +15,13 @@ SUBOBJ := $(SUBSRC:.cc=.o)
 AUTOMAKE_OPTIONS = foreign
 
 INCLUDES = -Iinclude -I$(ROOTSYS)/include
-CXXFLAGS = -fPIC -Iinclude $(shell root-config --cflags) -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 $(MINOS_FEM_CFLAGS)
-LDFLAGS = $(shell root-config --glibs) $(MINOS_FEM_LIBS)
+CXXFLAGS = -fPIC -Iinclude $(shell root-config --cflags) -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+LDFLAGS = $(shell root-config --glibs)
+
+if USE_MINOS
+CXXFLAGS += $(MINOS_FEM_CFLAGS) -DUSE_MINOS
+LDFLAGS += $(MINOS_FEM_LIBS)
+endif
 
 include_HEADERS = $(SUBHDR) $(SUBHDRF)
 

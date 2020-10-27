@@ -4,6 +4,18 @@
 #include "TObject.h"
 #include "TFitResult.h"
 #include "TFitResultPtr.h"
+#include<iostream>
+#include<fstream>
+#include<TAxis.h>
+#include<TH2.h>
+#include<TMath.h>
+#include<TColor.h>
+#include<TF1.h>
+#include<TROOT.h>
+#include<TFile.h>
+#include<TRegexp.h>
+#include<TString.h>
+
 
 class TVirtualPad;
 class TH1;
@@ -221,6 +233,13 @@ void histtune(const char* title, int nxdiv = 505, int nydiv = 505, int nzdiv = 5
 	      double xmin=0, double xmax=-1, double ymin=0, double ymax=-1);
 void graphtune(TGraph* graph, const char* title, int nxdiv = 505, int nydiv = 505,
 	       int nzdiv = 505, double xmin=0, double xmax=-1, double ymin=0, double ymax=-1);
+
+
+// draw histograms directly in the terminal, useful over poor connction (ex: abroad)
+void drawdumb() ;
+void drawdumb(Int_t) ;
+void drawdumb(Int_t,TString ) ;
+
 
 //return hist of id
 TH1* gethist(int id);

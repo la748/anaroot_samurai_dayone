@@ -21,7 +21,7 @@ TArtMINOSParameters::TArtMINOSParameters(const char* name, const char* title)
   : TNamed(name, title)
 {
   TArtCore::Info(__FILE__,"Creating MINOS setup...");
-  cout<<"!!!! creation of a new TArtMINOSParameters instance"<<endl;
+  std::cout<<"!!!! creation of a new TArtMINOSParameters instance"<<std::endl;
   listOfMINOSPara = new TList();
 
   TArtStoreManager *sman = TArtStoreManager::Instance();
@@ -50,7 +50,7 @@ TArtMINOSParameters::~TArtMINOSParameters()
 //__________________________________________________________
 TArtMINOSParameters* TArtMINOSParameters::Instance(const char* name, const char* title)
 {
-  cout<<"instance ..."<<endl;
+  std::cout<<"instance ..."<<std::endl;
   if(!fMINOSParameters) fMINOSParameters = new TArtMINOSParameters(name, title);
   return fMINOSParameters;
 }    
@@ -70,7 +70,7 @@ Bool_t TArtMINOSParameters::LoadParameters(char *xmlfile)
   domParser->SetValidate(false);
   Int_t parsecode = domParser->ParseFile(xmlfile);
   if (parsecode < 0) {
-    cerr << domParser->GetParseCodeMessage(parsecode) << endl;
+    std::cerr << domParser->GetParseCodeMessage(parsecode) << std::endl;
     return false;
   }
   TXMLNode * node = domParser->GetXMLDocument()->GetRootNode();
@@ -166,7 +166,7 @@ TArtMINOSPara * TArtMINOSParameters::GetMINOSPara(TArtMINOSMap *rmap){
 }
 
 void TArtMINOSParameters::ShowMap(){
-cout<<"Size : "<<pmap.size()<<endl;
+  std::cout<<"Size : "<<pmap.size()<<std::endl;
 }
 
 

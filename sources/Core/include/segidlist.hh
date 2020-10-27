@@ -113,6 +113,10 @@ static const int RDC        = 56;
 static const int PLATC      = 60;
 
 // For SAMURAI
+static const int TEL        = 56; // Silicon telescope -- GiB May 2018
+static const int TEL_ADC    = 21; // ADC module -- Must be a cleaner way to do it ?
+static const int TEL_TDC    = 24; // TDC module -- Must be a cleaner way to do it ?
+
 //
 static const int BPC      = 17; // TDC, BigRIPS devide
 static const int ICB      = 25 ;// ADC
@@ -127,7 +131,7 @@ static const int HODPQ    = 33 ;// ADC
 static const int HODPT    = 34 ;// TDC
 static const int TEDQ     = 35 ;// ADC
 static const int TEDT     = 36 ;// TDC
-static const int PDC      = 37 ;// ADC
+static const int PDC      = 37 ;// ADC 
 static const int HODPQ2   = 39 ;// QDC
 
 static const int NEBULA1Q = 41;
@@ -141,9 +145,9 @@ static const int NEBULA4T = 48;
 // proportional counter for NEBULA calibration
 static const int HPCT     = 49;
 
-// HIME (GiB 2 Nov 2016 : to start coding : TO BE ADJUSTED )
-static const int HIMEQ = 54;
-static const int HIMET = 55;
+// HIME 
+static const int HIMEQ = -666 ; //54; // conflict in SAMURAI 012
+static const int HIMET = -666 ; //55; // conflict in SAMURAI 012 
 
 // For WINDS
 static const int WINDSQ   = 50;
@@ -153,7 +157,7 @@ static const int CATANAQ   = 52;
 static const int CATANAT   = 53;
 // For RP
 static const int RPDC     = 54;
-static const int RPTOF    = 55;
+static const int RPTOF    = -666 ; //55; // conflict in SAMURAI 012
 static const int NEULAND  = 56; //Tacquila
 static const int NEULANDVETOQ = 57;
 static const int NEULANDVETOT = 58;
@@ -216,6 +220,8 @@ static const int LUPOMTS    = 43;  // for dead time monitor
 static const int MUST2VXI   = 50;
 static const int MINOS      = 53;
 static const int TACQUILA   = 54;
+static const int A3400      = 55;
+//static const int SILICONS   = 666; // to be defined, GiB 1 May 18
 
 static const int MDAQ       = 58;  // for special case
 

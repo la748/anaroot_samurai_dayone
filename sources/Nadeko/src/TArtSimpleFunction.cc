@@ -1900,3 +1900,266 @@ TGraph* TArtSimpleFunction::CreateGraphFromText(char* filename)
 
   return graph;
 }
+
+
+void TArtSimpleFunction::DrawDumb1D(TH1 *h,TString o=""){
+  enum  DrawDumbCharEnum { blanck, hleft, hright, hboth, hline, vline, hticks, vticks} ; 
+  TString tmp ;
+  Bool_t ko_star = o.Contains("*");
+  Bool_t ko_log = o.Contains("log",TString::kIgnoreCase);
+  struct winsize w;
+  ioctl(0, TIOCGWINSZ, &w);
+
+  Int_t cscreen = w.ws_col;
+  Int_t lscreen = w.ws_row;
+
+  Int_t c = cscreen-4 ;
+  Int_t l = lscreen-6 ;  
+  //  cout << c << " |" << l <<  "|" << std::endl;
+  std::cout << "\033[2J" << std::flush ;
+  Double_t inc =  2;
+  if(h->GetXaxis()->GetLast()-h->GetXaxis()->GetFirst()+1>(2*c)){
+    h->Rebin(TMath::Ceil((h->GetXaxis()->GetLast()-h->GetXaxis()->GetFirst()+1)/((Double_t)c*2)));
+    inc = 2 ;
+  } else {
+    inc = (Double_t)(h->GetXaxis()->GetLast()-h->GetXaxis()->GetFirst()+1)/(Double_t)c;
+    //    std::cout << inc ;
+    //    return ;
+  }
+  //  std::cout << h->GetNbinsX() << std::endl;
+  Double_t max = h->GetMaximum() - h->GetMinimum()  ;
+  Double_t ratio = (Double_t)l/max/1.1;
+  DrawDumbCharEnum screen[c+1][l+1];
+  
+  TString xaxis(' ',cscreen)  ;
+  
+  for(int i=0;i<=c;i++){
+    for(int j=0;j<=l;j++){
+      screen[i][j] = blanck;
+      if(j%5==0){
+	screen[0][j] = vticks;
+      } else {
+	screen[0][j] = vline;
+      }
+    }
+    screen[i][0] = hline;
+  }
+  
+
+  Double_t bin = 1;
+  Int_t col =0 ;
+
+  for(bin=h->GetXaxis()->GetFirst();
+      bin<=h->GetXaxis()->GetLast();bin+=inc){
+
+    col++ ;
+    Int_t n = TMath::Nint((h->GetBinContent(TMath::Nint(bin    ))-h->GetMinimum())*ratio);
+    Int_t m = TMath::Nint((h->GetBinContent(TMath::Nint(bin+inc))-h->GetMinimum())*ratio);
+    if(TMath::Nint(bin+inc)>h->GetXaxis()->GetLast()) m = 0;
+    
+    if(col%10==0){
+      screen[col][0] = hticks ;
+      xaxis.Replace(col-3,5,Form("%-5g",
+				 0.5*(h->GetBinCenter(TMath::Nint(bin))
+				      +h->GetBinCenter(TMath::Nint(bin+inc)))));
+    }
+    for(int j=1;j<l;j++){
+      if(ko_star){
+	if ((j<=n) && (j<=m)) {
+	  screen[col][j] = hboth;
+	} else if ((j>n) && (j<=m)) {
+	  screen[col][j] = hleft;
+	} else if ((j<=n) && (j>m)) {
+	  screen[col][j] = hright;
+	}	
+      } else {
+	if ((j<=n) && (j<=m)) {
+	  screen[col][j] = hboth;
+	} else if ((j>n) && (j<=m)) {
+	  screen[col][j] = hleft;
+	} else if ((j<=n) && (j>m)) {
+	  screen[col][j] = hright;
+	}
+      }
+    }
+  }
+
+  xaxis.Replace(0,5,Form("%-5g",
+			 h->GetMinimum()));
+  xaxis.Insert(6,TString("\033[0m"));
+  xaxis.Insert(0,TString("\033[37m"));
+  std::cout << "\033[37m" << TMath::Nint((l+1)/ratio) << std::endl;
+  for(int j=l;j>=0;j--){
+    for(int i=0;i<=c;i++){
+      switch(screen[i][j]){
+      case hboth:
+	if(ko_star) {
+	  std::cout << "\033[38;5;" << h->GetLineColor()%7 << "m\u2584\033[0m";
+	} else {
+	  std::cout << "\033[38;5;" << h->GetLineColor()%7 << "m\u2588\033[0m";
+	}
+	break;
+      case hright:
+	if(ko_star) {
+	  std::cout << "\033[38;5;" << h->GetLineColor()%7 << "m\u2597\033[0m";
+	} else {
+	  std::cout << "\033[38;5;" << h->GetLineColor()%7 << "m\u258C\033[0m";
+	}
+	break;
+      case hleft:
+	if(ko_star) {
+	  std::cout << "\033[38;5;" << h->GetLineColor()%7 << "m\u2596\033[0m";
+	} else {
+	  std::cout << "\033[38;5;" << h->GetLineColor()%7 << "m\u2590\033[0m";
+	}
+	break;
+      case blanck:
+	std::cout << "\033[0m ";
+	break;
+      case hline:
+	std::cout << "\033[1m\u2500\033[0m";
+	break;
+      case vline:
+	std::cout << "\033[37m\u2502\033[0m";
+	break;
+      case hticks:
+	std::cout << "\033[1m\u253C\033[0m";
+	break;
+      case vticks:
+	std::cout << "\033[37m\u253C\033[0m";
+	break;
+      default:
+	std::cout << "\033[0m ";
+	break;	
+      }
+    }
+    std::cout << std::endl;    
+  }
+  std::cout << xaxis << std::endl;
+
+}
+
+// 2D histos
+void TArtSimpleFunction::DrawDumb2D(TH2 *h){
+  enum  DrawDumbCharEnum { blanck, hleft, hright, hboth, hline, vline, hticks, vticks} ;
+  TString tmp ;
+  struct winsize w;
+  ioctl(0, TIOCGWINSZ, &w);
+
+  Int_t cscreen = w.ws_col;
+  Int_t lscreen = w.ws_row;
+  Int_t c = cscreen-4 ;
+  Int_t l = lscreen-6 ;  
+
+  std::cout << "\033[2J" << std::flush ;
+  Double_t incX =  2;
+  if(h->GetXaxis()->GetLast()-h->GetXaxis()->GetFirst()+1>(2*c)){
+    h->RebinX(TMath::Ceil((h->GetXaxis()->GetLast()-h->GetXaxis()->GetFirst()+1)/((Double_t)c*2)));
+    incX = 2 ;
+  } else {
+    incX = (Double_t)(h->GetXaxis()->GetLast()-h->GetXaxis()->GetFirst()+1)/(Double_t)c;
+  }
+  Double_t incY =  2;
+  if(h->GetYaxis()->GetLast()-h->GetYaxis()->GetFirst()+1>(2*l)){
+    h->RebinY(TMath::Ceil((h->GetYaxis()->GetLast()-h->GetYaxis()->GetFirst()+1)/((Double_t)l*2)));
+    incY = 2 ;
+  } else {
+    incY = (Double_t)(h->GetYaxis()->GetLast()-h->GetYaxis()->GetFirst()+1)/(Double_t)l;
+  }
+
+  //  Double_t max = h->GetMaximum() - h->GetMinimum()  ;
+  //  Double_t ratio = (Double_t)l/max/1.1;
+  DrawDumbCharEnum screen[c+1][l+1];
+  Int_t color[c+1][l+1];
+  //  memset(color,0,(c+1)*(l+1)*sizeof(Int_t));
+  
+  TString xaxis(' ',cscreen)  ;
+  
+  for(int i=0;i<=c;i++){
+    for(int j=0;j<=l;j++){
+      screen[i][j] = blanck;
+      color[i][j] = 0 ;
+      if(j%5==0){
+	screen[0][j] = vticks;
+      } else {
+	screen[0][j] = vline;
+      }
+
+    }
+    screen[i][0] = hline;
+
+  }
+  
+
+  Double_t binX = 1, binY=1;
+  Int_t col =0, row=0 ;
+
+  for(binX=h->GetXaxis()->GetFirst();
+      binX<=h->GetXaxis()->GetLast();binX+=incX){
+
+    col++;
+    row = 1;
+    for(binY=h->GetYaxis()->GetFirst();
+	binY<=h->GetYaxis()->GetLast();binY+=incY){      
+      row++ ;
+      Double_t f = (Double_t)(h->GetBinContent(binX,binY)-h->GetMinimum())/(h->GetMaximum()-h->GetMinimum());
+      Double_t n = int(240+360*f);
+      Float_t cr,cg,cb;
+      TColor::HSV2RGB(n, 1., 1., cr, cg, cb);
+
+      if(f>0 && f<=1){
+	color[col][row] = TMath::Nint(16 + 36 * (cr*5) + 6 * (cg*5) + (cb*5));
+      }
+      //      std::cout << n <<  " " << color[col][row] << std::endl;
+      //  
+      screen[col][row] = hboth ;
+      
+    }
+    if(col%10==0){
+      screen[col][0] = hticks ;
+      xaxis.Replace(col-3,5,Form("%-5g",
+				 0.5*(h->GetXaxis()->GetBinCenter(TMath::Nint(binX))
+				      +h->GetXaxis()->GetBinCenter(TMath::Nint(binX+incX)))));
+    } else {
+      screen[col][0] = hline ;
+    }
+  }
+
+  xaxis.Replace(0,5,Form("%-5g",
+			 h->GetYaxis()->GetXmin()));
+  xaxis.Insert(6,TString("\033[0m\033[48;5;0m"));
+  xaxis.Insert(0,TString("\033[37m"));
+  std::cout << "\033[37m\033[48;5;0m " << Form("%-5g",
+			     h->GetYaxis()->GetXmax()) << std::endl;
+  for(int j=l;j>=0;j--){
+    std::cout << " " ;
+    for(int i=0;i<=c;i++){
+      switch(screen[i][j]){
+      case hboth:
+	std::cout << "\033[38;5;" << color[i][j] << "m\u2588\033[0m";
+	break;
+      case blanck:
+	std::cout << "\033[48;5;0m ";
+	break;
+      case hline:
+	std::cout << "\033[1m\033[48;5;0m\u2500\033[0m";
+	break;
+      case vline:
+	std::cout << "\033[37m\033[48;5;0m\u2502\033[0m";
+	break;
+      case hticks:
+	std::cout << "\033[1m\033[48;5;0m\u253C\033[0m";
+	break;
+      case vticks:
+	std::cout << "\033[37m\033[48;5;0m\u253C\033[0m";
+	break;
+      default:
+	std::cout << "\033[48;5;0m ";
+	break;	
+      }
+    }
+    std::cout << std::endl;    
+  }
+  std::cout << "\033[48;5;0m " << xaxis << "\033[0m" << std::endl;
+  
+}

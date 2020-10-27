@@ -18,6 +18,8 @@
 #pragma link C++ class TArtCalibFDC1Hit+;
 #pragma link C++ class TArtCalibFDC2Track+;
 #pragma link C++ class TArtCalibFDC2Hit+;
+#pragma link C++ class TArtCalibPDCTrack+;
+#pragma link C++ class TArtCalibPDCHit+;
 #pragma link C++ class TArtCalibRPDCTrack+;
 #pragma link C++ class TArtCalibRPDCHit+;
 #pragma link C++ class TArtCalibS1DC1Track+;
@@ -33,6 +35,15 @@
 #pragma link C++ class TArtDCTrack+;
 #pragma link C++ class TArtDCHit+;
 #pragma link C++ class TArtDCHitPara+;
+
+// for online (fast) analysis ====> 
+#pragma link C++ class TArtCalibSimpleDCTrack+;
+#pragma link C++ class TArtCalibSimpleBDC1Track+;
+#pragma link C++ class TArtCalibSimpleBDC2Track+;
+#pragma link C++ class TArtCalibSimpleFDC0Track+;
+#pragma link C++ class TArtCalibSimpleFDC1Track+;
+#pragma link C++ class TArtCalibSimpleFDC2Track+;
+// <===============================
 
 #pragma link C++ class TArtCalibHODPla+;
 #pragma link C++ class TArtHODPla+;

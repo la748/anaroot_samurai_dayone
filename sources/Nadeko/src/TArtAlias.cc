@@ -185,6 +185,25 @@ void sh(){
   }
 }
 
+// in principal one function is enough, for ROOT safety
+void drawdumb() {
+  drawdumb(0,"");
+}
+void drawdumb(Int_t id=0) {
+  drawdumb(id,"");
+}
+void drawdumb(Int_t id=0,TString o="") {
+  TH1 *hist = gH1 ;
+  if(id>0) hist = TArtHistManager::GetHist(id);
+  if(!hist) return;
+  if(hist->InheritsFrom(TH2::Class())){
+    TArtSimpleFunction::DrawDumb2D((TH2*)hist);
+  } else if (hist->InheritsFrom(TH1::Class())) {
+    TArtSimpleFunction::DrawDumb1D(hist,o);
+  }
+}
+
+
 //_____________________________________________________________________________
 
 // void readobject(char* filename){TArtSimpleFunction::ReadObjectFromFile(filename);}

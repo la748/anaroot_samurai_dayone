@@ -62,6 +62,7 @@ public:
   void PrintListOfBPCHitPara ();
   void PrintListOfBDC1HitPara();
   void PrintListOfBDC2HitPara();
+  void PrintListOfPDCHitPara();
   void PrintListOfFDC0HitPara();
   void PrintListOfFDC1HitPara();
   void PrintListOfFDC2HitPara();
@@ -81,6 +82,7 @@ public:
   TList* GetListOfBPCHitPara () {return listOfBPCHitPara; }
   TList* GetListOfBDC1HitPara() {return listOfBDC1HitPara; }
   TList* GetListOfBDC2HitPara() {return listOfBDC2HitPara; }
+  TList* GetListOfPDCHitPara() {return listOfPDCHitPara; }
   TList* GetListOfFDC0HitPara() {return listOfFDC0HitPara; }
   TList* GetListOfFDC1HitPara() {return listOfFDC1HitPara; }
   TList* GetListOfFDC2HitPara() {return listOfFDC2HitPara; }
@@ -94,6 +96,7 @@ public:
   const TArtDCHitPara * FindBPCHitPara   (TArtRIDFMap *rmap) const;
   const TArtDCHitPara * FindBDC1HitPara  (TArtRIDFMap *rmap) const;
   const TArtDCHitPara * FindBDC2HitPara  (TArtRIDFMap *rmap) const;
+  const TArtDCHitPara * FindPDCHitPara  (TArtRIDFMap *rmap) const;
   const TArtDCHitPara * FindFDC0HitPara  (TArtRIDFMap *rmap) const;
   const TArtDCHitPara * FindFDC1HitPara  (TArtRIDFMap *rmap) const;
   const TArtDCHitPara * FindFDC2HitPara  (TArtRIDFMap *rmap) const;
@@ -148,6 +151,7 @@ private:
   std::map<TArtRIDFMap, TArtDCHitPara *> bpc_pmap;
   std::map<TArtRIDFMap, TArtDCHitPara *> bdc1_pmap;
   std::map<TArtRIDFMap, TArtDCHitPara *> bdc2_pmap;
+  std::map<TArtRIDFMap, TArtDCHitPara *> pdc_pmap;
   std::map<TArtRIDFMap, TArtDCHitPara *> fdc0_pmap;
   std::map<TArtRIDFMap, TArtDCHitPara *> fdc1_pmap;
   std::map<TArtRIDFMap, TArtDCHitPara *> fdc2_pmap;
@@ -171,6 +175,7 @@ private:
   TList *listOfBPCHitPara;
   TList *listOfBDC1HitPara;
   TList *listOfBDC2HitPara;
+  TList *listOfPDCHitPara;
   TList *listOfFDC0HitPara;
   TList *listOfFDC1HitPara;
   TList *listOfFDC2HitPara;

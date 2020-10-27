@@ -1,4 +1,3 @@
-#include "TArtConfig.hh"
 #include "TArtRawSegmentObject.hh"
 #include "TArtRawDataObject.hh"
 

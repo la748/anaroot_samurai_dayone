@@ -36,6 +36,11 @@ void TAlEncGlobalExample::Construct()
 {
   calibcoin = new TArtCalibCoin; 
   //  hcoin->Reset();
+
+  // temporary for s021 experiment 2018/05/15 -->
+  calibcoin->SetAddress(85);
+  //calibcoin->SetAddress(153);
+  // <--
 }
 
 //____________________________________________________________________________

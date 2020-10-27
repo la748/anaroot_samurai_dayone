@@ -45,6 +45,7 @@ TArtSAMURAIParameters* TArtSAMURAIParameters::fSAMURAIParameters = 0;
   listOfFDC0HitPara = new TList();
   listOfFDC1HitPara = new TList();
   listOfFDC2HitPara = new TList();
+  listOfPDCHitPara = new TList();
   listOfRPDCHitPara = new TList();
   listOfS1DC1HitPara = new TList();
   listOfS1DC2HitPara = new TList();
@@ -56,6 +57,7 @@ TArtSAMURAIParameters* TArtSAMURAIParameters::fSAMURAIParameters = 0;
   listOfBDC1HitPara->SetOwner();
   listOfBDC2HitPara->SetOwner();
   listOfFDC0HitPara->SetOwner();
+  listOfPDCHitPara->SetOwner();
   listOfFDC1HitPara->SetOwner();
   listOfFDC2HitPara->SetOwner();
   listOfRPDCHitPara->SetOwner();
@@ -207,6 +209,7 @@ TArtSAMURAIParameters::~TArtSAMURAIParameters()
   delete listOfBPCHitPara;
   delete listOfBDC1HitPara;
   delete listOfBDC2HitPara;
+  delete listOfPDCHitPara;
   delete listOfFDC0HitPara;
   delete listOfFDC1HitPara;
   delete listOfFDC2HitPara;
@@ -363,6 +366,9 @@ void TArtSAMURAIParameters::ParseParaList(TXMLNode *node)
     }
     else if(strcmp(node->GetNodeName(), "SAMURAIFDC0") == 0){
       listOfFDC0HitPara->Add(ParseDCHitPara(node->GetChildren(),&fdc0_pmap));
+    }
+    else if(strcmp(node->GetNodeName(), "SAMURAIPDC") == 0){
+      listOfPDCHitPara->Add(ParseDCHitPara(node->GetChildren(),&pdc_pmap));
     }
     else if(strcmp(node->GetNodeName(), "SAMURAIFDC1") == 0){
       listOfFDC1HitPara->Add(ParseDCHitPara(node->GetChildren(),&fdc1_pmap));
@@ -1675,6 +1681,10 @@ void TArtSAMURAIParameters::PrintListOfBDC2HitPara(){
   TIter next(listOfBDC2HitPara);
   while (TArtDCHitPara *p = (TArtDCHitPara *)next()) std::cout << *p;
 }
+void TArtSAMURAIParameters::PrintListOfPDCHitPara(){
+  TIter next(listOfPDCHitPara);
+  while (TArtDCHitPara *p = (TArtDCHitPara *)next()) std::cout << *p;
+}
 void TArtSAMURAIParameters::PrintListOfFDC0HitPara(){
   TIter next(listOfFDC0HitPara);
   while (TArtDCHitPara *p = (TArtDCHitPara *)next()) std::cout << *p;
@@ -1718,6 +1728,13 @@ const TArtDCHitPara* TArtSAMURAIParameters::FindBDC2HitPara(TArtRIDFMap *rmap) c
 {
   std::map<TArtRIDFMap, TArtDCHitPara *>::const_iterator itr = bdc2_pmap.find(*rmap);
   if(itr != bdc2_pmap.end()) return (TArtDCHitPara*)itr->second;
+  else return 0;
+}
+
+const TArtDCHitPara* TArtSAMURAIParameters::FindPDCHitPara(TArtRIDFMap *rmap) const
+{
+  std::map<TArtRIDFMap, TArtDCHitPara *>::const_iterator itr = pdc_pmap.find(*rmap);
+  if(itr != pdc_pmap.end()) return (TArtDCHitPara*)itr->second;
   else return 0;
 }
 

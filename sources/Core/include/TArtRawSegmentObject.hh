@@ -1,7 +1,6 @@
 #ifndef TARTRAWSEGMENTOBJECT_H
 #define TARTRAWSEGMENTOBJECT_H
 
-#include "TArtConfig.hh"
 #include "TObject.h"
 #include <vector>
 #include "TArtRawDataObject.hh"

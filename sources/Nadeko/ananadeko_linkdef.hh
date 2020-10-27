@@ -119,6 +119,9 @@
 #pragma link C++ function gethist;
 #pragma link C++ function setoption;
 
+#pragma link C++ function drawdumb;
+#pragma link C++ function drawdumb;
+
 //__________________________________________________
 
 // #pragma link C++ function readobject;

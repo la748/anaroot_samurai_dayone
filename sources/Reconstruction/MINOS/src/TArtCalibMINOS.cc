@@ -23,11 +23,11 @@ TArtCalibMINOS::TArtCalibMINOS()
   sman = TArtStoreManager::Instance();
   setup = (TArtMINOSParameters*)sman->FindParameters("MINOSParameters");
   if(!setup){
-  cout<<"could not find Parameters!!!"<<endl;
+    std::cout<<"could not find Parameters!!!"<<std::endl;
     TArtCore::Info(__FILE__,"Can not find parameter handler: MINOSParameters");
     throw;
   }
-  cout<<"done"<<endl;
+  std::cout<<"done"<<std::endl;
 }
 
 //__________________________________________________________
@@ -63,7 +63,6 @@ void TArtCalibMINOS::LoadData(TArtRawSegmentObject *seg)   {
     //Int_t detid = 0; 
     d = (TArtRawFeminosDataObject *)(seg->GetFeminosData(j));
         
-    //cout<<"size : "<<d->GetNData()<<endl;
     if(d->GetNData()>0){//Only consider non-zero the waveform
       Int_t fem = d->GetFeminos(); 
       Int_t asic = d->GetAsic(); 
@@ -75,16 +74,12 @@ void TArtCalibMINOS::LoadData(TArtRawSegmentObject *seg)   {
       TArtMINOSMap mm(fem,asic,channel);
       para = (TArtMINOSPara*)setup->GetMINOSPara(&mm);
     
-      //cout<<"!!!! fem, asic, channel : "<<fem<<" "<<asic<<" "<<channel<<endl;
-
       //Check ID Mapping
       Int_t detid = para->GetDetID();
       if((fem<20 && detid != 0) || (fem==21 && !(detid == 1 || detid == 2)))
 	  {
-          cout<<"PROBLEM in DET. ID mapping !!!! detid, fem : "<<detid<<" "<<fem<<endl;
+	    std::cout<<"PROBLEM in DET. ID mapping !!!! detid, fem : "<<detid<<" "<<fem<<std::endl;
       }
-
-      //cout<<"!!!! detid, fem, asic, channel : "<<detid<<" "<<fem<<" "<<asic<<" "<<channel<<endl;
 
       if(NULL == para){
         TArtCore::Debug(__FILE__,"Could not find TArtMINOSPara...: Dev:%s", mm.GetMapInfo());
@@ -155,7 +150,6 @@ void TArtCalibMINOS::LoadData(TArtRawSegmentObject *seg)   {
       }
      fCalibMINOSArray.push_back(minos);
 
-     //cout<<"size Calib MINOS : "<<GetNumCalibMINOS()<<endl;
      //     para->Clear();
      //     d->Clear();
 

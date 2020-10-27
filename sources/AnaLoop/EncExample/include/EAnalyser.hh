@@ -26,10 +26,12 @@ namespace Analyser{
 
     NEUTRON=31,   //31
 
-    WINDS=40,     //40
+    WINDS=40,     //40 // USE for PANDORA in SAMURAI Spring 2018 Campaign
     RPTOF,        //41
     RPDC,         //42
-    MINOS=51,     //51
+    ESPRI=45,     //45
+    MINOS=51,     //51    
+    SILICONS=52,  //52
     NEULAND=60,   //60
     HIME=61,      //61
     NINJA=62,     //62

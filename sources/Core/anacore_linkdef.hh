@@ -10,6 +10,7 @@
 #pragma link C++ class TArtDecoderLUPO-!;
 #pragma link C++ class TArtDecoderDSP-!;
 #pragma link C++ class TArtDecoderA3100-!;
+#pragma link C++ class TArtDecoderA3400-!;
 #pragma link C++ class TArtDecoderAD413A-!;
 #pragma link C++ class TArtDecoderCTM405-!;
 #pragma link C++ class TArtDecoderFactory-!;
@@ -36,6 +37,7 @@
 #pragma link C++ class TArtDecoderNeulandTS-!;
 #pragma link C++ class TArtDecoderTacquila-!;
 #pragma link C++ class TArtDecoderSIS3301-!;
+#pragma link C++ class TArtDecoderHINP-!;
 #pragma link C++ class TArtEventStore+;
 #pragma link C++ class TArtFileDataSource-!;
 #pragma link C++ class TArtRIDFMap+;
@@ -58,6 +60,9 @@
 #pragma link C++ class TArtSharedMemoryDataSource-!;
 #pragma link C++ class TArtStreamingDataSource+;
 #pragma link C++ class TArtSemaphore-!;
+
+#pragma link C++ class vector<Long64_t>+;
+#pragma link C++ class vector<UShort_t>+;
 
 #if USE_MINOS
 #pragma link C++ class TArtDecoderFeminos-!;

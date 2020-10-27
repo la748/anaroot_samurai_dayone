@@ -31,7 +31,7 @@ class TArtMINOSPara : public TNamed {
 
   TArtMINOSMap * GetMap() { return &map;  }
 
-  friend ostream & operator << (ostream& out, const TArtMINOSPara& p) {
+  friend std::ostream & operator << (std::ostream& out, const TArtMINOSPara& p) {
     out << "Det. ID: " << p.detid << ", ";
     out << "ID: " << p.id << ", ";
     out << "Fem: " << p.fem << ", ";

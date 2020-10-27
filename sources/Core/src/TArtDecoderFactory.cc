@@ -8,7 +8,6 @@
  *--------------------------------------------------------
  *    Copyright (C)2008 by Shinsuke OTA <ota@ribf.riken.jp>
  */
-#include "TArtConfig.hh"
 #include "TArtDecoderFactory.hh"
 #include "TArtCore.hh"
 #include "TArtDecoderFixed16.hh"
@@ -25,6 +24,7 @@
 #include "TArtDecoderV767.hh"
 #include "TArtDecoderV550.hh"
 #include "TArtDecoderA3100.hh"
+#include "TArtDecoderA3400.hh"
 #include "TArtDecoderDSP.hh"
 #include "TArtDecoderLUPO.hh"
 #include "TArtDecoderMADC32.hh"
@@ -68,6 +68,7 @@ void TArtDecoderFactory::Register()
    Register(TArtDecoderV767::Instance());
    Register(TArtDecoderV550::Instance());
    Register(TArtDecoderA3100::Instance());
+   Register(TArtDecoderA3400::Instance());
    Register(TArtDecoderDSP::Instance());
    Register(TArtDecoderLUPO::Instance());
    Register(TArtDecoderMADC32::Instance());

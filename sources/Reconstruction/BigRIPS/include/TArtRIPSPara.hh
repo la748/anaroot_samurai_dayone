@@ -1,6 +1,7 @@
 #ifndef _TARTRIPSPARA_H_
 #define _TARTRIPSPARA_H_
 
+#include <TNamed.h>
 #include <TString.h>
 #include <TMatrixD.h>
 
