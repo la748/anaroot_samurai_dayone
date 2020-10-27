@@ -539,11 +539,12 @@ void TArtCalibDALI::AddBackAnalysis(){
     fDali[i].e          = nai->GetEnergy();
     fDali[i].t          = nai->GetTimeOffseted();
     cout<<"test3"<<endl;
+    fDaliFold++; // In principle fDaliFold should be equal to GetNumNai();
     if(fDali[i].e>0){
       cout<<"test4"<<endl;           
       fDali[i].dopp[0] = fDali[i].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
       cout<<"test5"<<endl;
-        if(fDali[i].t>fTimeTrueCutLow-500&&fDali[i].t<fTimeTrueCutHigh+500)fDaliFold++;
+      //if(fDali[i].t>fTimeTrueCutLow-500&&fDali[i].t<fTimeTrueCutHigh+500)fDaliFold++; // This line is strange. Why it trys to counts the hits outside of the time condition...
         if(fDali[i].t>fTimeTrueCutLow && fDali[i].t<fTimeTrueCutHigh){
 	  fDali[i].ttrue = true;
           fDaliFoldTa++;
@@ -551,10 +552,10 @@ void TArtCalibDALI::AddBackAnalysis(){
 	//cout<<"test6"<<endl;
         else fDali[i].ttrue = false;
       }
-      else {
+    else {
         fDali[i].dopp[0] = -999.;
         fDali[i].ttrue   = false;
-      }
+    }
     cout<<"test7"<<endl;
     //} //
   for(int i=GetNumNaI();i<NUMBEROFDALICRYSTALS;i++){
@@ -573,14 +574,19 @@ void TArtCalibDALI::AddBackAnalysis(){
   cout<<"test9"<<endl;    
     if(fDali[0].e>0)
       SortData(fDaliFold,fDali);
+    // SortData(GetNumNaI(),fDali);
+    // fDali should have number of hits of GetNumNaI, so you have to tell sort process to check all of the energies. Now the definition of fDaliFold has been updated. So keep as it was.
     cout<<"test10"<<endl;
     //Going to the add-back:
     float dummyEnergy[NUMBEROFDALICRYSTALS][6] = {{0.}};
     //Making add-back and true multiplicity:
     //The Energy must be sorted already according to the highest detected one.
     cout<<"Starting addback"<<endl;
+    //for(int i=0;i<fDaliFold;i++){
     for(int i=0;i<fDaliFold;i++){
       cout<<"test11"<<endl;
+      cout<<"ID:"<<fDali[i].id<<", Energy:"<<fDali[i].e<<", Time:"<<fDali[i].t<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<endl;
+      //Check the values if properly stored in fDali.
       if(crystalUsedForAddback[fDali[i].id] == true) continue; //|| fDali[i].ttrue == false) continue;
 
       dummyEnergy[fDaliMultTa][0] = fDali[i].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
