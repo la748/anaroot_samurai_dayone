@@ -348,7 +348,9 @@ void TArtRecoFragment::ReconstructData() {
 	  Double_t hodt_slew = pla->GetTimeSlew();
 	  frag->SetHODTime_slew(hodt_slew);
 	  frag->SetHODQ(pla->GetQAveCal());
-	  frag->SetZ(QtoZ_a*(pla->GetQAveCal())+QtoZ_b);
+	  Double_t fragZ = QtoZ_a*(pla->GetQAveCal())+QtoZ_b;
+	  frag->SetZ(fragZ);
+	  //frag->SetZ(QtoZ_a*(pla->GetQAveCal())+QtoZ_b);
 	  frag->SetZ_test((0.00001*(pla->GetQAveCal()*pla->GetQAveCal()))+(0.0103*(pla->GetQAveCal()))+2.5045);
 	  Double_t tof = hodt-tzero + 107.5; //tof_offset[pla->GetID()]; //107.5 111.5
 	  std::cout << "tzero: " << tzero << "hodt: " << hodt << "tof: " << tof << std::endl;
@@ -372,6 +374,7 @@ void TArtRecoFragment::ReconstructData() {
 	Double_t aoq_test = brho * clight / mnucleon / beta_test / gamma_test;
 	frag->SetAoQ_test(aoq_test);
 	std::cout << "aoq: " << aoq << std::endl;
+	std::cout << "fragZ: " << fragZ << std::endl;
 	//TArtCore::Info(__FILE__,"beta: %f , aoq: %f",beta,aoq);
       }
       else {

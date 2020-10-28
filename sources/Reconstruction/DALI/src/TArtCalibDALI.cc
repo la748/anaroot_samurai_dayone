@@ -546,6 +546,7 @@ void TArtCalibDALI::AddBackAnalysis(){
       cout<<"test5"<<endl;
       //if(fDali[i].t>fTimeTrueCutLow-500&&fDali[i].t<fTimeTrueCutHigh+500)fDaliFold++; // This line is strange. Why it trys to counts the hits outside of the time condition...
         if(fDali[i].t>fTimeTrueCutLow && fDali[i].t<fTimeTrueCutHigh){
+	  //cout<<"test6"<<endl;
 	  fDali[i].ttrue = true;
           fDaliFoldTa++;
         }
@@ -557,7 +558,7 @@ void TArtCalibDALI::AddBackAnalysis(){
         fDali[i].ttrue   = false;
     }
     cout<<"test7"<<endl;
-    //} //
+  } //
   for(int i=GetNumNaI();i<NUMBEROFDALICRYSTALS;i++){
     fDali[i].id         = -1;
     fDali[i].layer      = -1;
@@ -582,6 +583,7 @@ void TArtCalibDALI::AddBackAnalysis(){
     //Making add-back and true multiplicity:
     //The Energy must be sorted already according to the highest detected one.
     cout<<"Starting addback"<<endl;
+    //cout<<fDali[i].dopp[0]<<endl;
     //for(int i=0;i<fDaliFold;i++){
     for(int i=0;i<fDaliFold;i++){
       cout<<"test11"<<endl;
@@ -610,6 +612,7 @@ void TArtCalibDALI::AddBackAnalysis(){
 	    //nai->SetAddBackEnergy(dummyEnergy);
 	  }
 	}
+	//fNaIArray->Clear();
       }
       fDaliMultTa++;
       cout<<"test19"<<endl;
@@ -623,7 +626,7 @@ void TArtCalibDALI::AddBackAnalysis(){
       fDali[i].idwa      = -999;
     }
     cout<<"test21"<<endl;
-  }//
+    //}//
 }
 
 //__________________________________________________________
