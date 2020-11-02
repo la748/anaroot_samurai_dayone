@@ -310,6 +310,7 @@ void TArtCalibDALI::DopplerCorrect(Double_t beta)   {
     nai->SetBeta(beta);
     if(nai->GetTimeTrueEnergy() > 0.){
       nai->SetTimeTrueDoppCorEnergy(fDoppCorEnergy);
+      //cout<<"Original Dopp Cor Energy: "<<fDoppCorEnergy<<endl
     }else{
       nai->SetTimeTrueDoppCorEnergy(-1.);
     }
@@ -402,6 +403,9 @@ struct dali{
   float e;       //Energy
   float rt;      //Raw time
   float t;       //Time
+  float ode;     //non add back doppler corrected energy
+  float beta;    //beta
+  float othe;    //original theta
   bool  ttrue;   //Bool if time is true
   float dopp[1]; //Doppler energy. Three doppler corrections for the three betas  
   float doppwa[1]; //Doppler energy with true multiplicity and addback.
@@ -454,7 +458,8 @@ void TArtCalibDALI::CreateAddBackTable(Double_t maxDistance){
     fPosX[i] = x;
     fPosY[i] = y;
     fPosZ[i] = z;
-    //cout<<detPos[i].X()<<" "<<detPos[i].Y()<<" "<<detPos[i].Z()<<endl; 
+    //cout<<detPos[i].X()<<" "<<detPos[i].Y()<<" "<<detPos[i].Z()<<endl;
+    //cout<<"angle:"<<angle<<", theta:"<<fTheta[i]<<endl;
   }
   FILE *fAddbackTableOut = fopen("/shared/storage/physnp/rt1091/share/SAMURAI-Day1/users/la748/Analysis/input/AddbackTable.out","w");
 
@@ -533,7 +538,7 @@ void TArtCalibDALI::AddBackAnalysis(){
   //cout<<"test2"<<endl;
   for(Int_t i=0;i<GetNumNaI();i++){
     TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
-    fDali[i].id         = nai->GetID()-1; 
+    fDali[i].id         = nai->GetID()-1;
     fDali[i].layer      = nai->GetLayer();
     fDali[i].theta      = fTheta[fDali[i].id];
     fDali[i].x          = fPosX[fDali[i].id];
@@ -543,11 +548,15 @@ void TArtCalibDALI::AddBackAnalysis(){
     fDali[i].e          = nai->GetEnergy();
     fDali[i].rt         = nai->GetRawTDC();
     fDali[i].t          = nai->GetTimeOffseted();
+    fDali[i].ode        = nai->GetDoppCorEnergy();
+    fDali[i].beta       = nai->GetBeta();
+    fDali[i].othe       = nai->GetTheta();
     //cout<<"test3"<<endl;
     fDaliFold++; // In principle fDaliFold should be equal to GetNumNai();
     if(fDali[i].e>0){
       //cout<<"test4"<<endl;           
       fDali[i].dopp[0] = fDali[i].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
+      cout<<"Raw energy: "<<fDali[i].re<<", Raw time:"<<fDali[i].rt<<", Energy:"<<fDali[i].e<<", Time:"<<fDali[i].t<<", Beta:"<<fDali[i].beta<<", Original theta:"<<fDali[i].othe<<", Add back theta:"<<fDali[i].theta<<", Original Dopp Cor Energy: "<<fDali[i].ode<<", AB dopp cor energy:"<< fDali[i].dopp[0]<<endl;
       //cout<<"test5"<<endl;
       //if(fDali[i].t>fTimeTrueCutLow-500&&fDali[i].t<fTimeTrueCutHigh+500)fDaliFold++; // This line is strange. Why it trys to counts the hits outside of the time condition...
         if(fDali[i].t>fTimeTrueCutLow && fDali[i].t<fTimeTrueCutHigh){
@@ -626,8 +635,8 @@ void TArtCalibDALI::AddBackAnalysis(){
     for(int i = 0;i<fDaliMultTa;i++) {
       fDali[i].doppwa[0] = dummyEnergy[i][0];
       //cout<<"dummyEnergy2:"<<fDali[i].doppwa[0]<<", ID:"<<fDali[i].id<<endl;
-      for(Int_t i=0;i<GetNumNaI();i++){
-	TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
+      for(Int_t j=0;j<GetNumNaI();j++){
+	TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(j);
 	if(fDali[i].doppwa[0]>0){
 	  nai->SetAddBackEnergy(fDali[i].doppwa[0]);
 	}
