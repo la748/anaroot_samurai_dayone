@@ -10,7 +10,7 @@ class TArtDALINaI: public TArtDataObject {
  TArtDALINaI()
    : TArtDataObject(), fADC(0), fTDC(0), layer(-1), theta(-1), costheta(-1),
      fEnergy(-1), fDoppCorEnergy(-1), fEnergyWithoutT(-1),
-     fTime(-9999), fTimeOffseted(-1), fTimeTrueMult(-1), dummyEnergy(-1)
+     fTime(-9999), fTimeOffseted(-1), fTimeTrueMult(-1)//, dummyEnergy(-1)
     {;}
   virtual ~TArtDALINaI(){}
 
@@ -48,7 +48,7 @@ class TArtDALINaI: public TArtDataObject {
   virtual void  SetTimeTrueTime(Double_t val){fTimeTrueTime = val;}
   virtual void  SetTimeTrueTimeOffseted(Double_t val){fTimeTrueTimeOffseted = val;}
   virtual void  SetMultiplicity(Double_t val){fTimeTrueMult = val;} //added
-  virtual void  SetAddBackEnergy(Double_t val){dummyEnergy = val;} //added
+  virtual void  SetAddBackEnergy(Double_t val){fDali_doppwa = val;} //added
 
   // function to get reco data
   virtual Double_t GetCosTheta(){return costheta;}
@@ -68,7 +68,7 @@ class TArtDALINaI: public TArtDataObject {
   virtual Double_t GetTimeTrueTime(){return fTimeTrueTime;}
   virtual Double_t GetTimeTrueTimeOffseted(){return fTimeTrueTimeOffseted;}
   virtual Double_t GetMultiplicity(){return fTimeTrueMult;} //added
-  virtual Double_t GetAddBackEnergy(){return dummyEnergy;} //added
+  virtual Double_t GetAddBackEnergy(){return fDali_doppwa;} //added
 
  private:
 
@@ -95,8 +95,9 @@ class TArtDALINaI: public TArtDataObject {
   Double_t fTimeTrueTime;
   Double_t fTimeTrueTimeOffseted;
   Double_t fTimeTrueMult; //added
-  Double_t dummyEnergy; //added
-
+  //Double_t dummyEnergy; //added
+  Double_t fDali_doppwa; //added
+  
   ClassDef(TArtDALINaI,1);
 
 };
