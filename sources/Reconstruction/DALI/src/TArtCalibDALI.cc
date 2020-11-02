@@ -608,7 +608,6 @@ void TArtCalibDALI::AddBackAnalysis(){
       dummyEnergy[fDaliMultTa][0] = fDali[i].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
        //cout<<"test12"<<endl;  
       crystalUsedForAddback[fDali[i].id]=true;
-      fDali[fDaliMultTa].idwa = fDali[i].id;
       //cout<<"test13"<<endl;  
       for(int j = i+1;j<fDaliFold;j++)  {
 	//cout<<"test14"<<endl;
@@ -629,17 +628,16 @@ void TArtCalibDALI::AddBackAnalysis(){
 	}
 	//fNaIArray->Clear();
       }
+      // Put add-backed values
+      fDali[fDaliMultTa].idwa = fDali[i].id;
+      fDali[fDaliMultTa].doppwa[0] = dummyEnergy[fDaliMultTa][0];
       fDaliMultTa++;
       //cout<<"test19"<<endl;
     }
     for(int i = 0;i<fDaliMultTa;i++) {
-      fDali[i].doppwa[0] = dummyEnergy[i][0];
-      //cout<<"dummyEnergy2:"<<fDali[i].doppwa[0]<<", ID:"<<fDali[i].id<<endl;
-      for(Int_t j=0;j<GetNumNaI();j++){
-	TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(j);
-	if(fDali[i].doppwa[0]>0){
-	  nai->SetAddBackEnergy(fDali[i].doppwa[0]);
-	}
+      TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
+      if(fDali[i].doppwa[0]>0){// Well, this should be true always, by definition.
+	nai->SetAddBackEnergy(fDali[i].doppwa[0]); 
       }
     }
     //cout<<"test20"<<endl;
