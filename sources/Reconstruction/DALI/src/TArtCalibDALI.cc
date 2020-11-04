@@ -406,9 +406,30 @@ struct dali{
   float ode;     //non add back doppler corrected energy
   float beta;    //beta
   float othe;    //original theta
+  float mult;    //multiplicity
   bool  ttrue;   //Bool if time is true
   float dopp[1]; //Doppler energy. Three doppler corrections for the three betas  
   float doppwa[1]; //Doppler energy with true multiplicity and addback.
+  float doppwa_m1[1]; //Doppler energy with multiplicity = 1
+  float doppwa_m2[1]; //Doppler energy with multiplicity = 2
+  float doppwa_m3[1]; //Doppler energy with multiplicity = 3
+  float doppwa_m4[1]; //Doppler energy with multiplicity = 4
+  float doppwa_m5[1]; //Doppler energy with multiplicity = 5
+  float doppwa_m6[1]; //Doppler energy with multiplicity = 6
+  float doppwa_m7[1]; //Doppler energy with multiplicity = 7
+  float doppwa_m8[1]; //Doppler energy with multiplicity = 8
+  float doppwa_m9[1]; //Doppler energy with multiplicity = 9
+  float doppwa_m10[1]; //Doppler energy with multiplicity = 10
+  float doppwa_m11[1]; //Doppler energy with multiplicity = 11
+  float doppwa_m12[1]; //Doppler energy with multiplicity = 12
+  float doppwa_m13[1]; //Doppler energy with multiplicity = 13
+  float doppwa_m14[1]; //Doppler energy with multiplicity = 14
+  float doppwa_m15[1]; //Doppler energy with multiplicity = 15
+  float doppwa_m16[1]; //Doppler energy with multiplicity = 16
+  float doppwa_m17[1]; //Doppler energy with multiplicity = 17
+  float doppwa_m18[1]; //Doppler energy with multiplicity = 18
+  float doppwa_m19[1]; //Doppler energy with multiplicity = 19
+  float doppwa_m20[1]; //Doppler energy with multiplicity = 20
   float idwa;
   //float twa;
   //float ttruewa;
@@ -540,7 +561,8 @@ void TArtCalibDALI::AddBackAnalysis(){
     TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
     fDali[i].id         = nai->GetID()-1;
     fDali[i].layer      = nai->GetLayer();
-    fDali[i].theta      = fTheta[fDali[i].id];
+    //fDali[i].theta      = fTheta[fDali[i].id]; //uses averageinteractionpoint theta
+    fDali[i].theta      = nai->GetTheta(); //try using xml theta
     fDali[i].x          = fPosX[fDali[i].id];
     fDali[i].y          = fPosY[fDali[i].id];
     fDali[i].z          = fPosZ[fDali[i].id];
@@ -551,12 +573,14 @@ void TArtCalibDALI::AddBackAnalysis(){
     fDali[i].ode        = nai->GetDoppCorEnergy();
     fDali[i].beta       = nai->GetBeta();
     fDali[i].othe       = nai->GetTheta();
+    fDali[i].mult       = nai->GetMultiplicity();
     //cout<<"test3"<<endl;
     fDaliFold++; // In principle fDaliFold should be equal to GetNumNai();
     if(fDali[i].e>0){
-      //cout<<"test4"<<endl;           
-      fDali[i].dopp[0] = fDali[i].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
-      cout<<"Raw energy: "<<fDali[i].re<<", Raw time:"<<fDali[i].rt<<", Energy:"<<fDali[i].e<<", Time:"<<fDali[i].t<<", Beta:"<<fDali[i].beta<<", Original theta:"<<fDali[i].othe<<", Add back theta:"<<fDali[i].theta<<", Original Dopp Cor Energy: "<<fDali[i].ode<<", AB dopp cor energy:"<< fDali[i].dopp[0]<<endl;
+      //cout<<"test4"<<endl;
+      //fDali[i].dopp[0] = fDali[i].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
+      fDali[i].dopp[0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta));
+      //cout<<"Raw energy: "<<fDali[i].re<<", Raw time:"<<fDali[i].rt<<", Energy:"<<fDali[i].e<<", Time:"<<fDali[i].t<<", Beta:"<<fDali[i].beta<<", Original theta:"<<fDali[i].othe<<", Add back theta:"<<fDali[i].theta<<", Original Dopp Cor Energy: "<<fDali[i].ode<<", AB dopp cor energy:"<< fDali[i].dopp[0]<<", Multiplicity:"<<fDali[i].mult<<endl;
       //cout<<"test5"<<endl;
       //if(fDali[i].t>fTimeTrueCutLow-500&&fDali[i].t<fTimeTrueCutHigh+500)fDaliFold++; // This line is strange. Why it trys to counts the hits outside of the time condition...
         if(fDali[i].t>fTimeTrueCutLow && fDali[i].t<fTimeTrueCutHigh){
@@ -588,29 +612,362 @@ void TArtCalibDALI::AddBackAnalysis(){
   }
   //cout<<"test9"<<endl;    
     if(fDali[0].e>0)
-      SortData(fDaliFold,fDali);
+      //SortData(fDaliFold,fDali); //old
+      SortData(fDaliFoldTa,fDali); //test according to time cut
     // SortData(GetNumNaI(),fDali);
     // fDali should have number of hits of GetNumNaI, so you have to tell sort process to check all of the energies. Now the definition of fDaliFold has been updated. So keep as it was.
     //cout<<"test10"<<endl;
     //Going to the add-back:
+    float dummyEnergy_m1[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m2[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m3[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m4[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m5[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m6[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m7[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m8[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m9[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m10[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m11[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m12[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m13[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m14[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m15[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m16[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m17[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m18[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m19[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m20[NUMBEROFDALICRYSTALS][6] = {{0.}};
     float dummyEnergy[NUMBEROFDALICRYSTALS][6] = {{0.}};
     //Making add-back and true multiplicity:
     //The Energy must be sorted already according to the highest detected one.
     //cout<<"Starting addback"<<endl;
     //cout<<fDali[i].dopp[0]<<endl;
-    //for(int i=0;i<fDaliFold;i++){
-    for(int i=0;i<fDaliFold;i++){
+    //for(int i=0;i<fDaliFold;i++){ //old
+    for(int i=0;i<fDaliFoldTa;i++){ //test according to the time cut
       //cout<<"test11"<<endl;
       //cout<<"ID:"<<fDali[i].id<<", Raw Energy:"<<fDali[i].re<<", Energy:"<<fDali[i].e<<", Raw Time:"<<fDali[i].rt<<", Time:"<<fDali[i].t<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<endl;
       //Check the values if properly stored in fDali.
-      if(crystalUsedForAddback[fDali[i].id] == true) continue; //|| fDali[i].ttrue == false) continue;
+      if(fDali[i].mult == 1){
+	dummyEnergy_m1[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta));
+      }
 
-      dummyEnergy[fDaliMultTa][0] = fDali[i].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
+      if(fDali[i].mult == 2){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m2[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m2[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 3){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m3[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m3[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 4){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m4[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m4[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 5){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m5[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m5[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 6){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m6[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m6[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 7){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m7[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m8[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 9){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m9[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m9[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 10){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m10[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m10[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 11){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m11[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m11[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 12){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m12[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m12[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 13){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m13[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m13[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 14){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m14[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m14[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 15){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m15[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m15[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 16){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m16[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m16[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 17){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m17[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m17[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 18){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m18[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m18[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 19){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m19[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m19[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+
+      if(fDali[i].mult == 20){
+	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+	dummyEnergy_m20[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	crystalUsedForAddback[fDali[i].id]=true;
+	fDali[fDaliMultTa].idwa = fDali[i].id;
+	for(int j = i+1; j<fDaliFoldTa;j++){ //new
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy_m20[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      }
+	    }
+	  }
+	}
+      }
+      
+      if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+
+      //dummyEnergy[fDaliMultTa][0] = fDali[i].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1)); //original theta and beta
+      dummyEnergy[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
        //cout<<"test12"<<endl;  
       crystalUsedForAddback[fDali[i].id]=true;
       fDali[fDaliMultTa].idwa = fDali[i].id;
       //cout<<"test13"<<endl;  
-      for(int j = i+1;j<fDaliFold;j++)  {
+      //for(int j = i+1;j<fDaliFold;j++)  {//old
+      for(int j = i+1; j<fDaliFoldTa;j++){ //new
 	//cout<<"test14"<<endl;
         if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
 	  //cout<<"test15"<<endl;
@@ -620,7 +977,10 @@ void TArtCalibDALI::AddBackAnalysis(){
               //cout<<"test17"<<endl;  
               crystalUsedForAddback[fDali[j].id]=true;
 
-	      dummyEnergy[fDaliMultTa][0] += fDali[j].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
+	      //dummyEnergy[fDaliMultTa][0] += fDali[j].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1)); //original theta and beta
+
+	      dummyEnergy[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+	      
 	      //cout<<"dummyEnergy: "<<dummyEnergy[fDaliMultTa][0]<<endl;
 	      //cout<<"test18"<<endl;
 	    }
@@ -629,17 +989,96 @@ void TArtCalibDALI::AddBackAnalysis(){
 	}
 	//fNaIArray->Clear();
       }
+      fDali[fDaliMultTa].idwa = fDali[i].id;
+      fDali[fDaliMultTa].doppwa_m1[0] = dummyEnergy_m1[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m2[0] = dummyEnergy_m2[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m3[0] = dummyEnergy_m3[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m4[0] = dummyEnergy_m4[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m5[0] = dummyEnergy_m5[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m6[0] = dummyEnergy_m6[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m7[0] = dummyEnergy_m7[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m8[0] = dummyEnergy_m8[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m9[0] = dummyEnergy_m9[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m10[0] = dummyEnergy_m10[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m11[0] = dummyEnergy_m11[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m12[0] = dummyEnergy_m12[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m13[0] = dummyEnergy_m13[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m14[0] = dummyEnergy_m14[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m15[0] = dummyEnergy_m15[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m16[0] = dummyEnergy_m16[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m17[0] = dummyEnergy_m17[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m18[0] = dummyEnergy_m18[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m19[0] = dummyEnergy_m19[fDaliMultTa][0];
+      fDali[fDaliMultTa].doppwa_m20[0] = dummyEnergy_m20[fDaliMultTa][0];  
+      fDali[fDaliMultTa].doppwa[0] = dummyEnergy[fDaliMultTa][0];
       fDaliMultTa++;
       //cout<<"test19"<<endl;
     }
+    
     for(int i = 0;i<fDaliMultTa;i++) {
-      fDali[i].doppwa[0] = dummyEnergy[i][0];
-      //cout<<"dummyEnergy2:"<<fDali[i].doppwa[0]<<", ID:"<<fDali[i].id<<endl;
-      for(Int_t j=0;j<GetNumNaI();j++){
-	TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(j);
-	if(fDali[i].doppwa[0]>0){
-	  nai->SetAddBackEnergy(fDali[i].doppwa[0]);
-	}
+      TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
+      if(fDali[i].doppwa[0]>1){ //should be true by definition
+	nai->SetAddBackEnergy(fDali[i].doppwa[0]);
+      }
+      if(fDali[i].doppwa_m1[0]>1){
+	nai->SetAddBackEnergy_M1(fDali[i].doppwa_m1[0]);
+      }
+      if(fDali[i].doppwa_m2[0]>1){
+	nai->SetAddBackEnergy_M2(fDali[i].doppwa_m2[0]);
+      }
+      if(fDali[i].doppwa_m3[0]>1){
+	nai->SetAddBackEnergy_M3(fDali[i].doppwa_m3[0]);
+      }
+      if(fDali[i].doppwa_m4[0]>1){
+	nai->SetAddBackEnergy_M4(fDali[i].doppwa_m4[0]);
+      }
+      if(fDali[i].doppwa_m5[0]>1){
+	nai->SetAddBackEnergy_M5(fDali[i].doppwa_m5[0]);
+      }
+      if(fDali[i].doppwa_m6[0]>1){
+	nai->SetAddBackEnergy_M6(fDali[i].doppwa_m6[0]);
+      }
+      if(fDali[i].doppwa_m7[0]>1){
+	nai->SetAddBackEnergy_M7(fDali[i].doppwa_m7[0]);
+      }
+      if(fDali[i].doppwa_m8[0]>1){
+	nai->SetAddBackEnergy_M8(fDali[i].doppwa_m8[0]);
+      }
+      if(fDali[i].doppwa_m9[0]>1){
+	nai->SetAddBackEnergy_M9(fDali[i].doppwa_m9[0]);
+      }
+      if(fDali[i].doppwa_m10[0]>1){
+	nai->SetAddBackEnergy_M10(fDali[i].doppwa_m10[0]);
+      }
+      if(fDali[i].doppwa_m11[0]>1){
+	nai->SetAddBackEnergy_M11(fDali[i].doppwa_m11[0]);
+      }
+      if(fDali[i].doppwa_m12[0]>1){
+	nai->SetAddBackEnergy_M12(fDali[i].doppwa_m12[0]);
+      }
+      if(fDali[i].doppwa_m13[0]>1){
+	nai->SetAddBackEnergy_M13(fDali[i].doppwa_m13[0]);
+      }
+      if(fDali[i].doppwa_m14[0]>1){
+	nai->SetAddBackEnergy_M14(fDali[i].doppwa_m14[0]);
+      }
+      if(fDali[i].doppwa_m15[0]>1){
+	nai->SetAddBackEnergy_M15(fDali[i].doppwa_m15[0]);
+      }
+      if(fDali[i].doppwa_m16[0]>1){
+	nai->SetAddBackEnergy_M16(fDali[i].doppwa_m16[0]);
+      }
+      if(fDali[i].doppwa_m17[0]>1){
+	nai->SetAddBackEnergy_M17(fDali[i].doppwa_m17[0]);
+      }
+      if(fDali[i].doppwa_m18[0]>1){
+	nai->SetAddBackEnergy_M18(fDali[i].doppwa_m18[0]);
+      }
+      if(fDali[i].doppwa_m19[0]>1){
+	nai->SetAddBackEnergy_M19(fDali[i].doppwa_m19[0]);
+      }
+      if(fDali[i].doppwa_m20[0]>1){
+	nai->SetAddBackEnergy_M20(fDali[i].doppwa_m20[0]);
       }
     }
     //cout<<"test20"<<endl;
