@@ -311,7 +311,32 @@ void TArtCalibDALI::DopplerCorrect(Double_t beta)   {
     if(nai->GetTimeTrueEnergy() > 0.){
       nai->SetTimeTrueDoppCorEnergy(fDoppCorEnergy);
       //cout<<"Original Dopp Cor Energy: "<<fDoppCorEnergy<<endl
-    }else{
+      if(nai->GetMultiplicity()==1){
+	if(fDoppCorEnergy>1){
+	  nai->SetTimeTrueDoppCorEnergy_m1(fDoppCorEnergy);
+	//cout<<"Mult==1 Dopp cor Energy:"<<nai->GetTimeTrueDoppCorEnergy()<<endl;
+	}
+      }
+      if(nai->GetMultiplicity()==2){
+	if(fDoppCorEnergy>1){
+	  nai->SetTimeTrueDoppCorEnergy_m2(fDoppCorEnergy);
+	  //cout<<"Mult==1 Dopp cor Energy:"<<nai->GetTimeTrueDoppCorEnergy()<<endl;
+	}
+      }
+      if(nai->GetMultiplicity()==3){
+	if(fDoppCorEnergy>1){
+	  nai->SetTimeTrueDoppCorEnergy_m3(fDoppCorEnergy);
+	  //cout<<"Mult==1 Dopp cor Energy:"<<nai->GetTimeTrueDoppCorEnergy()<<endl;
+	}
+      }
+      if(nai->GetMultiplicity()==4){
+	if(fDoppCorEnergy>1){
+	  nai->SetTimeTrueDoppCorEnergy_m4(fDoppCorEnergy);
+	  //cout<<"Mult==1 Dopp cor Energy:"<<nai->GetTimeTrueDoppCorEnergy()<<endl;
+	}
+      }
+    }
+    else{
       nai->SetTimeTrueDoppCorEnergy(-1.);
     }
   }
@@ -650,6 +675,7 @@ void TArtCalibDALI::AddBackAnalysis(){
       //Check the values if properly stored in fDali.
       if(fDali[i].mult == 1){
 	dummyEnergy_m1[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta));
+	cout<<"Inside multiplicity=1 loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy_m1[fDaliMultTa][0]<<endl;
       }
 
       if(fDali[i].mult == 2){
@@ -1022,6 +1048,7 @@ void TArtCalibDALI::AddBackAnalysis(){
       }
       if(fDali[i].doppwa_m1[0]>1){
 	nai->SetAddBackEnergy_M1(fDali[i].doppwa_m1[0]);
+	cout<<"Inside Set Energy loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy_m1[fDaliMultTa][0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy_M1()<<endl; 
       }
       if(fDali[i].doppwa_m2[0]>1){
 	nai->SetAddBackEnergy_M2(fDali[i].doppwa_m2[0]);
