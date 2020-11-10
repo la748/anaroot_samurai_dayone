@@ -310,34 +310,39 @@ void TArtCalibDALI::DopplerCorrect(Double_t beta)   {
     nai->SetBeta(beta);
     if(nai->GetTimeTrueEnergy() > 0.){
       nai->SetTimeTrueDoppCorEnergy(fDoppCorEnergy);
-      //cout<<"Original Dopp Cor Energy: "<<fDoppCorEnergy<<endl
-      if(nai->GetMultiplicity()==1){
+      //cout<<"Before multiplicity check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<endl;
+      if(nai->GetMultiplicity()==1.){
 	if(fDoppCorEnergy>1){
 	  nai->SetTimeTrueDoppCorEnergy_m1(fDoppCorEnergy);
-	//cout<<"Mult==1 Dopp cor Energy:"<<nai->GetTimeTrueDoppCorEnergy()<<endl;
+	  //cout<<"Multiplicity==1 check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", M=1 Dopp cor Energy check:"<<nai->GetTimeTrueDoppCorEnergy_m1()<<endl;
 	}
       }
-      if(nai->GetMultiplicity()==2){
+      if(nai->GetMultiplicity()==2.){
 	if(fDoppCorEnergy>1){
 	  nai->SetTimeTrueDoppCorEnergy_m2(fDoppCorEnergy);
-	  //cout<<"Mult==1 Dopp cor Energy:"<<nai->GetTimeTrueDoppCorEnergy()<<endl;
+	  //cout<<"Multiplicity==2 check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", M=2 Dopp cor Energy check:"<<nai->GetTimeTrueDoppCorEnergy_m2()<<endl;
 	}
       }
-      if(nai->GetMultiplicity()==3){
+      if(nai->GetMultiplicity()==3.){
 	if(fDoppCorEnergy>1){
 	  nai->SetTimeTrueDoppCorEnergy_m3(fDoppCorEnergy);
-	  //cout<<"Mult==1 Dopp cor Energy:"<<nai->GetTimeTrueDoppCorEnergy()<<endl;
+	  //cout<<"Multiplicity==3 check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", M=3 Dopp cor Energy check:"<<nai->GetTimeTrueDoppCorEnergy_m3()<<endl;
 	}
       }
-      if(nai->GetMultiplicity()==4){
+      if(nai->GetMultiplicity()==4.){
 	if(fDoppCorEnergy>1){
 	  nai->SetTimeTrueDoppCorEnergy_m4(fDoppCorEnergy);
-	  //cout<<"Mult==1 Dopp cor Energy:"<<nai->GetTimeTrueDoppCorEnergy()<<endl;
+	  //cout<<"Multiplicity==4 check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", M=4 Dopp cor Energy check:"<<nai->GetTimeTrueDoppCorEnergy_m4()<<endl;
 	}
       }
     }
     else{
-      nai->SetTimeTrueDoppCorEnergy(-1.);
+      nai->SetTimeTrueDoppCorEnergy(-9999.);
+      nai->SetTimeTrueDoppCorEnergy_m1(-9999.);
+      nai->SetTimeTrueDoppCorEnergy_m2(-9999.);
+      nai->SetTimeTrueDoppCorEnergy_m3(-9999.);
+      nai->SetTimeTrueDoppCorEnergy_m4(-9999.);
+      //cout<<"Underflow check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<endl; 
     }
   }
 
@@ -433,13 +438,13 @@ struct dali{
   float othe;    //original theta
   float mult;    //multiplicity
   bool  ttrue;   //Bool if time is true
-  float dopp[1]; //Doppler energy. Three doppler corrections for the three betas  
+  float dopp[1]; //Doppler energy. Three doppler corrections for the three betas [1] 
   float doppwa[1]; //Doppler energy with true multiplicity and addback.
   float doppwa_m1[1]; //Doppler energy with multiplicity = 1
   float doppwa_m2[1]; //Doppler energy with multiplicity = 2
   float doppwa_m3[1]; //Doppler energy with multiplicity = 3
   float doppwa_m4[1]; //Doppler energy with multiplicity = 4
-  float doppwa_m5[1]; //Doppler energy with multiplicity = 5
+  /*float doppwa_m5[1]; //Doppler energy with multiplicity = 5
   float doppwa_m6[1]; //Doppler energy with multiplicity = 6
   float doppwa_m7[1]; //Doppler energy with multiplicity = 7
   float doppwa_m8[1]; //Doppler energy with multiplicity = 8
@@ -454,7 +459,7 @@ struct dali{
   float doppwa_m17[1]; //Doppler energy with multiplicity = 17
   float doppwa_m18[1]; //Doppler energy with multiplicity = 18
   float doppwa_m19[1]; //Doppler energy with multiplicity = 19
-  float doppwa_m20[1]; //Doppler energy with multiplicity = 20
+  float doppwa_m20[1]; //Doppler energy with multiplicity = 20*/
   float idwa;
   //float twa;
   //float ttruewa;
@@ -599,6 +604,7 @@ void TArtCalibDALI::AddBackAnalysis(){
     fDali[i].beta       = nai->GetBeta();
     fDali[i].othe       = nai->GetTheta();
     fDali[i].mult       = nai->GetMultiplicity();
+    
     //cout<<"test3"<<endl;
     fDaliFold++; // In principle fDaliFold should be equal to GetNumNai();
     if(fDali[i].e>0){
@@ -647,7 +653,7 @@ void TArtCalibDALI::AddBackAnalysis(){
     float dummyEnergy_m2[NUMBEROFDALICRYSTALS][6] = {{0.}};
     float dummyEnergy_m3[NUMBEROFDALICRYSTALS][6] = {{0.}};
     float dummyEnergy_m4[NUMBEROFDALICRYSTALS][6] = {{0.}};
-    float dummyEnergy_m5[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    /*float dummyEnergy_m5[NUMBEROFDALICRYSTALS][6] = {{0.}};
     float dummyEnergy_m6[NUMBEROFDALICRYSTALS][6] = {{0.}};
     float dummyEnergy_m7[NUMBEROFDALICRYSTALS][6] = {{0.}};
     float dummyEnergy_m8[NUMBEROFDALICRYSTALS][6] = {{0.}};
@@ -662,7 +668,7 @@ void TArtCalibDALI::AddBackAnalysis(){
     float dummyEnergy_m17[NUMBEROFDALICRYSTALS][6] = {{0.}};
     float dummyEnergy_m18[NUMBEROFDALICRYSTALS][6] = {{0.}};
     float dummyEnergy_m19[NUMBEROFDALICRYSTALS][6] = {{0.}};
-    float dummyEnergy_m20[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy_m20[NUMBEROFDALICRYSTALS][6] = {{0.}};*/
     float dummyEnergy[NUMBEROFDALICRYSTALS][6] = {{0.}};
     //Making add-back and true multiplicity:
     //The Energy must be sorted already according to the highest detected one.
@@ -676,6 +682,9 @@ void TArtCalibDALI::AddBackAnalysis(){
       if(fDali[i].mult == 1){
 	dummyEnergy_m1[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta));
 	cout<<"Inside multiplicity=1 loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy_m1[fDaliMultTa][0]<<endl;
+      }
+      else{
+	dummyEnergy_m1[fDaliMultTa][0] = -9999;
       }
 
       if(fDali[i].mult == 2){
@@ -693,6 +702,10 @@ void TArtCalibDALI::AddBackAnalysis(){
 	    }
 	  }
 	}
+	cout<<"Inside multiplicity=2 loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy_m2[fDaliMultTa][0]<<endl;
+      }
+      else{
+	dummyEnergy_m2[fDaliMultTa][0] == -9999;
       }
 
       if(fDali[i].mult == 3){
@@ -711,6 +724,9 @@ void TArtCalibDALI::AddBackAnalysis(){
 	  }
 	}
       }
+      else{
+	dummyEnergy_m3[fDaliMultTa][0] == -9999;
+      }
 
       if(fDali[i].mult == 4){
 	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
@@ -728,8 +744,11 @@ void TArtCalibDALI::AddBackAnalysis(){
 	  }
 	}
       }
+      else{
+	dummyEnergy_m4[fDaliMultTa][0] == -9999;
+      }
 
-      if(fDali[i].mult == 5){
+      /*if(fDali[i].mult == 5){
 	if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
 	dummyEnergy_m5[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
 	crystalUsedForAddback[fDali[i].id]=true;
@@ -982,7 +1001,7 @@ void TArtCalibDALI::AddBackAnalysis(){
 	    }
 	  }
 	}
-      }
+      }*/
       
       if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
 
@@ -1016,11 +1035,12 @@ void TArtCalibDALI::AddBackAnalysis(){
 	//fNaIArray->Clear();
       }
       fDali[fDaliMultTa].idwa = fDali[i].id;
+      //fDaliMultTa++;
       fDali[fDaliMultTa].doppwa_m1[0] = dummyEnergy_m1[fDaliMultTa][0];
       fDali[fDaliMultTa].doppwa_m2[0] = dummyEnergy_m2[fDaliMultTa][0];
       fDali[fDaliMultTa].doppwa_m3[0] = dummyEnergy_m3[fDaliMultTa][0];
       fDali[fDaliMultTa].doppwa_m4[0] = dummyEnergy_m4[fDaliMultTa][0];
-      fDali[fDaliMultTa].doppwa_m5[0] = dummyEnergy_m5[fDaliMultTa][0];
+      /*fDali[fDaliMultTa].doppwa_m5[0] = dummyEnergy_m5[fDaliMultTa][0];
       fDali[fDaliMultTa].doppwa_m6[0] = dummyEnergy_m6[fDaliMultTa][0];
       fDali[fDaliMultTa].doppwa_m7[0] = dummyEnergy_m7[fDaliMultTa][0];
       fDali[fDaliMultTa].doppwa_m8[0] = dummyEnergy_m8[fDaliMultTa][0];
@@ -1035,29 +1055,50 @@ void TArtCalibDALI::AddBackAnalysis(){
       fDali[fDaliMultTa].doppwa_m17[0] = dummyEnergy_m17[fDaliMultTa][0];
       fDali[fDaliMultTa].doppwa_m18[0] = dummyEnergy_m18[fDaliMultTa][0];
       fDali[fDaliMultTa].doppwa_m19[0] = dummyEnergy_m19[fDaliMultTa][0];
-      fDali[fDaliMultTa].doppwa_m20[0] = dummyEnergy_m20[fDaliMultTa][0];  
+      fDali[fDaliMultTa].doppwa_m20[0] = dummyEnergy_m20[fDaliMultTa][0];*/  
       fDali[fDaliMultTa].doppwa[0] = dummyEnergy[fDaliMultTa][0];
+      for(int i = 0;i<fDaliMultTa;i++) {
+	TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
+	if(fDali[i].doppwa[0]>1){ //should be true by definition
+	  nai->SetAddBackEnergy(fDali[i].doppwa[0]);
+	}
+	if(fDali[i].doppwa_m1[0]>0){
+	  nai->SetAddBackEnergy_M1(fDali[i].doppwa_m1[0]); //fDali[i]...
+	  cout<<"Inside Set Energy Mult ==1 loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy_m1[fDaliMultTa][0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy_M1()<<endl;
+	}
+	if(fDali[i].doppwa_m2[0]>0){
+	  nai->SetAddBackEnergy_M2(fDali[i].doppwa_m2[0]);
+	  cout<<"Inside Set Energy Mult==2 loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy_m2[fDaliMultTa][0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy_M2()<<endl;
+	}
+	if(fDali[i].doppwa_m3[0]>0){
+	  nai->SetAddBackEnergy_M3(fDali[i].doppwa_m3[0]);
+	}
+	if(fDali[i].doppwa_m4[0]>0){
+	  nai->SetAddBackEnergy_M4(fDali[i].doppwa_m4[0]);
+	}
+      }
       fDaliMultTa++;
       //cout<<"test19"<<endl;
     }
     
-    for(int i = 0;i<fDaliMultTa;i++) {
+    /*for(int i = 0;i<fDaliMultTa;i++) {
       TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
-      if(fDali[i].doppwa[0]>1){ //should be true by definition
-	nai->SetAddBackEnergy(fDali[i].doppwa[0]);
+      if(fDali[fDaliMultTa].doppwa[0]>0){ //should be true by definition, trying replacing i with fDaliMultTa
+	nai->SetAddBackEnergy(fDali[fDaliMultTa].doppwa[0]);
       }
-      if(fDali[i].doppwa_m1[0]>1){
-	nai->SetAddBackEnergy_M1(fDali[i].doppwa_m1[0]);
-	cout<<"Inside Set Energy loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy_m1[fDaliMultTa][0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy_M1()<<endl; 
+      if(fDali[fDaliMultTa].doppwa_m1[0]>0){
+	nai->SetAddBackEnergy_M1(fDali[fDaliMultTa].doppwa_m1[0]);
+	cout<<"Inside Set Energy Mult ==1 loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy_m1[fDaliMultTa][0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy_M1()<<endl; 
       }
-      if(fDali[i].doppwa_m2[0]>1){
-	nai->SetAddBackEnergy_M2(fDali[i].doppwa_m2[0]);
+      if(fDali[fDaliMultTa].doppwa_m2[0]>0){
+	nai->SetAddBackEnergy_M2(fDali[fDaliMultTa].doppwa_m2[0]);
+	cout<<"Inside Set Energy Mult==2 loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy_m2[fDaliMultTa][0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy_M2()<<endl; 
       }
-      if(fDali[i].doppwa_m3[0]>1){
-	nai->SetAddBackEnergy_M3(fDali[i].doppwa_m3[0]);
+      if(fDali[fDaliMultTa].doppwa_m3[0]>0){
+	nai->SetAddBackEnergy_M3(fDali[fDaliMultTa].doppwa_m3[0]);
       }
-      if(fDali[i].doppwa_m4[0]>1){
-	nai->SetAddBackEnergy_M4(fDali[i].doppwa_m4[0]);
+      if(fDali[fDaliMultTa].doppwa_m4[0]>0){
+	nai->SetAddBackEnergy_M4(fDali[fDaliMultTa].doppwa_m4[0]);
       }
       if(fDali[i].doppwa_m5[0]>1){
 	nai->SetAddBackEnergy_M5(fDali[i].doppwa_m5[0]);
@@ -1106,8 +1147,8 @@ void TArtCalibDALI::AddBackAnalysis(){
       }
       if(fDali[i].doppwa_m20[0]>1){
 	nai->SetAddBackEnergy_M20(fDali[i].doppwa_m20[0]);
-      }
-    }
+	}
+	}*/
     //cout<<"test20"<<endl;
     for(int i = fDaliMultTa;i<NUMBEROFDALICRYSTALS;i++) {
       fDali[i].doppwa[0] = -999;

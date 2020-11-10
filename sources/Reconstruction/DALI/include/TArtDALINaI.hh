@@ -73,6 +73,7 @@ class TArtDALINaI: public TArtDataObject {
   virtual void  SetTimeTrueDoppCorEnergy_m2(Double_t val){fTimeTrueDoppCorEnergy_m2 = val;} //added
   virtual void  SetTimeTrueDoppCorEnergy_m3(Double_t val){fTimeTrueDoppCorEnergy_m3 = val;} //added
   virtual void  SetTimeTrueDoppCorEnergy_m4(Double_t val){fTimeTrueDoppCorEnergy_m4 = val;} //added
+  //virtual void  SetTimeTrueDoppCorEnergy_m1_test(Double_t val){fTimeTrueDoppCorEnergy_m1_test = val;} //added
 
   // function to get reco data
   virtual Double_t GetCosTheta(){return costheta;}
@@ -116,7 +117,8 @@ class TArtDALINaI: public TArtDataObject {
   virtual Double_t GetTimeTrueDoppCorEnergy_m1(){return fTimeTrueDoppCorEnergy_m1;} //added
   virtual Double_t GetTimeTrueDoppCorEnergy_m2(){return fTimeTrueDoppCorEnergy_m2;} //added
   virtual Double_t GetTimeTrueDoppCorEnergy_m3(){return fTimeTrueDoppCorEnergy_m3;} //added
-  virtual Double_t GetTimeTrueDoppCorEnergy_m4(){return fTimeTrueDoppCorEnergy_m4;} //added 
+  virtual Double_t GetTimeTrueDoppCorEnergy_m4(){return fTimeTrueDoppCorEnergy_m4;} //added
+  //virtual Double_t GetTimeTrueDoppCorEnergy_m1_test(){return fTimeTrueDoppCorEnergy_m1_test;} //added
 
  private:
 
@@ -147,7 +149,6 @@ class TArtDALINaI: public TArtDataObject {
   Double_t fTimeTrueTime;
   Double_t fTimeTrueTimeOffseted;
   Double_t fTimeTrueMult; //added
-  //Double_t dummyEnergy; //added
   Double_t fDali_doppwa; //added
   Double_t fDali_doppwa_m1; //added
   Double_t fDali_doppwa_m2; //added
@@ -169,6 +170,7 @@ class TArtDALINaI: public TArtDataObject {
   Double_t fDali_doppwa_m18; //added
   Double_t fDali_doppwa_m19; //added
   Double_t fDali_doppwa_m20; //added
+  //Double_t fTimeTrueDoppCorEnergy_m1_test; //added
   
   ClassDef(TArtDALINaI,1);
 
