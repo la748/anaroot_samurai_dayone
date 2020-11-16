@@ -454,12 +454,6 @@ struct dali{
   bool  ttrue;   //Bool if time is true
   float dopp[1]; //Doppler energy. Three doppler corrections for the three betas [1] 
   float doppwa[1]; //Doppler energy with true multiplicity and addback.
-  float doppwa_m1[1]; //Doppler energy with multiplicity = 1
-  float doppwa_m2[1]; //Doppler energy with multiplicity = 2
-  float doppwa_m3[1]; //Doppler energy with multiplicity = 3
-  float doppwa_m4[1]; //Doppler energy with multiplicity = 4
-  float doppwa_m5[1]; //Doppler energy with multiplicity = 5
-  float doppwa_m6[1]; //Doppler energy with multiplicity = 6
   float idwa;
   //float twa;
   //float ttruewa;
@@ -646,37 +640,31 @@ void TArtCalibDALI::AddBackAnalysis(){
   }
   //cout<<"test9"<<endl;    
     if(fDali[0].e>0)
-      //SortData(fDaliFold,fDali); //old
-      SortData(fDaliFoldTa,fDali); //test according to time cut
+      SortData(fDaliFold,fDali); //old
+      //SortData(fDaliFoldTa,fDali); //test according to time cut
     // SortData(GetNumNaI(),fDali);
     // fDali should have number of hits of GetNumNaI, so you have to tell sort process to check all of the energies. Now the definition of fDaliFold has been updated. So keep as it was.
     //cout<<"test10"<<endl;
     //Going to the add-back:
-    float dummyEnergy_m1[NUMBEROFDALICRYSTALS][6] = {{0.}}; //[6]
-    float dummyEnergy_m2[NUMBEROFDALICRYSTALS][6] = {{0.}}; //[6]
-    float dummyEnergy_m3[NUMBEROFDALICRYSTALS][6] = {{0.}}; //[6]
-    float dummyEnergy_m4[NUMBEROFDALICRYSTALS][6] = {{0.}}; //[6]
-    float dummyEnergy_m5[NUMBEROFDALICRYSTALS][6] = {{0.}}; //[6]
-    float dummyEnergy_m6[NUMBEROFDALICRYSTALS][6] = {{0.}}; //[6]
-    float dummyEnergy[NUMBEROFDALICRYSTALS][6] = {{0.}};
+    float dummyEnergy[NUMBEROFDALICRYSTALS][6] = {{0.}}; //[6]
     int mult_counter = 0; //added
     //Making add-back and true multiplicity:
     //The Energy must be sorted already according to the highest detected one.
     //cout<<"Starting addback"<<endl;
     //cout<<fDali[i].dopp[0]<<endl;
-    //for(int i=0;i<fDaliFold;i++){ //old
-    for(int i=0;i<fDaliFoldTa;i++){ //test according to the time cut
+    for(int i=0;i<fDaliFold;i++){ //old
+      //for(int i=0;i<fDaliFoldTa;i++){ //test according to the time cut
       TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
       //cout<<"test11"<<endl;
       cout<<"Addback pre mult check, ID:"<<fDali[i].id<<", Raw Energy:"<<fDali[i].re<<", Energy:"<<fDali[i].e<<", Raw Time:"<<fDali[i].rt<<", Time:"<<fDali[i].t<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<", Dopp cor energy:"<<fDali[i].dopp[0]<<endl;
       //Check the values if properly stored in fDali.
 
       if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
-      dummyEnergy[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
-      cout<<"Test1, ID:"<<fDali[i].id<<", Raw Energy:"<<fDali[i].re<<", Energy:"<<fDali[i].e<<", Raw Time:"<<fDali[i].rt<<", Time:"<<fDali[i].t<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<", Dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy[i][0]<<endl;  
+      dummyEnergy[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta fDaliMultTa
+      cout<<"Test1, ID:"<<fDali[i].id<<", Raw Energy:"<<fDali[i].re<<", Energy:"<<fDali[i].e<<", Raw Time:"<<fDali[i].rt<<", Time:"<<fDali[i].t<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<", Crystal used for AB:"<<(crystalUsedForAddback[fDali[i].id]?"true":"false")<<", Dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy[fDaliMultTa][0]<<endl; //fDaliMultTa
       crystalUsedForAddback[fDali[i].id]=true;
-      fDali[fDaliMultTa].idwa = fDali[i].id;
-      for(int j = i+1; j<fDaliFoldTa;j++){ //new
+      fDali[fDaliMultTa].idwa = fDali[i].id; //fDaliMultTa =fDali[i].id
+      for(int j = i+1; j<fDaliFold;j++){ //new fDaliFoldTa
 	cout<<"Test2, ID:"<<fDali[j].id<<", Raw Energy:"<<fDali[j].re<<", Energy:"<<fDali[j].e<<", Raw Time:"<<fDali[j].rt<<", Time:"<<fDali[j].t<<", TTrue:"<<(fDali[j].ttrue?"true":"false")<<", Dopp cor energy:"<<fDali[j].dopp[0]<<endl;
 	if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
 	  cout<<"Test3, ID:"<<fDali[j].id<<", Raw Energy:"<<fDali[j].re<<", Energy:"<<fDali[j].e<<", Raw Time:"<<fDali[j].rt<<", Time:"<<fDali[j].t<<", TTrue:"<<(fDali[j].ttrue?"true":"false")<<", Dopp cor energy:"<<fDali[j].dopp[0]<<endl;
@@ -699,7 +687,7 @@ void TArtCalibDALI::AddBackAnalysis(){
       mult_counter=0;
       fDali[fDaliMultTa].idwa = fDali[i].id;
       fDali[fDaliMultTa].doppwa[0] = dummyEnergy[fDaliMultTa][0];
-      if(fDali[i].doppwa[0]>0){ //should be true by definition
+      if(fDali[fDaliMultTa].doppwa[0]>0){ //should be true by definition
 	nai->SetAddBackEnergy(fDali[fDaliMultTa].doppwa[0]);
 	cout<<"Inside Set addback Energy loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy[i][0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy()<<", mult counter:"<<nai->GetAddBackMult()<<endl;
 	}
@@ -713,10 +701,6 @@ void TArtCalibDALI::AddBackAnalysis(){
     for(int i = fDaliMultTa;i<NUMBEROFDALICRYSTALS;i++) {
       fDali[i].doppwa[0] = -999;
       fDali[i].idwa      = -999;
-      fDali[i].doppwa_m1[0] = -999;
-      fDali[i].doppwa_m2[0] = -999;
-      fDali[i].doppwa_m3[0] = -999;
-      fDali[i].doppwa_m4[0] = -999;
     }
     //cout<<"test21"<<endl;
 }
