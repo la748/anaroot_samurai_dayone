@@ -242,10 +242,9 @@ void TArtCalibDALI::ReconstructData()   { // call after the raw data are loaded
       nai->SetTimeTrueTime(fTime);
       nai->SetTimeTrueTimeOffseted(fTimeOffseted);
       if(fEnergy>fMultiplicityThreshold) fTimeTrueMultThres++;
-      if(fEnergy>0)fTimeTrueMult++;
-      nai->SetMultiplicity(fTimeTrueMult); //added
+      if(fEnergy>0) fTimeTrueMult++;
+      nai->SetMultiplicity(fTimeTrueMult);
     }
-
     // copy some information from para to data container
     //	nai->SetID(para->GetID());
     //	nai->SetFpl(para->GetFpl());
@@ -253,7 +252,7 @@ void TArtCalibDALI::ReconstructData()   { // call after the raw data are loaded
     //	nai->SetLayer(para->GetLayer());
     //	nai->SetTheta(para->GetNaITheta());
 
-    } 
+    }
   fReconstructed = true;
 
   //DopplerCorrect(fBeta);
@@ -282,6 +281,7 @@ void TArtCalibDALI::DopplerCorrect()   {
       TArtTOF *tof = (TArtTOF *)tofarray->At(i);
       if( tof->GetUpstreamPlaFpl()==3 && tof->GetDownstreamPlaFpl()==13 ){
 	DopplerCorrect(tof->GetBeta());
+	cout<<"DALI check incoming beta:"<<tof->GetBeta()<<endl;
 	break;
       }
     }
@@ -304,58 +304,15 @@ void TArtCalibDALI::DopplerCorrect(Double_t beta)   {
   for(Int_t i=0;i<GetNumNaI();i++){
     TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
     // reconstructed position and angle based on PPAC information is too fine and not used since the most of the resolution is determined by DALI-NaI angle resolution.
-
     Double_t fDoppCorEnergy = nai->GetEnergy() * (1-beta*nai->GetCosTheta())/TMath::Sqrt((1.0-beta*beta));
     nai->SetDoppCorEnergy(fDoppCorEnergy);
     nai->SetBeta(beta);
     if(nai->GetTimeTrueEnergy() > 0.){
       nai->SetTimeTrueDoppCorEnergy(fDoppCorEnergy);
-      cout<<"Dopp cor check, Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<endl;
-      /*if(nai->GetMultiplicity()==1.){
-	if(fDoppCorEnergy>1){
-	  nai->SetTimeTrueDoppCorEnergy_m1(fDoppCorEnergy);
-	  //cout<<"Dopp cor Multiplicity==1 check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", M=1 Dopp cor Energy check:"<<nai->GetTimeTrueDoppCorEnergy_m1()<<endl;
-	}
-      }
-      if(nai->GetMultiplicity()==2.){
-	if(fDoppCorEnergy>1){
-	  nai->SetTimeTrueDoppCorEnergy_m2(fDoppCorEnergy);
-	  //cout<<"Dopp cor Multiplicity==2 check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", M=2 Dopp cor Energy check:"<<nai->GetTimeTrueDoppCorEnergy_m2()<<endl;
-	}
-      }
-      if(nai->GetMultiplicity()==3.){
-	if(fDoppCorEnergy>1){
-	  nai->SetTimeTrueDoppCorEnergy_m3(fDoppCorEnergy);
-	  //cout<<"Multiplicity==3 check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", M=3 Dopp cor Energy check:"<<nai->GetTimeTrueDoppCorEnergy_m3()<<endl;
-	}
-      }
-      if(nai->GetMultiplicity()==4.){
-	if(fDoppCorEnergy>1){
-	  nai->SetTimeTrueDoppCorEnergy_m4(fDoppCorEnergy);
-	  //cout<<"Multiplicity==4 check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", M=4 Dopp cor Energy check:"<<nai->GetTimeTrueDoppCorEnergy_m4()<<endl;
-	}
-      }
-      if(nai->GetMultiplicity()==5.){
-	if(fDoppCorEnergy>1){
-	  nai->SetTimeTrueDoppCorEnergy_m5(fDoppCorEnergy);
-	  //cout<<"Multiplicity==5 check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", M=5 Dopp cor Energy check:"<<nai->GetTimeTrueDoppCorEnergy_m5()<<endl;
-	}
-      }
-      if(nai->GetMultiplicity()==6.){
-	if(fDoppCorEnergy>1){
-	  nai->SetTimeTrueDoppCorEnergy_m6(fDoppCorEnergy);
-	  //cout<<"Multiplicity==6 check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", M=6 Dopp cor Energy check:"<<nai->GetTimeTrueDoppCorEnergy_m6()<<endl;
-	}
-	}*/
+      cout<<"Dopp cor check, Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Time Offseted:"<<nai->GetTimeOffseted()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", multiplicity ="<<nai->GetMultiplicity()<<endl;
     }
     else{
       nai->SetTimeTrueDoppCorEnergy(-9999.);
-      /*nai->SetTimeTrueDoppCorEnergy_m1(-9999.);
-      nai->SetTimeTrueDoppCorEnergy_m2(-9999.);
-      nai->SetTimeTrueDoppCorEnergy_m3(-9999.);
-      nai->SetTimeTrueDoppCorEnergy_m4(-9999.);
-      nai->SetTimeTrueDoppCorEnergy_m5(-9999.);
-      nai->SetTimeTrueDoppCorEnergy_m6(-9999.);*/
       //cout<<"Underflow check, multiplicity ="<<nai->GetMultiplicity()<<", Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<endl; 
     }
   }
@@ -391,7 +348,6 @@ void TArtCalibDALI::DopplerCorrectVertex(Double_t beta, Double_t vertex) {
 //__________________________________________________________
 //added
 
-//#include "/shared/storage/physnp/rt1091/share/SAMURAI-Day1/users/la748/Analysis/Event.h"
 #include "TChain.h"
 
 #include "TCutG.h"
@@ -432,6 +388,7 @@ float fPosZ[NUMBEROFDALICRYSTALS];
 
 int fDaliFold   = 0;//Fold
 int fDaliFoldTa = 0;//Fold at Target time
+int fDaliFoldNoTa = 0;
 int fDaliMult   = 0;//multiplicity
 int fDaliMultTa = 0;//multiplicity at target time
 
@@ -571,6 +528,7 @@ void TArtCalibDALI::AddBackAnalysis(){
   int daliTimeTrueMult;
   int daliFold;
   int daliTimeTrueFold;
+  int daliFoldNoTa;
 
   Double_t DopplerAngle;
 
@@ -578,6 +536,7 @@ void TArtCalibDALI::AddBackAnalysis(){
 
   fDaliFold   = 0;//Fold
   fDaliFoldTa = 0;//Fold
+  fDaliFoldNoTa = 0;
   fDaliMultTa = 0;//multiplicity
   for(int j=0;j<NUMBEROFDALICRYSTALS;j++) {
     crystalUsedForAddback[j] = false;
@@ -596,35 +555,34 @@ void TArtCalibDALI::AddBackAnalysis(){
     fDali[i].re         = nai->GetRawADC();
     fDali[i].e          = nai->GetTimeTrueEnergy();
     fDali[i].rt         = nai->GetRawTDC();
-    fDali[i].t          = nai->GetTimeOffseted();
+    fDali[i].t          = nai->GetTimeOffseted(); 
     fDali[i].ode        = nai->GetDoppCorEnergy();
     fDali[i].beta       = nai->GetBeta();
     fDali[i].othe       = nai->GetTheta();
     fDali[i].mult       = nai->GetMultiplicity();
     
     //cout<<"test3"<<endl;
-    fDaliFold++; // In principle fDaliFold should be equal to GetNumNai();
+    fDaliFold++; // In principle fDaliFold should be equal to GetNumNai(); 
     if(fDali[i].e>0){
-      //cout<<"test4"<<endl;
-      //fDali[i].dopp[0] = fDali[i].e * (1-beta1*TMath::Cos(fDali[i].theta))/TMath::Sqrt((1.0-beta1*beta1));
       fDali[i].dopp[0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta));
-      //cout<<"Raw energy: "<<fDali[i].re<<", Raw time:"<<fDali[i].rt<<", Energy:"<<fDali[i].e<<", Time:"<<fDali[i].t<<", Beta:"<<fDali[i].beta<<", Original theta:"<<fDali[i].othe<<", Add back theta:"<<fDali[i].theta<<", Original Dopp Cor Energy: "<<fDali[i].ode<<", AB dopp cor energy:"<< fDali[i].dopp[0]<<", Multiplicity:"<<fDali[i].mult<<endl;
-      //cout<<"test5"<<endl;
       //if(fDali[i].t>fTimeTrueCutLow-500&&fDali[i].t<fTimeTrueCutHigh+500)fDaliFold++; // This line is strange. Why it trys to counts the hits outside of the time condition...
-        if(fDali[i].t>fTimeTrueCutLow && fDali[i].t<fTimeTrueCutHigh){
+      if(fDali[i].t>fTimeTrueCutLow && fDali[i].t<fTimeTrueCutHigh){
 	  //cout<<"test6"<<endl;
-	  fDali[i].ttrue = true;
-          fDaliFoldTa++;
-        }
-	//cout<<"test6"<<endl;
-        else fDali[i].ttrue = false;
+	fDaliFoldTa++;
+	fDali[i].ttrue = true;
       }
-    else {
-        fDali[i].dopp[0] = -999.;
-        fDali[i].ttrue   = false;
+      else{
+	fDali[i].ttrue = false;
+	fDaliFoldNoTa++;
+      }
+    }
+    else{
+      fDali[i].dopp[0] = -999.;
+      fDali[i].ttrue   = false;
     }
     //cout<<"test7"<<endl;
   }
+  
   for(int i=GetNumNaI();i<NUMBEROFDALICRYSTALS;i++){
     fDali[i].id         = -1;
     fDali[i].layer      = -1;
@@ -638,71 +596,127 @@ void TArtCalibDALI::AddBackAnalysis(){
     fDali[i].dopp[0]    = -999;
     //cout<<"test8"<<endl;
   }
-  //cout<<"test9"<<endl;    
-    if(fDali[0].e>0)
-      SortData(fDaliFold,fDali); //old
-      //SortData(fDaliFoldTa,fDali); //test according to time cut
-    // SortData(GetNumNaI(),fDali);
-    // fDali should have number of hits of GetNumNaI, so you have to tell sort process to check all of the energies. Now the definition of fDaliFold has been updated. So keep as it was.
-    //cout<<"test10"<<endl;
-    //Going to the add-back:
-    float dummyEnergy[NUMBEROFDALICRYSTALS][6] = {{0.}}; //[6]
-    int mult_counter = 0; //added
-    //Making add-back and true multiplicity:
-    //The Energy must be sorted already according to the highest detected one.
-    //cout<<"Starting addback"<<endl;
-    //cout<<fDali[i].dopp[0]<<endl;
-    for(int i=0;i<fDaliFold;i++){ //old
-      //for(int i=0;i<fDaliFoldTa;i++){ //test according to the time cut
-      TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
-      //cout<<"test11"<<endl;
-      cout<<"Addback pre mult check, ID:"<<fDali[i].id<<", Raw Energy:"<<fDali[i].re<<", Energy:"<<fDali[i].e<<", Raw Time:"<<fDali[i].rt<<", Time:"<<fDali[i].t<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<", Dopp cor energy:"<<fDali[i].dopp[0]<<endl;
-      //Check the values if properly stored in fDali.
 
-      if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+  for(int i=0;i<fDaliFold;i++){ 
+    TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
+    if(fDaliFoldTa>0){
+      nai->SetTrueMult(fDaliFoldTa);
+    }
+    else{
+      nai->SetTrueMult(-1);
+    }
+  }
+  
+  //cout<<"test9"<<endl;    
+  if(fDali[0].e>0)
+    SortData(fDaliFold,fDali); //old
+  //SortData(fDaliFoldTa,fDali); //test according to time cut
+  // SortData(GetNumNaI(),fDali);
+  // fDali should have number of hits of GetNumNaI, so you have to tell sort process to check all of the energies. Now the definition of fDaliFold has been updated. So keep as it was.
+  //cout<<"test10"<<endl;
+  //Going to the add-back:
+  float dummyEnergy[NUMBEROFDALICRYSTALS][6] = {{0.}}; //[6]
+  int cluster_mult_counter = 0; //added
+  int addback_mult_counter = 0; //added
+  //Making add-back and true multiplicity:
+  //The Energy must be sorted already according to the highest detected one.
+  //cout<<"Starting addback"<<endl;
+  //cout<<fDali[i].dopp[0]<<endl;
+  for(int i=0;i<fDaliFold;i++){ //old
+    //for(int i=0;i<fDaliFoldTa;i++){ //test according to the time cut
+        
+    TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i); //At(i)
+    //cout<<"test11"<<endl;
+    //Check the values if properly stored in fDali.
+    if(crystalUsedForAddback[fDali[i].id] == true || fDali[i].ttrue == false) continue;
+    if(fDali[i].e>0 && fDali[i].id<140){
+      cluster_mult_counter++;
+      if(cluster_mult_counter<=nai->GetTrueMult()){
       dummyEnergy[fDaliMultTa][0] = fDali[i].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta fDaliMultTa
-      cout<<"Test1, ID:"<<fDali[i].id<<", Raw Energy:"<<fDali[i].re<<", Energy:"<<fDali[i].e<<", Raw Time:"<<fDali[i].rt<<", Time:"<<fDali[i].t<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<", Crystal used for AB:"<<(crystalUsedForAddback[fDali[i].id]?"true":"false")<<", Dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy[fDaliMultTa][0]<<endl; //fDaliMultTa
+      //cout<<"Test1, ID:"<<fDali[i].id<<", Raw Energy:"<<fDali[i].re<<", Energy:"<<fDali[i].e<<", Raw Time:"<<fDali[i].rt<<", Time:"<<fDali[i].t<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<", Used for Addback:"<<(crystalUsedForAddback[fDali[i].id]?"true":"false")<<", Beta:"<<fDali[i].beta<<", Beta:"<<fDali[i].beta<<", Original theta:"<<fDali[i].othe<<", Dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy[fDaliMultTa][0]<<endl; //fDaliMultTa
       crystalUsedForAddback[fDali[i].id]=true;
       fDali[fDaliMultTa].idwa = fDali[i].id; //fDaliMultTa =fDali[i].id
       for(int j = i+1; j<fDaliFold;j++){ //new fDaliFoldTa
-	cout<<"Test2, ID:"<<fDali[j].id<<", Raw Energy:"<<fDali[j].re<<", Energy:"<<fDali[j].e<<", Raw Time:"<<fDali[j].rt<<", Time:"<<fDali[j].t<<", TTrue:"<<(fDali[j].ttrue?"true":"false")<<", Dopp cor energy:"<<fDali[j].dopp[0]<<endl;
-	if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
-	  cout<<"Test3, ID:"<<fDali[j].id<<", Raw Energy:"<<fDali[j].re<<", Energy:"<<fDali[j].e<<", Raw Time:"<<fDali[j].rt<<", Time:"<<fDali[j].t<<", TTrue:"<<(fDali[j].ttrue?"true":"false")<<", Dopp cor energy:"<<fDali[j].dopp[0]<<endl;
-	  for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
-	    //cout<<"Test4, k:"<<k<<", number of addback partners:"<<fNumberOfAddbackPartners[fDali[i].id]<<endl;
-	    if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
-	      crystalUsedForAddback[fDali[j].id]=true;
-	      dummyEnergy[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
-	      cout<<"Test4, ID:"<<fDali[i].id<<", Raw Energy:"<<fDali[i].re<<", Energy:"<<fDali[i].e<<", Raw Time:"<<fDali[i].rt<<", Time:"<<fDali[i].t<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<", Beta:"<<fDali[i].beta<<", Original theta:"<<fDali[i].othe<<", Dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy[i][0]<<endl;
-	      cout<<"Test5, ID:"<<fDali[j].id<<", Raw Energy:"<<fDali[j].re<<", Energy:"<<fDali[j].e<<", Raw Time:"<<fDali[j].rt<<", Time:"<<fDali[j].t<<", TTrue:"<<(fDali[j].ttrue?"true":"false")<<", Beta:"<<fDali[j].beta<<", Original theta:"<<fDali[j].othe<<", Dopp cor energy:"<<fDali[j].dopp[0]<<", New Addback energy:"<<dummyEnergy[j][0]<<endl;
-	      cout<<"Test6, New Addback energy:"<<dummyEnergy[fDaliMultTa][0]<<endl;
-	      mult_counter++;
+	if(fDali[j].e>0 && fDali[j].id<140){
+	  //cout<<"Test2, ID:"<<fDali[j].id<<", Raw Energy:"<<fDali[j].re<<", Energy:"<<fDali[j].e<<", Raw Time:"<<fDali[j].rt<<", Time:"<<fDali[j].t<<", Beta:"<<fDali[i].beta<<", Original theta:"<<fDali[i].othe<<", TTrue:"<<(fDali[j].ttrue?"true":"false")<<", Used for Addback:"<<(crystalUsedForAddback[fDali[i].id]?"true":"false")<<", Dopp cor energy:"<<fDali[j].dopp[0]<<endl;
+	  if(crystalUsedForAddback[fDali[j].id]==false && fDali[j].ttrue==true)  {
+	    //cout<<"Test3, ID:"<<fDali[j].id<<", Raw Energy:"<<fDali[j].re<<", Energy:"<<fDali[j].e<<", Raw Time:"<<fDali[j].rt<<", Time:"<<fDali[j].t<<", Beta:"<<fDali[i].beta<<", Original theta:"<<fDali[i].othe<<", TTrue:"<<(fDali[j].ttrue?"true":"false")<<", Used for Addback:"<<(crystalUsedForAddback[fDali[i].id]?"true":"false")<<", Dopp cor energy:"<<fDali[j].dopp[0]<<endl;
+	    for(int k = 0;k<fNumberOfAddbackPartners[fDali[i].id] ;k++) {
+	      //cout<<"Test4, k:"<<k<<", number of addback partners:"<<fNumberOfAddbackPartners[fDali[i].id]<<endl;
+	      if(fDali[j].id == fAddbackTable[fDali[i].id][k+1])  {
+		crystalUsedForAddback[fDali[j].id]=true;
+		dummyEnergy[fDaliMultTa][0] += fDali[j].e * (1-fDali[i].beta*TMath::Cos(fDali[i].theta*TMath::Pi()/180.))/TMath::Sqrt((1.0-fDali[i].beta*fDali[i].beta)); //new theta and beta
+		//cout<<"Test4, ID:"<<fDali[i].id<<", Raw Energy:"<<fDali[i].re<<", Energy:"<<fDali[i].e<<", Raw Time:"<<fDali[i].rt<<", Time:"<<fDali[i].t<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<", Used for Addback:"<<(crystalUsedForAddback[fDali[i].id]?"true":"false")<<", Beta:"<<fDali[i].beta<<", Original theta:"<<fDali[i].othe<<", Dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy[i][0]<<endl;
+		//cout<<"Test5, ID:"<<fDali[j].id<<", Raw Energy:"<<fDali[j].re<<", Energy:"<<fDali[j].e<<", Raw Time:"<<fDali[j].rt<<", Time:"<<fDali[j].t<<", TTrue:"<<(fDali[j].ttrue?"true":"false")<<", Used for Addback:"<<(crystalUsedForAddback[fDali[i].id]?"true":"false")<<", Beta:"<<fDali[j].beta<<", Original theta:"<<fDali[j].othe<<", Dopp cor energy:"<<fDali[j].dopp[0]<<", New Addback energy:"<<dummyEnergy[j][0]<<endl;
+		//cout<<"Test6, New Addback energy:"<<dummyEnergy[fDaliMultTa][0]<<endl;
+		cluster_mult_counter++;
+	      }
+	      }
 	    }
 	  }
 	}
       }
-      mult_counter++;
-      cout<<"mult counter:"<<mult_counter<<endl;
-      nai->SetAddBackMult(mult_counter);
-      mult_counter=0;
-      fDali[fDaliMultTa].idwa = fDali[i].id;
-      fDali[fDaliMultTa].doppwa[0] = dummyEnergy[fDaliMultTa][0];
-      if(fDali[fDaliMultTa].doppwa[0]>0){ //should be true by definition
-	nai->SetAddBackEnergy(fDali[fDaliMultTa].doppwa[0]);
-	cout<<"Inside Set addback Energy loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", New Addback energy:"<<dummyEnergy[i][0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy()<<", mult counter:"<<nai->GetAddBackMult()<<endl;
-	}
-      else{
-	nai->SetAddBackEnergy(-9999.);
+    }
+    fDali[fDaliMultTa].idwa = fDali[i].id;
+    fDali[fDaliMultTa].doppwa[0] = dummyEnergy[fDaliMultTa][0];
+    if(fDali[fDaliMultTa].doppwa[0]>0){
+      nai->SetClusterMult(cluster_mult_counter);
+      cluster_mult_counter=0;
+      nai->SetAddBackEnergy(fDali[fDaliMultTa].doppwa[0]);
+      cout<<"Inside Set addback Energy loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy()<<", True mult counter:"<<nai->GetTrueMult()<<", Cluster mult counter:"<<nai->GetClusterMult()<<endl;
+      addback_mult_counter++;
+    }
+    else{
+      nai->SetAddBackEnergy(-9999.);
+      //cout<<"Inside Set problem addback Energy loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy()<<", True mult counter:"<<nai->GetTrueMult()<<", Cluster mult counter:"<<nai->GetClusterMult()<<endl;
+      nai->SetClusterMult(-1);
       }
-      fDaliMultTa++;
+    fDaliMultTa++;
+  }
+      
+  for(int i=0;i<fDaliFold;i++){
+    TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
+    if(addback_mult_counter>0){
+      nai->SetAddBackMult(addback_mult_counter);
     }
+    else{
+      nai->SetAddBackMult(-1);
+    }
+    if(nai->GetTrueMult()>=1 && nai->GetClusterMult()>nai->GetTrueMult()){
+      nai->SetClusterMult(-1);
+      nai->SetAddBackEnergy(-9999.);
+    }
+    if(fDali[i].id>=140){
+      nai->SetClusterMult(-1);
+      nai->SetAddBackEnergy(-9999.);
+      nai->SetTrueMult(-1);
+    }
+    if(nai->GetAddBackEnergy()==-9999){
+      nai->SetTrueMult(-1);
+      nai->SetClusterMult(-1);
+    }
+    if(fDali[i].e == -999){
+      nai->SetClusterMult(-1);
+      nai->SetAddBackEnergy(-9999.);
+      nai->SetTrueMult(-1);
+    }
+    if(fDali[i].dopp[0]<0){
+      nai->SetClusterMult(-1);
+      nai->SetAddBackEnergy(-9999.);
+      nai->SetTrueMult(-1);
+    }
+    if(nai->GetTrueMult()>=1){
+      cout<<""<<endl;
+      cout<<"Set Addback Energy loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy()<<", True mult counter:"<<nai->GetTrueMult()<<", AddBack Mult:"<<nai->GetAddBackMult()<<", Cluster mult counter:"<<nai->GetClusterMult()<<endl;
+    }
+  }
 
-    //cout<<"test20"<<endl;
-    for(int i = fDaliMultTa;i<NUMBEROFDALICRYSTALS;i++) {
-      fDali[i].doppwa[0] = -999;
-      fDali[i].idwa      = -999;
-    }
-    //cout<<"test21"<<endl;
+  //cout<<"test20"<<endl;
+  for(int i = fDaliMultTa;i<NUMBEROFDALICRYSTALS;i++) {
+    fDali[i].doppwa[0] = -999;
+    fDali[i].idwa      = -999;
+  }
+  //cout<<"test21"<<endl;
 }
 
 //__________________________________________________________

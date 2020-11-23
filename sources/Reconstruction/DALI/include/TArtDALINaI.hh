@@ -49,19 +49,9 @@ class TArtDALINaI: public TArtDataObject {
   virtual void  SetTimeTrueTimeOffseted(Double_t val){fTimeTrueTimeOffseted = val;}
   virtual void  SetMultiplicity(Double_t val){fTimeTrueMult = val;} //added
   virtual void  SetAddBackEnergy(Double_t val){fDali_doppwa = val;} //added
-  virtual void  SetAddBackEnergy_M1(Double_t val){fDali_doppwa_m1 = val;} //added
-  virtual void  SetAddBackEnergy_M2(Double_t val){fDali_doppwa_m2 = val;} //added
-  virtual void  SetAddBackEnergy_M3(Double_t val){fDali_doppwa_m3 = val;} //added
-  virtual void  SetAddBackEnergy_M4(Double_t val){fDali_doppwa_m4 = val;} //added
-  virtual void  SetAddBackEnergy_M5(Double_t val){fDali_doppwa_m5 = val;} //added
-  virtual void  SetAddBackEnergy_M6(Double_t val){fDali_doppwa_m6 = val;} //added
-  virtual void  SetTimeTrueDoppCorEnergy_m1(Double_t val){fTimeTrueDoppCorEnergy_m1 = val;} //added
-  virtual void  SetTimeTrueDoppCorEnergy_m2(Double_t val){fTimeTrueDoppCorEnergy_m2 = val;} //added
-  virtual void  SetTimeTrueDoppCorEnergy_m3(Double_t val){fTimeTrueDoppCorEnergy_m3 = val;} //added
-  virtual void  SetTimeTrueDoppCorEnergy_m4(Double_t val){fTimeTrueDoppCorEnergy_m4 = val;} //added
-  virtual void  SetTimeTrueDoppCorEnergy_m5(Double_t val){fTimeTrueDoppCorEnergy_m5 = val;} //added
-  virtual void  SetTimeTrueDoppCorEnergy_m6(Double_t val){fTimeTrueDoppCorEnergy_m6 = val;} //added
-  virtual void  SetAddBackMult(Double_t val){fAddBackMult = val;} //added
+  virtual void  SetClusterMult(Double_t val){fClusterMult = val;} //added
+  virtual void  SetTrueMult(Double_t val){fTrueMult = val;}
+  virtual void  SetAddBackMult(Double_t val){fAddBackMult = val;} 
 
   // function to get reco data
   virtual Double_t GetCosTheta(){return costheta;}
@@ -82,18 +72,8 @@ class TArtDALINaI: public TArtDataObject {
   virtual Double_t GetTimeTrueTimeOffseted(){return fTimeTrueTimeOffseted;}
   virtual Double_t GetMultiplicity(){return fTimeTrueMult;} //added
   virtual Double_t GetAddBackEnergy(){return fDali_doppwa;} //added
-  virtual Double_t GetAddBackEnergy_M1(){return fDali_doppwa_m1;} //added
-  virtual Double_t GetAddBackEnergy_M2(){return fDali_doppwa_m2;} //added
-  virtual Double_t GetAddBackEnergy_M3(){return fDali_doppwa_m3;} //added
-  virtual Double_t GetAddBackEnergy_M4(){return fDali_doppwa_m4;} //added
-  virtual Double_t GetAddBackEnergy_M5(){return fDali_doppwa_m5;} //added
-  virtual Double_t GetAddBackEnergy_M6(){return fDali_doppwa_m6;} //added
-  virtual Double_t GetTimeTrueDoppCorEnergy_m1(){return fTimeTrueDoppCorEnergy_m1;} //added
-  virtual Double_t GetTimeTrueDoppCorEnergy_m2(){return fTimeTrueDoppCorEnergy_m2;} //added
-  virtual Double_t GetTimeTrueDoppCorEnergy_m3(){return fTimeTrueDoppCorEnergy_m3;} //added
-  virtual Double_t GetTimeTrueDoppCorEnergy_m4(){return fTimeTrueDoppCorEnergy_m4;} //added
-  virtual Double_t GetTimeTrueDoppCorEnergy_m5(){return fTimeTrueDoppCorEnergy_m5;} //added
-  virtual Double_t GetTimeTrueDoppCorEnergy_m6(){return fTimeTrueDoppCorEnergy_m6;} //added
+  virtual Double_t GetClusterMult(){return fClusterMult;} //added
+  virtual Double_t GetTrueMult(){return fTrueMult;} //added
   virtual Double_t GetAddBackMult(){return fAddBackMult;} //added
 
  private:
@@ -117,24 +97,14 @@ class TArtDALINaI: public TArtDataObject {
   Double_t fTimeTrueEnergy;
   Double_t beta;
   Double_t fTimeTrueDoppCorEnergy;
-  Double_t fTimeTrueDoppCorEnergy_m1; //added
-  Double_t fTimeTrueDoppCorEnergy_m2; //added
-  Double_t fTimeTrueDoppCorEnergy_m3; //added
-  Double_t fTimeTrueDoppCorEnergy_m4; //added
-  Double_t fTimeTrueDoppCorEnergy_m5; //added
-  Double_t fTimeTrueDoppCorEnergy_m6; //added
   Double_t fTimeTrueDoppCorVertexEnergy;
   Double_t fTimeTrueTime;
   Double_t fTimeTrueTimeOffseted;
   Double_t fTimeTrueMult; //added
   Double_t fDali_doppwa; //added
-  Double_t fDali_doppwa_m1; //added
-  Double_t fDali_doppwa_m2; //added
-  Double_t fDali_doppwa_m3; //added
-  Double_t fDali_doppwa_m4; //added
-  Double_t fDali_doppwa_m5; //added
-  Double_t fDali_doppwa_m6; //added
-  Double_t fAddBackMult; //added
+  Double_t fClusterMult; //added
+  Double_t fTrueMult;
+  Double_t fAddBackMult;
   
   ClassDef(TArtDALINaI,1);
 
