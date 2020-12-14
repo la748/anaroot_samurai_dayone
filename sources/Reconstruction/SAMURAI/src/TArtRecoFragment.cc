@@ -162,7 +162,9 @@ void TArtRecoFragment::ClearData()   {
 }
 
 //__________________________________________________________
-void TArtRecoFragment::ReconstructData() { 
+void TArtRecoFragment::ReconstructData() {
+
+  
 
   if((!fMatReady) && (!fRKtraceReady) && (!fMultDimReady))return;
 
@@ -276,7 +278,7 @@ void TArtRecoFragment::ReconstructData() {
   //TArtCore::Debug(__FILE__,"fMultDimReady: %s",fMultDimReady?"true":"false");
   TArtCore::Debug(__FILE__,"fRKtraceReady: %s",fRKtraceReady?"true":"false");
   if(fRKtraceReady || fMultDimReady){
-    if(fRKtraceReady){ 
+    if(fRKtraceReady){
       //TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*(1.+rvec(1,0))*0.3);
       TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*0.3);
       gtr.doFit();
@@ -354,7 +356,7 @@ void TArtRecoFragment::ReconstructData() {
 	  frag->SetZ_test((0.00001*(pla->GetQAveCal()*pla->GetQAveCal()))+(0.0103*(pla->GetQAveCal()))+2.5045);
 	  Double_t tof = hodt-tzero + 107.5; //tof_offset[pla->GetID()]; //107.5 111.5
 	  std::cout << "tzero: " << tzero << "hodt: " << hodt << "tof: " << tof << std::endl;
-	  TArtCore::Debug(__FILE__,"tzero: %f , hodt: %f , tof_offset: %f",tzero,hodt,tof_offset);//
+	  //TArtCore::Debug(__FILE__,"tzero: %f , hodt: %f , tof_offset: %f",tzero,hodt,tof_offset);//
 	  frag->SetTOF(tof);
 	  Double_t tof_test = hodt_slew-tzero + 107; //107
 	  frag->SetTOF_test(tof_test);
@@ -367,14 +369,14 @@ void TArtRecoFragment::ReconstructData() {
 	  if(brho<0){
 	  brho = frag->GetBrho();
 	}
-	  std::cout << "toflength: " << toflength <<std::endl;  
+	  //std::cout << "toflength: " << toflength <<std::endl;  
 	  std::cout << "brho:" << brho <<std::endl;
 	Double_t aoq = brho * clight / mnucleon / beta / gamma;
 	frag->SetAoQ(aoq);
 	Double_t aoq_test = brho * clight / mnucleon / beta_test / gamma_test;
 	frag->SetAoQ_test(aoq_test);
-	std::cout << "aoq: " << aoq << std::endl;
-	std::cout << "fragZ: " << fragZ << std::endl;
+	//std::cout << "aoq: " << aoq << std::endl;
+	//std::cout << "fragZ: " << fragZ << std::endl;
 	//TArtCore::Info(__FILE__,"beta: %f , aoq: %f",beta,aoq);
       }
       else {
@@ -389,8 +391,7 @@ void TArtRecoFragment::ReconstructData() {
     TMatrixD rvec = inv_mat2 * (outxvec - fdc1tr->GetPosition(0) * mat1);
     frag->SetDelta(rvec(1,0));
     TArtCore::Debug(__FILE__,"Delta: %f",rvec(1,0));
-    }
-
+  }
   fReconstructed = true;
   return;
 

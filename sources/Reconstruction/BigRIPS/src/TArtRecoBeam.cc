@@ -288,7 +288,7 @@ void TArtRecoBeam::ReconstructData()   { // call after the raw data are loaded
     beam->SetAoQ(aoq);
     beam->SetZet(zet);
     beam->SetBeta(beta);
-    //cout<<"Incoming info, Z:"<<beam->GetZet()<<", A/Q:"<<beam->GetAoQ()<<", Beta:"<<beam->GetBeta()<<endl; 
+    //cout<<"RecoBeam incoming info, Z:"<<beam->GetZet()<<", A/Q:"<<beam->GetAoQ()<<", Beta:"<<beam->GetBeta()<<endl; 
   }
 
   fReconstructed = true;

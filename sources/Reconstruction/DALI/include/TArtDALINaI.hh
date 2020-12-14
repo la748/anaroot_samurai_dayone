@@ -51,7 +51,7 @@ class TArtDALINaI: public TArtDataObject {
   virtual void  SetAddBackEnergy(Double_t val){fDali_doppwa = val;} //added
   virtual void  SetClusterMult(Double_t val){fClusterMult = val;} //added
   virtual void  SetTrueMult(Double_t val){fTrueMult = val;}
-  virtual void  SetAddBackMult(Double_t val){fAddBackMult = val;} 
+  virtual void  SetAddBackMult(Double_t val){fAddBackMult = val;}
 
   // function to get reco data
   virtual Double_t GetCosTheta(){return costheta;}
