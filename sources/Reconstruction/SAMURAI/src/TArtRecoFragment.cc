@@ -15,7 +15,7 @@ TArtRecoFragment::TArtRecoFragment(const TString outdataname)
     QtoZ_a(0.0162), QtoZ_b(1.6647), //0.0168, 1.4647
     clight(299.79246),
     mnucleon(931.494028),
-    fMatReady(false), //false
+    fMatReady(true), //false
     fRKtraceReady(true), //true
     fMultDimReady(false) //false
 {
@@ -274,13 +274,25 @@ void TArtRecoFragment::ReconstructData() {
   TArtFragment * frag = (TArtFragment *)fFragmentArray->At(0);
   Double_t toflength = -1;
   Double_t brho = -1;
+  Double_t brho_test = -1;
+
+  if(fMatReady) {
+    TMatrixD outxvec(2,1);
+    outxvec(0,0) = fdc2tr->GetPosition(0);
+    outxvec(1,0) = fdc2tr->GetAngle(0);
+
+    TMatrixD rvec = inv_mat2 * (outxvec - fdc1tr->GetPosition(0) * mat1);
+    frag->SetDelta(rvec(1,0));
+    TArtCore::Debug(__FILE__,"Delta: %f",rvec(1,0));
+  }  
 
   //TArtCore::Debug(__FILE__,"fMultDimReady: %s",fMultDimReady?"true":"false");
   TArtCore::Debug(__FILE__,"fRKtraceReady: %s",fRKtraceReady?"true":"false");
   if(fRKtraceReady || fMultDimReady){
     if(fRKtraceReady){
       //TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*(1.+rvec(1,0))*0.3);
-      TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*0.3);
+      TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*(1.+frag->GetDelta())*0.3); //0.3
+      //TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*0.3);
       gtr.doFit();
       frag->SetRKtraceStatus(gtr.Status());
       frag->SetChi2(gtr.chisqr());
@@ -338,6 +350,34 @@ void TArtRecoFragment::ReconstructData() {
       TArtCore::Debug(__FILE__,"Brho: %f",brho);
       }
 
+  /*if(fMatReady) {
+    TMatrixD outxvec(2,1);
+    outxvec(0,0) = fdc2tr->GetPosition(0);
+    outxvec(1,0) = fdc2tr->GetAngle(0);
+
+    TMatrixD rvec = inv_mat2 * (outxvec - fdc1tr->GetPosition(0) * mat1);
+    frag->SetDelta(rvec(1,0));
+    TArtCore::Debug(__FILE__,"Delta: %f",rvec(1,0));
+    }*/
+
+  brho_test = center_brho*(1+(frag->GetDelta()*0.01)); //*0.01
+  //frag->SetBrho_test(brho_test);
+
+  std::cout<<"delta: "<<frag->GetDelta()<<std::endl;
+  std::cout<<"Centre Brho: "<<center_brho<<std::endl;
+
+  std::cout<<"Brho test: "<<brho_test<<std::endl;
+
+  if(hod_array){
+    if(hod_array->GetEntries()>0){
+      TArtHODPla *pla = (TArtHODPla *)hod_array->At(0); // pickup qmax-hod
+      Double_t fragZ_test = QtoZ_a*(pla->GetQAveCal())+QtoZ_b;
+      frag->SetZ_test(fragZ_test);
+    }
+  }
+
+  std::cout<<"Z test out of RKtrace loop: "<<frag->GetZ_test()<<std::endl;
+
       if(hod_array && pla_tzero && (fRKtraceReady||fMultDimReady)){
 	if(hod_array->GetEntries()>0){
 	  TArtHODPla *pla = (TArtHODPla *)hod_array->At(0); // pickup qmax-hod	
@@ -353,12 +393,13 @@ void TArtRecoFragment::ReconstructData() {
 	  Double_t fragZ = QtoZ_a*(pla->GetQAveCal())+QtoZ_b;
 	  frag->SetZ(fragZ);
 	  //frag->SetZ(QtoZ_a*(pla->GetQAveCal())+QtoZ_b);
-	  frag->SetZ_test((0.00001*(pla->GetQAveCal()*pla->GetQAveCal()))+(0.0103*(pla->GetQAveCal()))+2.5045);
-	  Double_t tof = hodt-tzero + 107.5; //tof_offset[pla->GetID()]; //107.5 111.5
+	  //frag->SetZ_test((0.00001*(pla->GetQAveCal()*pla->GetQAveCal()))+(0.0103*(pla->GetQAveCal()))+2.5045);
+	  Double_t tof = hodt-tzero + 103.2; //tof_offset[pla->GetID()]; //107.5 111.5
 	  std::cout << "tzero: " << tzero << "hodt: " << hodt << "tof: " << tof << std::endl;
 	  //TArtCore::Debug(__FILE__,"tzero: %f , hodt: %f , tof_offset: %f",tzero,hodt,tof_offset);//
 	  frag->SetTOF(tof);
-	  Double_t tof_test = hodt_slew-tzero + 107; //107
+	  //Double_t tof_test = hodt_slew-tzero + 107; //107
+	  Double_t tof_test = hodt-tzero + 107.5; //original to test different time
 	  frag->SetTOF_test(tof_test);
 	  Double_t beta = toflength/tof/clight;
 	  frag->SetBeta(beta);
@@ -373,9 +414,16 @@ void TArtRecoFragment::ReconstructData() {
 	  std::cout << "brho:" << brho <<std::endl;
 	Double_t aoq = brho * clight / mnucleon / beta / gamma;
 	frag->SetAoQ(aoq);
-	Double_t aoq_test = brho * clight / mnucleon / beta_test / gamma_test;
-	frag->SetAoQ_test(aoq_test);
-	//std::cout << "aoq: " << aoq << std::endl;
+	//Double_t aoq_test = brho * clight / mnucleon / beta_test / gamma_test;
+	//frag->SetAoQ_test(aoq_test);
+	//Double_t aoq_test_2 = brho_test * clight / mnucleon / beta / gamma;
+	Double_t aoq_test_2 = brho * clight / mnucleon / beta / gamma;
+	frag->SetAoQ_test(aoq_test_2);
+	Double_t aoq_orig = center_brho * clight / mnucleon / beta_test / gamma_test;
+	frag->SetAoQ_orig(aoq_orig);
+	std::cout << "aoq: " << aoq << std::endl;
+	std::cout << "aoq test 2: " << aoq_test_2 << std::endl;
+	std::cout << "aoq original: " << aoq_orig << std::endl;
 	//std::cout << "fragZ: " << fragZ << std::endl;
 	//TArtCore::Info(__FILE__,"beta: %f , aoq: %f",beta,aoq);
       }

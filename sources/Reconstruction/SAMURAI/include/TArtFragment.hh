@@ -54,6 +54,7 @@ class TArtFragment : public TArtDataObject {
   virtual void SetBeta_test (Double_t val){fBeta_test=val;}
   virtual void SetAoQ  (Double_t val){fAoQ=val;}
   virtual void SetAoQ_test  (Double_t val){fAoQ_test=val;}
+  virtual void SetAoQ_orig  (Double_t val){fAoQ_orig=val;}
   virtual void SetZ    (Double_t val){fZ  =val;}
   virtual void SetZ_test    (Double_t val){fZ_test  =val;}
   
@@ -83,6 +84,7 @@ class TArtFragment : public TArtDataObject {
   virtual Double_t GetBeta_test (){return fBeta_test;}
   virtual Double_t GetAoQ  (){return fAoQ;}
   virtual Double_t GetAoQ_test  (){return fAoQ_test;}
+  virtual Double_t GetAoQ_orig  (){return fAoQ_orig;} 
   virtual Double_t GetZ    (){return fZ  ;}
   virtual Double_t GetZ_test    (){return fZ_test  ;} 
 
@@ -108,6 +110,7 @@ class TArtFragment : public TArtDataObject {
   Double_t fBeta_test;
   Double_t fAoQ;
   Double_t fAoQ_test;
+  Double_t fAoQ_orig;
   Double_t fBrho;
   Double_t fZ;
   Double_t fZ_test;
