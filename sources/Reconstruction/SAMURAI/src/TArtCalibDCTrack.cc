@@ -754,7 +754,6 @@ TArtDCTrack * TArtCalibDCTrack::CalcTrackWith1DTracks(Track1D *trx, Track1D *tru
   }
 
   //TArtCore::Info(__FILE__,"chi2x:%f, chi2u: %f, chi2v: %f",chi2x,chi2u,chi2v);
-
   tr->SetChi2(chi2);
   tr->SetNDF(nx+nu+nv -2 -1);
   tr->SetNumHitLayer(nx+nu+nv);
@@ -762,7 +761,7 @@ TArtDCTrack * TArtCalibDCTrack::CalcTrackWith1DTracks(Track1D *trx, Track1D *tru
   tr->SetAngle(rvec(1,0));
   tr->SetPosition(rvec(2,0),1);
   tr->SetAngle(rvec(3,0),1);
-
+  
   return tr;
 }
 

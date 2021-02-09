@@ -21,7 +21,7 @@ public:
       fTUCalT0(-1), fTDCalT0(-1), fTUSlwT0(-1), fTDSlwT0(-1), fTAveCalT0(-1), fTAveSlwT0(-1),
       fTTOFGamma(-90000), fTTOFNeutron(-90000),
       fPosCal(0), fPosSlw(0), fFlightLength(-1), fFlightAngle(-1)
-  {
+        {
     for(Int_t i=0; i<3; ++i) fDetPos[i] = -90000;
     for(Int_t i=0; i<3; ++i) fPos[i] = -90000;
   }
@@ -75,6 +75,16 @@ public:
   virtual void SetFlightLength(Double_t val){fFlightLength = val;}
   virtual void SetFlightAngle(Double_t val){fFlightAngle = val;}
 
+  virtual void SetMultiplicity_N(Int_t val){fMultiplicity_N = val;}
+  virtual void SetMultiplicity_N1(Int_t val){fMultiplicity_N1 = val;}
+  virtual void SetMultiplicity_N2(Int_t val){fMultiplicity_N2 = val;}
+  virtual void SetMultiplicity_V1(Int_t val){fMultiplicity_V1 = val;}
+  virtual void SetMultiplicity_V2(Int_t val){fMultiplicity_V2 = val;}
+  virtual void SetMultiplicity_N11(Int_t val){fMultiplicity_N11 = val;}
+  virtual void SetMultiplicity_N12(Int_t val){fMultiplicity_N12 = val;}
+  virtual void SetMultiplicity_N21(Int_t val){fMultiplicity_N21 = val;}
+  virtual void SetMultiplicity_N22(Int_t val){fMultiplicity_N22 = val;}
+
   virtual Int_t GetLayer() const {return fLayer;}
   virtual Int_t GetSubLayer() const {return fSubLayer;}
   virtual const Double_t* GetDetPos() const {return fDetPos;}
@@ -123,7 +133,17 @@ public:
   virtual Double_t GetFlightLength() const {return fFlightLength;}
   virtual Double_t GetFlightAngle() const {return fFlightAngle;}
 
-private:
+  virtual Int_t GetMultiplicity_N(){  return fMultiplicity_N  ;}
+  virtual Int_t GetMultiplicity_N1(){ return fMultiplicity_N1 ;}
+  virtual Int_t GetMultiplicity_N2(){ return fMultiplicity_N2 ;}
+  virtual Int_t GetMultiplicity_V1(){ return fMultiplicity_V1 ;}
+  virtual Int_t GetMultiplicity_V2(){ return fMultiplicity_V2 ;}
+  virtual Int_t GetMultiplicity_N11(){return fMultiplicity_N11;}
+  virtual Int_t GetMultiplicity_N12(){return fMultiplicity_N12;}
+  virtual Int_t GetMultiplicity_N21(){return fMultiplicity_N21;}
+  virtual Int_t GetMultiplicity_N22(){return fMultiplicity_N22;}
+
+  private:
   Int_t    fLayer;  
   Int_t    fSubLayer;  
   Double_t fDetPos[3];
@@ -169,6 +189,16 @@ private:
   Double_t fPos[3];
   Double_t fFlightLength;
   Double_t fFlightAngle;
+
+  Int_t fMultiplicity_N;
+  Int_t fMultiplicity_N1;
+  Int_t fMultiplicity_N2;
+  Int_t fMultiplicity_V1;
+  Int_t fMultiplicity_V2;
+  Int_t fMultiplicity_N11;
+  Int_t fMultiplicity_N12;
+  Int_t fMultiplicity_N21;
+  Int_t fMultiplicity_N22;
 
   ClassDef(TArtNEBULAPla,1);
 };

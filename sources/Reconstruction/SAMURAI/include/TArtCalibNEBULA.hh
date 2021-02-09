@@ -78,16 +78,26 @@ public:
   TArtNEBULAPlaParaArray* GetNEBULAPlaParaArray() const;
 
   void  CalMultiplicity(); // calculate multiplicity
+
+  void SetMultiplicity_N(Int_t val){fMultiplicity_N = val;}
+  void SetMultiplicity_N1(Int_t val){fMultiplicity_N1 = val;}
+  void SetMultiplicity_N2(Int_t val){fMultiplicity_N2 = val;}
+  void SetMultiplicity_V1(Int_t val){fMultiplicity_V1 = val;}
+  void SetMultiplicity_V2(Int_t val){fMultiplicity_V2 = val;}
+  void SetMultiplicity_N11(Int_t val){fMultiplicity_N11 = val;}
+  void SetMultiplicity_N12(Int_t val){fMultiplicity_N12 = val;}
+  void SetMultiplicity_N21(Int_t val){fMultiplicity_N21 = val;}
+  void SetMultiplicity_N22(Int_t val){fMultiplicity_N22 = val;}
   
-  Int_t GetMultiplicity_N(){  return fMult.fMultiplicity_N  ;}
-  Int_t GetMultiplicity_N1(){ return fMult.fMultiplicity_N1 ;}
-  Int_t GetMultiplicity_N2(){ return fMult.fMultiplicity_N2 ;}
-  Int_t GetMultiplicity_V1(){ return fMult.fMultiplicity_V1 ;}
-  Int_t GetMultiplicity_V2(){ return fMult.fMultiplicity_V2 ;}
-  Int_t GetMultiplicity_N11(){return fMult.fMultiplicity_N11;}
-  Int_t GetMultiplicity_N12(){return fMult.fMultiplicity_N12;}
-  Int_t GetMultiplicity_N21(){return fMult.fMultiplicity_N21;}
-  Int_t GetMultiplicity_N22(){return fMult.fMultiplicity_N22;}
+  Int_t GetMultiplicity_N(){  return fMultiplicity_N  ;}
+  Int_t GetMultiplicity_N1(){ return fMultiplicity_N1 ;}
+  Int_t GetMultiplicity_N2(){ return fMultiplicity_N2 ;}
+  Int_t GetMultiplicity_V1(){ return fMultiplicity_V1 ;}
+  Int_t GetMultiplicity_V2(){ return fMultiplicity_V2 ;}
+  Int_t GetMultiplicity_N11(){return fMultiplicity_N11;}
+  Int_t GetMultiplicity_N12(){return fMultiplicity_N12;}
+  Int_t GetMultiplicity_N21(){return fMultiplicity_N21;}
+  Int_t GetMultiplicity_N22(){return fMultiplicity_N22;}
 
   TArtCalibNEBULAMult* GetMultiplicities(){return &fMult;} 
  
@@ -108,6 +118,16 @@ private:
   std::map<int,int> fIDNPlaParaMap;
 
   ClassDef(TArtCalibNEBULA,1);
+
+  Int_t fMultiplicity_N;
+  Int_t fMultiplicity_N1;
+  Int_t fMultiplicity_N2;
+  Int_t fMultiplicity_V1;
+  Int_t fMultiplicity_V2;
+  Int_t fMultiplicity_N11;
+  Int_t fMultiplicity_N12;
+  Int_t fMultiplicity_N21;
+  Int_t fMultiplicity_N22;
 };
 
 #endif

@@ -19,7 +19,7 @@ class TArtDCTrack : public TArtDataObject {
   TArtDCTrack(){
     nhitlayer=0; chi2=0; ndf=0;
     for(Int_t i=0;i<2;i++){cx[i]=-9999; ca[i]=-9999;}
-    hitid.clear(); dl.clear(); lx.clear(); lz.clear(); 
+    hitid.clear(); dl.clear(); lx.clear(); lz.clear();
     dcangle.clear(); plane_id.clear();
   }
   virtual ~TArtDCTrack(){
@@ -35,7 +35,7 @@ class TArtDCTrack : public TArtDataObject {
   virtual void SetNumHitLayer(Int_t val){nhitlayer = val;}
   virtual void SetPosition(Double_t val, Int_t i=0){cx[i] = val;}
   virtual void SetAngle(Double_t val, Int_t i=0){ca[i] = val;}
-
+  
   // functions to set hit data which will be used for calibrating electron drift 
   virtual void AddHitID(Int_t val){hitid.push_back(val);}
   virtual void AddDriftLength(Double_t val){dl.push_back(val);}
@@ -53,7 +53,7 @@ class TArtDCTrack : public TArtDataObject {
   virtual Double_t GetPosition(Int_t i=0){return cx[i];}
   // local angle at center z
   virtual Double_t GetAngle(Int_t i=0){return ca[i];}
-
+  
   virtual Int_t GetHitPlaneID(Int_t i){return plane_id[i];}
   virtual Int_t GetHitID(Int_t i){return hitid[i];}
   virtual Double_t GetDriftLength(Int_t i){return dl[i];}
@@ -93,7 +93,7 @@ class TArtDCTrack : public TArtDataObject {
   Int_t nhitlayer; // number of hit layer
   Double_t chi2; // track fit chi2 
   Int_t ndf; // track fit ndf
-
+  
   Double_t cx[2]; // track center position, 0: x, 1: y 
   Double_t ca[2]; // track center angle,  0: x, 1: y 
   std::vector<Int_t> hitid; // local hit id. i.e. hit = hitarray->At(hitid) 
