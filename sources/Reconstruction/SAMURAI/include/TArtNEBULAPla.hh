@@ -84,6 +84,10 @@ public:
   virtual void SetMultiplicity_N12(Int_t val){fMultiplicity_N12 = val;}
   virtual void SetMultiplicity_N21(Int_t val){fMultiplicity_N21 = val;}
   virtual void SetMultiplicity_N22(Int_t val){fMultiplicity_N22 = val;}
+  virtual void SetTestTime_N11(Double_t val){ftest_time_N11 = val;}
+  virtual void SetTestTime_N12(Double_t val){ftest_time_N12 = val;}
+  virtual void SetTestTime_N21(Double_t val){ftest_time_N21 = val;}
+  virtual void SetTestTime_N22(Double_t val){ftest_time_N22 = val;}
 
   virtual Int_t GetLayer() const {return fLayer;}
   virtual Int_t GetSubLayer() const {return fSubLayer;}
@@ -142,7 +146,11 @@ public:
   virtual Int_t GetMultiplicity_N12(){return fMultiplicity_N12;}
   virtual Int_t GetMultiplicity_N21(){return fMultiplicity_N21;}
   virtual Int_t GetMultiplicity_N22(){return fMultiplicity_N22;}
-
+  virtual Double_t GetTestTime_N11(){return ftest_time_N11;}
+  virtual Double_t GetTestTime_N12(){return ftest_time_N12;}
+  virtual Double_t GetTestTime_N21(){return ftest_time_N21;}
+  virtual Double_t GetTestTime_N22(){return ftest_time_N22;} 
+  
   private:
   Int_t    fLayer;  
   Int_t    fSubLayer;  
@@ -199,6 +207,10 @@ public:
   Int_t fMultiplicity_N12;
   Int_t fMultiplicity_N21;
   Int_t fMultiplicity_N22;
+  Double_t ftest_time_N11;
+  Double_t ftest_time_N12;
+  Double_t ftest_time_N21;
+  Double_t ftest_time_N22;
 
   ClassDef(TArtNEBULAPla,1);
 };

@@ -53,6 +53,7 @@ public:
   Int_t fMultiplicity_N12;
   Int_t fMultiplicity_N21;
   Int_t fMultiplicity_N22;
+  Double_t fNebula_tt;
 
   ClassDef(TArtCalibNEBULAMult,1)
 };
@@ -88,6 +89,7 @@ public:
   void SetMultiplicity_N12(Int_t val){fMultiplicity_N12 = val;}
   void SetMultiplicity_N21(Int_t val){fMultiplicity_N21 = val;}
   void SetMultiplicity_N22(Int_t val){fMultiplicity_N22 = val;}
+  void SetTestTime(Double_t val){fNebula_tt = val;}
   
   Int_t GetMultiplicity_N(){  return fMultiplicity_N  ;}
   Int_t GetMultiplicity_N1(){ return fMultiplicity_N1 ;}
@@ -98,6 +100,7 @@ public:
   Int_t GetMultiplicity_N12(){return fMultiplicity_N12;}
   Int_t GetMultiplicity_N21(){return fMultiplicity_N21;}
   Int_t GetMultiplicity_N22(){return fMultiplicity_N22;}
+  Double_t GetTestTime(){return fNebula_tt;}
 
   TArtCalibNEBULAMult* GetMultiplicities(){return &fMult;} 
  
@@ -128,6 +131,7 @@ private:
   Int_t fMultiplicity_N12;
   Int_t fMultiplicity_N21;
   Int_t fMultiplicity_N22;
+  Double_t fNebula_tt;
 };
 
 #endif

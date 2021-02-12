@@ -334,6 +334,7 @@ void TArtCalibNEBULA::ReconstructData()
 }
 //__________________________________________________________
 const int NUMBEROFNEBULADETECTORS = 144;
+bool DetUsedForDT[NUMBEROFNEBULADETECTORS] = {false};
 struct nebula{
   int id;
   int layer;
@@ -343,8 +344,21 @@ struct nebula{
   float tur; //TURaw
   float tdr; //TDRaw
   int h; //hit
+  bool ttrue; //time true
+  float at; //ave time
+  float tt[1]; //test time
+  float idwa;
   }
   fNebula[NUMBEROFNEBULADETECTORS];
+//__________________________________________________________
+int CompareByTime(const void *element1, const void *element2) {
+  return((nebula*)element1)->at < ((nebula*)element2)->at? 1: -1;
+}
+
+//__________________________________________________________
+void SortData(int count, nebula fNebula[]) {
+  qsort(fNebula,count,sizeof(nebula),CompareByTime);
+}
 //__________________________________________________________
 void TArtCalibNEBULA::CalMultiplicity()
 {
@@ -358,6 +372,16 @@ void TArtCalibNEBULA::CalMultiplicity()
   Int_t fMultiplicity_N21 = 0;
   Int_t fMultiplicity_N22 = 0;
 
+  int fNEBULAFold = 0;
+  int fNEBULAMultTa1 = 0;
+  int fNEBULAMultTa2 = 0;
+  int fNEBULAMultTa3 = 0;
+  int fNEBULAMultTa4 = 0;
+  
+  for(int j=0;j<NUMBEROFNEBULADETECTORS;j++) {
+    DetUsedForDT[j] = false;
+  }
+
   for(Int_t i=0;i<GetNumNEBULAPla();++i){
     TArtNEBULAPla *pla = (TArtNEBULAPla*)fNEBULAPlaArray->At(i);
     fNebula[i].id          = pla->GetID();
@@ -368,90 +392,134 @@ void TArtCalibNEBULA::CalMultiplicity()
     fNebula[i].tur         = pla->GetTURaw();
     fNebula[i].tdr         = pla->GetTDRaw();
     fNebula[i].h           = pla->GetHit();
-
-    if(fNebula[i].h == 15){
-      if(!fNebula[i].sublayer == 0) ++fMultiplicity_N; // mul. of all NEUT
-      if(fNebula[i].layer == 1){
-	if(!fNebula[i].sublayer == 0){
-	  ++fMultiplicity_N1;
-	  if(fNebula[i].sublayer == 1){
-	    ++fMultiplicity_N11;
-	  }else if(fNebula[i].sublayer == 2){
-	    ++fMultiplicity_N12;
-	  }
-	}else if(fNebula[i].sublayer == 0){
-	  ++fMultiplicity_V1;
-	}
-      }else if(fNebula[i].layer == 2){
-	if(!fNebula[i].sublayer == 0){
-	  ++fMultiplicity_N2;
-	  if(fNebula[i].sublayer == 1){
-	    ++fMultiplicity_N21;
-	  }else if(fNebula[i].sublayer == 2){
-	    ++fMultiplicity_N22;
-	  }
-	}else if(fNebula[i].sublayer == 0){
-	  ++fMultiplicity_V2;
-	}
-      }
+    fNebula[i].at          = pla->GetTAveCal();
+    
+    fNEBULAFold++;
+    if(fNebula[i].h == 15 && !fNebula[i].sublayer == 0){
+      ++fMultiplicity_N;
+      //fNEBULAFoldTa++; 
+      //cout<<"N ID test: "<<fNebula[i].id<<endl; 
     }
+    //pla->SetMultiplicity_N(fMultiplicity_N);
   }
 
   for(Int_t i=0;i<GetNumNEBULAPla();++i){
-    TArtNEBULAPla* pla = GetNEBULAPla(i);
-    if(fMultiplicity_N > 0){
-      pla->SetMultiplicity_N(fMultiplicity_N);
+    TArtNEBULAPla *pla = (TArtNEBULAPla*)fNEBULAPlaArray->At(i);
+    if(fNebula[i].h == 15 && fNebula[i].layer == 1 && !fNebula[i].sublayer == 0){
+      ++fMultiplicity_N1;
+      //fNEBULAFoldTa++;
+      //cout<<"N1 ID test: "<<fNebula[i].id<<endl; 
+    }
+    //pla->SetMultiplicity_N1(fMultiplicity_N1);
+  }
+  
+  for(Int_t i=0;i<GetNumNEBULAPla();++i){
+    TArtNEBULAPla *pla = (TArtNEBULAPla*)fNEBULAPlaArray->At(i);
+    if(fNebula[i].h == 15 && fNebula[i].layer == 1 && fNebula[i].sublayer == 1){
+      ++fMultiplicity_N11;
+      fNEBULAMultTa1++;
+      //pla->SetMultiplicity_N11(fMultiplicity_N11);
+      //cout<<"N11 ID test: "<<fNebula[i].id<<endl;
+    }
+    //pla->SetMultiplicity_N11(fMultiplicity_N11);
+  }
+  
+  for(Int_t i=0;i<GetNumNEBULAPla();++i){
+    TArtNEBULAPla *pla = (TArtNEBULAPla*)fNEBULAPlaArray->At(i);
+    if(fNebula[i].h == 15 && fNebula[i].layer == 1 && fNebula[i].sublayer == 2){
+      ++fMultiplicity_N12;
+      fNEBULAMultTa2++;
+      //cout<<"N12 ID test: "<<fNebula[i].id<<endl; 
+    }
+    //pla->SetMultiplicity_N12(fMultiplicity_N12);
+  }
+  
+  for(Int_t i=0;i<GetNumNEBULAPla();++i){
+    TArtNEBULAPla *pla = (TArtNEBULAPla*)fNEBULAPlaArray->At(i);
+    if(fNebula[i].h == 15 && fNebula[i].layer == 1 && fNebula[i].sublayer == 0){
+      ++fMultiplicity_V1;
+      //cout<<"V1 ID test: "<<fNebula[i].id<<endl; 
+    }
+    //pla->SetMultiplicity_V1(fMultiplicity_V1);
+  }
+  
+  for(Int_t i=0;i<GetNumNEBULAPla();++i){
+    TArtNEBULAPla *pla = (TArtNEBULAPla*)fNEBULAPlaArray->At(i);
+    if(fNebula[i].h == 15 && fNebula[i].layer == 2 && !fNebula[i].sublayer == 0){
+      ++fMultiplicity_N2;
+      //cout<<"N2 ID test: "<<fNebula[i].id<<endl; 
+    }
+    //pla->SetMultiplicity_N2(fMultiplicity_N2);
+  }
+  
+  for(Int_t i=0;i<GetNumNEBULAPla();++i){
+    TArtNEBULAPla *pla = (TArtNEBULAPla*)fNEBULAPlaArray->At(i);
+    if(fNebula[i].h == 15 && fNebula[i].layer == 2 && fNebula[i].sublayer == 1){
+      ++fMultiplicity_N21;
+      fNEBULAMultTa3++;
+      //cout<<"N21 ID test: "<<fNebula[i].id<<endl; 
+    }
+    //pla->SetMultiplicity_N21(fMultiplicity_N21);
+  }
+  
+  for(Int_t i=0;i<GetNumNEBULAPla();++i){
+    TArtNEBULAPla *pla = (TArtNEBULAPla*)fNEBULAPlaArray->At(i);
+    if(fNebula[i].h == 15 && fNebula[i].layer == 2 && fNebula[i].sublayer == 2){
+      ++fMultiplicity_N22;
+      fNEBULAMultTa4++;
+      //cout<<"N22 ID test: "<<fNebula[i].id<<endl; 
+    }
+    //pla->SetMultiplicity_N22(fMultiplicity_N22);
+  }
+  
+  for(Int_t i=0;i<GetNumNEBULAPla();++i){
+    TArtNEBULAPla *pla = (TArtNEBULAPla*)fNEBULAPlaArray->At(i);
+    if(fNebula[i].h == 15 && fNebula[i].layer == 2 && fNebula[i].sublayer == 0){
+      ++fMultiplicity_V2;
+      //cout<<"V2 ID test: "<<fNebula[i].id<<endl; 
+    }
+    //pla->SetMultiplicity_V2(fMultiplicity_V2);
+  }
+  
+  for(Int_t i=0;i<GetNumNEBULAPla();++i){
+    TArtNEBULAPla *pla = (TArtNEBULAPla*)fNEBULAPlaArray->At(i);
+    pla->SetMultiplicity_N(fMultiplicity_N);
+    pla->SetMultiplicity_N1(fMultiplicity_N1);
+    pla->SetMultiplicity_N11(fMultiplicity_N11);
+    pla->SetMultiplicity_N12(fMultiplicity_N12);
+    pla->SetMultiplicity_V1(fMultiplicity_V1);
+    pla->SetMultiplicity_N2(fMultiplicity_N2);
+    pla->SetMultiplicity_N21(fMultiplicity_N21);
+    pla->SetMultiplicity_N22(fMultiplicity_N22);
+    pla->SetMultiplicity_V2(fMultiplicity_V2); 
+    //cout<<"Multiplicity: "<<pla->GetMultiplicity_N12()<<endl;
+  }
+
+  float test_time[NUMBEROFNEBULADETECTORS][2] = {{0}};
+  /*float test_time1 = 0;
+    float test_time2 = 0;*/
+  
+  for(Int_t i=0;i<fNEBULAFold;++i){
+    TArtNEBULAPla* pla = GetNEBULAPla(i);   
+    if(pla->GetMultiplicity_N11() == 2 && fNebula[i].layer == 1 && fNebula[i].sublayer == 1){
+      SortData(fNEBULAMultTa1,fNebula);
+      
+      if(DetUsedForDT[fNebula[i].id] == true) continue;
+      test_time[fNEBULAMultTa1][0] = fNebula[i].at;
+      cout<<"ID: "<<fNebula[i].id<<"measured time: "<<fNebula[i].at<<"test time: "<<test_time[fNEBULAMultTa1][0]<<endl;
+      DetUsedForDT[fNebula[i].id]=true;
+      for(int j = i+1; j<pla->GetMultiplicity_N11(); j++){
+	test_time[fNEBULAMultTa1][0] -= fNebula[j].at;
+	cout<<"ID_2: "<<fNebula[j].id<<"measured time: "<<fNebula[j].at<<"test time: "<<test_time[fNEBULAMultTa1][0]<<endl;
+	DetUsedForDT[fNebula[j].id]=true;
+	//test_time = test_time1 - test_time2;
+      }
+      fNebula[fNEBULAMultTa1].tt[0] = test_time[fNEBULAMultTa1][0];
+      pla->SetTestTime_N11(fNebula[fNEBULAMultTa1].tt[0]);
+      cout<<"test time: "<<pla->GetTestTime_N11()<<endl;
     }
     else{
-      pla->SetMultiplicity_N(-1);
-    }
-    if(fMultiplicity_N1 > 0){
-      pla->SetMultiplicity_N1(fMultiplicity_N1);
-    }
-    else{
-      pla->SetMultiplicity_N1(-1);
-    }
-    if(fMultiplicity_N2 > 0){
-      pla->SetMultiplicity_N2(fMultiplicity_N2);
-    }
-    else{
-      pla->SetMultiplicity_N2(-1);
-    }
-    if(fMultiplicity_V1 > 0){
-      pla->SetMultiplicity_V1(fMultiplicity_V1);
-    }
-    else{
-      pla->SetMultiplicity_V1(-1);
-    }
-    if(fMultiplicity_V2 > 0){
-      pla->SetMultiplicity_V2(fMultiplicity_V2);
-    }
-    else{
-      pla->SetMultiplicity_V2(-1);
-    }
-    if(fMultiplicity_N11 > 0){
-      pla->SetMultiplicity_N11(fMultiplicity_N11);
-    }
-    else{
-      pla->SetMultiplicity_N11(-1);
-    }
-    if(fMultiplicity_N12 > 0){
-      pla->SetMultiplicity_N12(fMultiplicity_N12);
-    }
-    else{
-      pla->SetMultiplicity_N12(-1);
-    }
-    if(fMultiplicity_N21 > 0){
-      pla->SetMultiplicity_N21(fMultiplicity_N21);
-    }
-    else{
-      pla->SetMultiplicity_N21(-1);
-    }
-    if(fMultiplicity_N22 > 0){
-      pla->SetMultiplicity_N22(fMultiplicity_N22);
-    }
-    else{
-      pla->SetMultiplicity_N22(-1);
+      pla->SetTestTime_N11(-9999);
     }
   }
 }
