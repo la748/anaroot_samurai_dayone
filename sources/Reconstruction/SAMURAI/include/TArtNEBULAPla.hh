@@ -68,6 +68,7 @@ public:
   virtual void SetTTOFGamma(Double_t val){fTTOFGamma = val;}
   virtual void SetTTOFNeutron(Double_t val){fTTOFNeutron = val;}
 
+  virtual void SetYPos(Double_t val){fYPos = val;}
   virtual void SetPosCal(Double_t val){fPosCal = val;}
   virtual void SetPosSlw(Double_t val){fPosSlw = val;}
   virtual void SetPos(const Double_t* val){for(Int_t i=0; i<3; ++i) fPos[i] = val[i];}
@@ -84,10 +85,16 @@ public:
   virtual void SetMultiplicity_N12(Int_t val){fMultiplicity_N12 = val;}
   virtual void SetMultiplicity_N21(Int_t val){fMultiplicity_N21 = val;}
   virtual void SetMultiplicity_N22(Int_t val){fMultiplicity_N22 = val;}
-  virtual void SetTestTime_N11(Double_t val){ftest_time_N11 = val;}
-  virtual void SetTestTime_N12(Double_t val){ftest_time_N12 = val;}
-  virtual void SetTestTime_N21(Double_t val){ftest_time_N21 = val;}
-  virtual void SetTestTime_N22(Double_t val){ftest_time_N22 = val;}
+  virtual void SetTestTime_UP_N11(Double_t val){ftest_time_UP_N11 = val;}
+  virtual void SetTestTime_DWN_N11(Double_t val){ftest_time_DWN_N11 = val;}
+  virtual void SetTestTime_SLW_UP_N11(Double_t val){ftest_time_SLW_UP_N11 = val;}
+  virtual void SetTestTime_SLW_DWN_N11(Double_t val){ftest_time_SLW_DWN_N11 = val;}
+  virtual void SetTestTime_UP_N12(Double_t val){ftest_time_UP_N12 = val;}
+  virtual void SetTestTime_DWN_N12(Double_t val){ftest_time_DWN_N12 = val;}
+  virtual void SetTestTime_UP_N21(Double_t val){ftest_time_UP_N21 = val;}
+  virtual void SetTestTime_DWN_N21(Double_t val){ftest_time_DWN_N21 = val;}
+  virtual void SetTestTime_UP_N22(Double_t val){ftest_time_UP_N22 = val;}
+  virtual void SetTestTime_DWN_N22(Double_t val){ftest_time_DWN_N22 = val;}
 
   virtual Int_t GetLayer() const {return fLayer;}
   virtual Int_t GetSubLayer() const {return fSubLayer;}
@@ -130,6 +137,7 @@ public:
   virtual Double_t GetTTOFGamma() const {return fTTOFGamma;}
   virtual Double_t GetTTOFNeutron() const {return fTTOFNeutron;}
 
+  virtual Double_t GetYPos() const {return fYPos;}
   virtual Double_t GetPosCal() const {return fPosCal;}
   virtual Double_t GetPosSlw() const {return fPosSlw;}
   virtual const Double_t* GetPos() const {return fPos;}
@@ -146,10 +154,16 @@ public:
   virtual Int_t GetMultiplicity_N12(){return fMultiplicity_N12;}
   virtual Int_t GetMultiplicity_N21(){return fMultiplicity_N21;}
   virtual Int_t GetMultiplicity_N22(){return fMultiplicity_N22;}
-  virtual Double_t GetTestTime_N11(){return ftest_time_N11;}
-  virtual Double_t GetTestTime_N12(){return ftest_time_N12;}
-  virtual Double_t GetTestTime_N21(){return ftest_time_N21;}
-  virtual Double_t GetTestTime_N22(){return ftest_time_N22;} 
+  virtual Double_t GetTestTime_UP_N11(){return ftest_time_UP_N11;}
+  virtual Double_t GetTestTime_DWN_N11(){return ftest_time_DWN_N11;}
+  virtual Double_t GetTestTime_SLW_UP_N11(){return ftest_time_SLW_UP_N11;}
+  virtual Double_t GetTestTime_SLW_DWN_N11(){return ftest_time_SLW_DWN_N11;}
+  virtual Double_t GetTestTime_UP_N12(){return ftest_time_UP_N12;}
+  virtual Double_t GetTestTime_DWN_N12(){return ftest_time_DWN_N12;}
+  virtual Double_t GetTestTime_UP_N21(){return ftest_time_UP_N21;}
+  virtual Double_t GetTestTime_DWN_N21(){return ftest_time_DWN_N21;}
+  virtual Double_t GetTestTime_UP_N22(){return ftest_time_UP_N22;}
+  virtual Double_t GetTestTime_DWN_N22(){return ftest_time_DWN_N22;}
   
   private:
   Int_t    fLayer;  
@@ -192,6 +206,7 @@ public:
   Double_t fTTOFGamma;
   Double_t fTTOFNeutron;
 
+  Double_t fYPos;
   Double_t fPosCal;
   Double_t fPosSlw;
   Double_t fPos[3];
@@ -207,10 +222,16 @@ public:
   Int_t fMultiplicity_N12;
   Int_t fMultiplicity_N21;
   Int_t fMultiplicity_N22;
-  Double_t ftest_time_N11;
-  Double_t ftest_time_N12;
-  Double_t ftest_time_N21;
-  Double_t ftest_time_N22;
+  Double_t ftest_time_UP_N11;
+  Double_t ftest_time_DWN_N11;
+  Double_t ftest_time_SLW_UP_N11;
+  Double_t ftest_time_SLW_DWN_N11;
+  Double_t ftest_time_UP_N12;
+  Double_t ftest_time_DWN_N12;
+  Double_t ftest_time_UP_N21;
+  Double_t ftest_time_DWN_N21;
+  Double_t ftest_time_UP_N22;
+  Double_t ftest_time_DWN_N22;
 
   ClassDef(TArtNEBULAPla,1);
 };

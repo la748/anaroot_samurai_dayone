@@ -2,7 +2,7 @@
 
 brho=7.3
 
-export SAMURAI_MATRIX0TH_FILE=/shared/storage/physnp/rt1091/share/SAMURAI-Day1/users/la748/matrix/mat0th.txt
+export SAMURAI_MATRIX0TH_FILE=/shared/storage/physnp/rt1091/share/SAMURAI-Day1/users/la748/matrix/mat3th.txt
 export SAMURAI_MATRIX1ST_FILE=/shared/storage/physnp/rt1091/share/SAMURAI-Day1/users/la748/matrix/mat1st.txt
 export SAMURAI_BFIELD_FILE=/shared/storage/physnp/rt1091/share/SAMURAI-Day1/users/la748/matrix/120405-bn_stage-d-540,0A-3,0T-map.bin
 export SAMURAI_DCGEOM_FILE=/shared/storage/physnp/rt1091/share/SAMURAI-Day1/users/la748/matrix/DCgeomSAMURAIdayone20130709.param

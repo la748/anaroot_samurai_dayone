@@ -280,9 +280,10 @@ void TArtCalibDALI::DopplerCorrect()   {
   if(NULL != tofarray){
     for(Int_t i=0;i<tofarray->GetEntries();i++){
       TArtTOF *tof = (TArtTOF *)tofarray->At(i);
-      if( tof->GetUpstreamPlaFpl()==3 && tof->GetDownstreamPlaFpl()==13 ){
+      //if( tof->GetUpstreamPlaFpl()==3 && tof->GetDownstreamPlaFpl()==13 ){
+      if( tof->GetUpstreamPlaFpl()==3 && tof->GetDownstreamPlaFpl1()==13 ){ 
 	DopplerCorrect(tof->GetBeta());
-	cout<<"DALI check incoming beta:"<<tof->GetBeta()<<endl;
+	//cout<<"DALI check incoming beta:"<<tof->GetBeta()<<endl;
 	break;
       }
     }
@@ -310,11 +311,11 @@ void TArtCalibDALI::DopplerCorrect(Double_t beta)   {
     nai->SetBeta(beta);
     if(nai->GetTimeTrueEnergy() > 0.){
       nai->SetTimeTrueDoppCorEnergy(fDoppCorEnergy);
-      cout<<"Dopp cor check, Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Time Offseted:"<<nai->GetTimeOffseted()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", multiplicity ="<<nai->GetMultiplicity()<<endl;
+      //cout<<"Dopp cor check, Detector ID:"<<nai->GetID()<<", Raw energy: "<<nai->GetRawADC()<<", Raw time:"<<nai->GetRawTDC()<<", Energy:"<<nai->GetTimeTrueEnergy()<<", Time:"<<nai->GetTimeTrueTime()<<", Time Offseted:"<<nai->GetTimeOffseted()<<", Beta:"<<nai->GetBeta()<<", Original theta:"<<nai->GetTheta()<<", Dopp Cor Energy: "<<nai->GetTimeTrueDoppCorEnergy()<<", Extra dopp cor Energy check: "<<fDoppCorEnergy<<", multiplicity ="<<nai->GetMultiplicity()<<endl;
       TClonesArray *beams = (TClonesArray *)sman->FindDataContainer("BigRIPSBeam");
       for(Int_t l=0;l<beams->GetEntries();l++){
 	TArtBeam *beam = (TArtBeam *)beams->At(0);
-	cout<<"Dopp Cor incoming info, Z:"<<beam->GetZet()<<", AoQ:"<<beam->GetAoQ()<<", Beta:"<<beam->GetBeta()<<endl;
+	//cout<<"Dopp Cor incoming info, Z:"<<beam->GetZet()<<", AoQ:"<<beam->GetAoQ()<<", Beta:"<<beam->GetBeta()<<endl;
       }
     }
     else{
@@ -631,7 +632,7 @@ void TArtCalibDALI::AddBackAnalysis(){
   int addback_mult_counter = 0; //added
   //Making add-back and true multiplicity:
   //The Energy must be sorted already according to the highest detected one.
-  cout<<"Starting addback"<<endl;
+  //cout<<"Starting addback"<<endl;
   for(int i=0;i<fDaliFold;i++){ //old
     TArtDALINaI *nai = (TArtDALINaI*)fNaIArray->At(i);
     //Check the values if properly stored in fDali.
@@ -664,7 +665,7 @@ void TArtCalibDALI::AddBackAnalysis(){
       nai->SetClusterMult(cluster_mult_counter);
       cluster_mult_counter=0;
       nai->SetAddBackEnergy(fDali[fDaliMultTa].doppwa[0]);
-      cout<<"Inside Set addback Energy loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy()<<", True mult counter:"<<nai->GetTrueMult()<<", Cluster mult counter:"<<nai->GetClusterMult()<<endl;
+      //cout<<"Inside Set addback Energy loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", Set Addback Energy:"<<nai->GetAddBackEnergy()<<", True mult counter:"<<nai->GetTrueMult()<<", Cluster mult counter:"<<nai->GetClusterMult()<<endl;
       addback_mult_counter++;
     }
     else{
@@ -714,7 +715,7 @@ void TArtCalibDALI::AddBackAnalysis(){
     }
     if(nai->GetTrueMult()>=1){
       cout<<""<<endl;
-      cout<<"Check loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<", Used for addback:"<<(crystalUsedForAddback[fDali[i].id]?"true":"false")<<", Set Addback Energy:"<<nai->GetAddBackEnergy()<<", True mult counter:"<<nai->GetTrueMult()<<", AddBack Mult:"<<nai->GetAddBackMult()<<", Cluster mult counter:"<<nai->GetClusterMult()<<endl;
+      //cout<<"Check loop:"<<", Detector ID:"<<fDali[i].id<<", Orig dopp cor energy:"<<fDali[i].ode<<", Orig addback dopp cor energy:"<<fDali[i].dopp[0]<<", TTrue:"<<(fDali[i].ttrue?"true":"false")<<", Used for addback:"<<(crystalUsedForAddback[fDali[i].id]?"true":"false")<<", Set Addback Energy:"<<nai->GetAddBackEnergy()<<", True mult counter:"<<nai->GetTrueMult()<<", AddBack Mult:"<<nai->GetAddBackMult()<<", Cluster mult counter:"<<nai->GetClusterMult()<<endl;
       }
   }
 

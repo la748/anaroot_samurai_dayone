@@ -34,7 +34,7 @@ TArtCalibSAMURAI::TArtCalibSAMURAI() : TArtReconstruction()
   sman = TArtStoreManager::Instance();
 
   // optimized with run 112 (samurai dayone)
-  Double_t bdc1_int_drift_tdc = 795-740;
+  /*Double_t bdc1_int_drift_tdc = 795-740;
   Double_t bdc1_tzero = 795;
   Double_t bdc2_int_drift_tdc = 770-722;
   Double_t bdc2_tzero = 770;
@@ -43,7 +43,30 @@ TArtCalibSAMURAI::TArtCalibSAMURAI() : TArtReconstruction()
   Double_t fdc1_int_drift_tdc = 1610-1510;
   Double_t fdc1_tzero = 1610;
   Double_t fdc2_int_drift_tdc = 1495-1090;
-  Double_t fdc2_tzero = 1495;
+  Double_t fdc2_tzero = 1495;*/
+
+  //new trial
+  /*Double_t bdc1_int_drift_tdc = 755-655;
+  Double_t bdc1_tzero = 755;
+  Double_t bdc2_int_drift_tdc = 750-630;
+  Double_t bdc2_tzero = 750;
+  Double_t fdc0_int_drift_tdc = 0;
+  Double_t fdc0_tzero = 0;
+  Double_t fdc1_int_drift_tdc = 1590-1340;
+  Double_t fdc1_tzero = 1590;
+  Double_t fdc2_int_drift_tdc = 1475-750;
+  Double_t fdc2_tzero = 1475;*/
+
+  Double_t bdc1_int_drift_tdc = 755-655;
+  Double_t bdc1_tzero = 0;
+  Double_t bdc2_int_drift_tdc = 750-630;
+  Double_t bdc2_tzero = 0;
+  Double_t fdc0_int_drift_tdc = 0;
+  Double_t fdc0_tzero = 0;
+  Double_t fdc1_int_drift_tdc = 1590-1340;
+  Double_t fdc1_tzero = 0;
+  Double_t fdc2_int_drift_tdc = 1475-750;
+  Double_t fdc2_tzero = 0;
 
   fCalibCoin = new TArtCalibCoin();
   fCalibBPCHit = new TArtCalibBPCHit();

@@ -14,10 +14,10 @@ public:
   TArtNEBULAPlaPara(Int_t id = -1, const TString& detname = "",
 		    Int_t fpl = -1, Int_t layer = -1, Int_t sublayer = -1, const Double_t* detpos = 0, 
 		    Double_t tucal = 1, Double_t tuoff = 0,
-		    Double_t tuslw = 0, const Double_t* tuslwlog = 0,
+		    /*Double_t tuslw = 0,*/ Double_t tuslwA = 0, Double_t tuslwB = 0, const Double_t* tuslwlog = 0,
 		    Double_t qucal = 1, Double_t quped = 0,
 		    Double_t tdcal = 1, Double_t tdoff = 0,
-		    Double_t tdslw = 0, const Double_t* tdslwlog = 0,
+		    /*Double_t tdslw = 0,*/ Double_t tdslwA = 0, Double_t tdslwB = 0, const Double_t* tdslwlog = 0,
 		    Double_t qdcal = 1, Double_t qdped = 0,
 		    Double_t dtcal = 1, Double_t dtoff = 0, Double_t taveoff = 0,
 		    Double_t qavecal = 1, Double_t qavecalatt = 0, Double_t qavecalatt2 = 0,
@@ -26,10 +26,10 @@ public:
       fID(id), fDetName(detname),
       fFpl(fpl), fLayer(layer), fSubLayer(sublayer),
       fTUCal(tucal), fTUOff(tuoff),
-      fTUSlw(tuslw),
+      /*fTUSlw(tuslw),*/ fTUSlwA(tuslwA), fTUSlwB(tuslwB),
       fQUCal(qucal), fQUPed(quped),
       fTDCal(tdcal), fTDOff(tdoff),
-      fTDSlw(tdslw),
+      /*fTDSlw(tdslw),*/ fTDSlwA(tdslwA), fTDSlwB(tdslwB),
       fQDCal(qdcal), fQDPed(qdped),
       fDTCal(dtcal), fDTOff(dtoff), fTAveOff(taveoff),
       fQAveCal(qavecal), fQAveCalAtt(qavecalatt), fQAveCalAtt2(qavecalatt2),
@@ -53,14 +53,18 @@ public:
   void SetDetPos(Double_t val, Int_t i){fDetPos[i] = val;} 
   void SetTUCal(Double_t val){fTUCal = val;} 
   void SetTUOff(Double_t val){fTUOff = val;} 
-  void SetTUSlw(Double_t val){fTUSlw = val;} 
+  //void SetTUSlw(Double_t val){fTUSlw = val;} //orig
+  void SetTUSlwA(Double_t val){fTUSlwA = val;} //new
+  void SetTUSlwB(Double_t val){fTUSlwB = val;} //new
   void SetTUSlwLog(const Double_t* val){for(Int_t i=0; i<5; ++i) fTUSlwLog[i] = val[i];}
   void SetTUSlwLog(Double_t val, Int_t i){fTUSlwLog[i] = val;} 
   void SetQUCal(Double_t val){fQUCal = val;} 
   void SetQUPed(Double_t val){fQUPed = val;} 
   void SetTDCal(Double_t val){fTDCal = val;} 
   void SetTDOff(Double_t val){fTDOff = val;} 
-  void SetTDSlw(Double_t val){fTDSlw = val;} 
+  //void SetTDSlw(Double_t val){fTDSlw = val;} //orig
+  void SetTDSlwA(Double_t val){fTDSlwA = val;} //new
+  void SetTDSlwB(Double_t val){fTDSlwB = val;} //new
   void SetTDSlwLog(const Double_t* val){for(Int_t i=0; i<5; ++i) fTDSlwLog[i] = val[i];}
   void SetTDSlwLog(Double_t val, Int_t i){fTDSlwLog[i] = val;} 
   void SetQDCal(Double_t val){fQDCal = val;} 
@@ -82,14 +86,18 @@ public:
   Double_t GetDetPos(Int_t i) const {return fDetPos[i];} 
   Double_t GetTUCal() const {return fTUCal;} 
   Double_t GetTUOff() const {return fTUOff;} 
-  Double_t GetTUSlw() const {return fTUSlw;} 
+  //Double_t GetTUSlw() const {return fTUSlw;} //orig
+  Double_t GetTUSlwA() const {return fTUSlwA;} //new
+  Double_t GetTUSlwB() const {return fTUSlwB;} //new
   const Double_t* GetTUSlwLog() const {return fTUSlwLog;} 
   Double_t GetTUSlwLog(Int_t i) const {return fTUSlwLog[i];} 
   Double_t GetQUCal() const {return fQUCal;} 
   Double_t GetQUPed() const {return fQUPed;} 
   Double_t GetTDCal() const {return fTDCal;} 
   Double_t GetTDOff() const {return fTDOff;} 
-  Double_t GetTDSlw() const {return fTDSlw;} 
+  //Double_t GetTDSlw() const {return fTDSlw;} //orig
+  Double_t GetTDSlwA() const {return fTDSlwA;} //new
+  Double_t GetTDSlwB() const {return fTDSlwB;} //new
   const Double_t* GetTDSlwLog() const {return fTDSlwLog;} 
   Double_t GetTDSlwLog(Int_t i) const {return fTDSlwLog[i];} 
   Double_t GetQDCal() const {return fQDCal;} 
@@ -111,7 +119,8 @@ public:
     out << "Det. Pos.: "   << p.fDetPos[0]  << " " << p.fDetPos[1]<< " " << p.fDetPos[2]<< std::endl;
     out << "TU Calib: "    << p.fTUCal   << std::endl;
     out << "TU Offset: "   << p.fTUOff   << std::endl;
-    out << "TU Slew: "     << p.fTUSlw   << std::endl;
+    out << "TU Slew A: "     << p.fTUSlwA   << std::endl;
+    out << "TU Slew B: "     << p.fTUSlwB   << std::endl;
     out << "TU Slew Log:";
     for(int i=0; i<5; ++i) out << " " << p.fTUSlwLog[i];
     out << std::endl;
@@ -119,7 +128,8 @@ public:
     out << "QU Pedestal: " << p.fQUPed   << std::endl;
     out << "TD Calib: "    << p.fTDCal   << std::endl;
     out << "TD Offset: "   << p.fTDOff   << std::endl;
-    out << "TD Slew: "     << p.fTDSlw   << std::endl;
+    out << "TD Slew A: "     << p.fTDSlwA   << std::endl;
+    out << "TD Slew B: "     << p.fTDSlwB   << std::endl;
     out << "TD Slew Log:";
     for(int i=0; i<5; ++i) out << " " << p.fTDSlwLog[i];
     out << std::endl;
@@ -150,13 +160,17 @@ private:
   Double_t  fDetPos[3];
   Double_t  fTUCal;
   Double_t  fTUOff;
-  Double_t  fTUSlw;
+  //Double_t  fTUSlw;
+  Double_t  fTUSlwA;
+  Double_t  fTUSlwB;
   Double_t  fTUSlwLog[5];
   Double_t  fQUCal;
   Double_t  fQUPed;
   Double_t  fTDCal;
   Double_t  fTDOff;
-  Double_t  fTDSlw;
+  //Double_t  fTDSlw;
+  Double_t  fTDSlwA;
+  Double_t  fTDSlwB;
   Double_t  fTDSlwLog[5];
   Double_t  fQDCal;
   Double_t  fQDPed;

@@ -8,9 +8,11 @@ TArtRecoFragment::TArtRecoFragment(const TString outdataname)
     fFragmentArray(NULL), 
     hod_array(NULL), 
     pla_tzero(NULL),
+    pla_t_one(NULL),
+    pla_t_two(NULL),
     BDCs_dist(999.32),
-    BDC1_Tgt_dist(2016.62),
-    Tgt_FDC1_dist(1188.38),
+    BDC1_Tgt_dist(2077.12), // 2016.62 original
+    Tgt_FDC1_dist(983.38), //1188.38 original
     BDC2X0(0), BDC2Y0(0),
     QtoZ_a(0.0162), QtoZ_b(1.6647), //0.0168, 1.4647
     clight(299.79246),
@@ -24,7 +26,8 @@ TArtRecoFragment::TArtRecoFragment(const TString outdataname)
   // do not edit following parameter!! //////
   // use SetCenterBrho function. Aki //////// 
   center_brho = 7.2751;
-  l_pla2target = 2824.; // mm
+  //l_pla2target = 2824.; // mm original
+  l_pla2target = 2943.99; //new from wiki
   ////////////////////////
   
   TArtCore::Info(__FILE__,"Creating the Reco Fragment objects...");
@@ -103,7 +106,7 @@ TArtRecoFragment::TArtRecoFragment(const TString outdataname)
 
   TArtCore::Debug(__FILE__,"fRKtraceReady: %s",fRKtraceReady?"true":"false");
   TArtCore::Debug(__FILE__,"test5");
-  if(fRKtraceReady){
+  /*if(fRKtraceReady){
     TArtCore::Debug(__FILE__,"test6");
     TClonesArray * pla_array = (TClonesArray *)sman->FindDataContainer("BigRIPSPlastic");
     if(pla_array){
@@ -123,6 +126,35 @@ TArtRecoFragment::TArtRecoFragment(const TString outdataname)
       TArtCore::Debug(__FILE__,"test10");
       fRKtraceReady = false;
       TArtCore::Error(__FILE__,"Failed to find SAMURAIHODPla");     
+    }
+    }*/ //original
+
+  if(fRKtraceReady){
+    TArtCore::Debug(__FILE__,"test6");
+    TClonesArray * pla_array = (TClonesArray *)sman->FindDataContainer("BigRIPSPlastic");
+    if(pla_array){
+      TArtCore::Debug(__FILE__,"test7");
+      pla_t_one = (TArtPlastic *)TArtUtil::FindDataObject(pla_array,(char*)"F13pl-1");
+      pla_t_two = (TArtPlastic *)TArtUtil::FindDataObject(pla_array,(char*)"F13pl-2");
+      if(!pla_t_one){
+	TArtCore::Debug(__FILE__,"test8");
+	TArtCore::Error(__FILE__,"Failed to find plastic F13pl-1");
+      }
+      if(!pla_t_two){
+	TArtCore::Debug(__FILE__,"test8");
+	TArtCore::Error(__FILE__,"Failed to find plastic F13pl-2");
+      }
+    } else {
+      TArtCore::Debug(__FILE__,"test9");
+      fRKtraceReady = false;
+      TArtCore::Error(__FILE__,"Failed to find plastic F13pl-1");
+      TArtCore::Error(__FILE__,"Failed to find plastic F13pl-2");
+    }
+    hod_array = (TClonesArray *)sman->FindDataContainer("SAMURAIHODPla");
+    if(!hod_array){
+      TArtCore::Debug(__FILE__,"test10");
+      fRKtraceReady = false;
+      TArtCore::Error(__FILE__,"Failed to find SAMURAIHODPla");
     }
   }
 
@@ -291,8 +323,8 @@ void TArtRecoFragment::ReconstructData() {
   if(fRKtraceReady || fMultDimReady){
     if(fRKtraceReady){
       //TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*(1.+rvec(1,0))*0.3);
-      TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*(1.+frag->GetDelta())*0.3); //0.3
-      //TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*0.3);
+      TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*(1.+frag->GetDelta())*0.3); //0.3 current
+      //TArtCalcGlobalTrack gtr(fdc1tr,fdc2tr,center_brho*0.3); //original
       gtr.doFit();
       frag->SetRKtraceStatus(gtr.Status());
       frag->SetChi2(gtr.chisqr());
@@ -363,10 +395,10 @@ void TArtRecoFragment::ReconstructData() {
   brho_test = center_brho*(1+(frag->GetDelta()*0.01)); //*0.01
   //frag->SetBrho_test(brho_test);
 
-  std::cout<<"delta: "<<frag->GetDelta()<<std::endl;
-  std::cout<<"Centre Brho: "<<center_brho<<std::endl;
+  //std::cout<<"delta: "<<frag->GetDelta()<<std::endl;
+  //std::cout<<"Centre Brho: "<<center_brho<<std::endl;
 
-  std::cout<<"Brho test: "<<brho_test<<std::endl;
+  //std::cout<<"Brho test: "<<brho_test<<std::endl;
 
   if(hod_array){
     if(hod_array->GetEntries()>0){
@@ -376,14 +408,20 @@ void TArtRecoFragment::ReconstructData() {
     }
   }
 
-  std::cout<<"Z test out of RKtrace loop: "<<frag->GetZ_test()<<std::endl;
+  //std::cout<<"Z test out of RKtrace loop: "<<frag->GetZ_test()<<std::endl;
 
-      if(hod_array && pla_tzero && (fRKtraceReady||fMultDimReady)){
+  //if(hod_array && pla_tzero && (fRKtraceReady||fMultDimReady)){
+  //if(hod_array && pla_t_one && (fRKtraceReady||fMultDimReady)){
+  if(hod_array && pla_t_one && pla_t_two && (fRKtraceReady||fMultDimReady)){ 
 	if(hod_array->GetEntries()>0){
-	  TArtHODPla *pla = (TArtHODPla *)hod_array->At(0); // pickup qmax-hod	
-	  Double_t tzero = pla_tzero->GetTime();
+	  TArtHODPla *pla = (TArtHODPla *)hod_array->At(0); // pickup qmax-hod
+	  //Double_t tzero = pla_tzero->GetTime(); //original
+	  //Double_t tzero = ((pla_t_one->GetTime() + pla_t_two->GetTime())/2);
+	  //Double_t tzero = pla_t_one->GetTimeLSlew();
+	  Double_t tzero = ((pla_t_one->GetTimeLSlew() + pla_t_two->GetTimeLSlew())/2);
 	  frag->SetTzero(tzero);
-	  frag->SetTzeroQ(pla_tzero->GetQAveRaw());
+	  //frag->SetTzeroQ(pla_tzero->GetQAveRaw()); //original
+	  frag->SetTzeroQ((pla_t_one->GetQAveRaw() + pla_t_two->GetQAveRaw())/2);
 	  Double_t hodt = pla->GetTime();
 	  //	std::cout << "HID: " << pla->GetID() << std::endl;
 	  frag->SetHODTime(hodt);
@@ -394,12 +432,12 @@ void TArtRecoFragment::ReconstructData() {
 	  frag->SetZ(fragZ);
 	  //frag->SetZ(QtoZ_a*(pla->GetQAveCal())+QtoZ_b);
 	  //frag->SetZ_test((0.00001*(pla->GetQAveCal()*pla->GetQAveCal()))+(0.0103*(pla->GetQAveCal()))+2.5045);
-	  Double_t tof = hodt-tzero + 103.2; //tof_offset[pla->GetID()]; //107.5 111.5
-	  std::cout << "tzero: " << tzero << "hodt: " << hodt << "tof: " << tof << std::endl;
+	  Double_t tof = hodt-tzero + 105; //tof_offset[pla->GetID()]; //107.5 111.5 103.2 104.6 105.2
+	  //std::cout << "tzero: " << tzero << "hodt: " << hodt << "tof: " << tof << std::endl;
 	  //TArtCore::Debug(__FILE__,"tzero: %f , hodt: %f , tof_offset: %f",tzero,hodt,tof_offset);//
 	  frag->SetTOF(tof);
 	  //Double_t tof_test = hodt_slew-tzero + 107; //107
-	  Double_t tof_test = hodt-tzero + 107.5; //original to test different time
+	  Double_t tof_test = hodt_slew-tzero + 105; //original to test different time
 	  frag->SetTOF_test(tof_test);
 	  Double_t beta = toflength/tof/clight;
 	  frag->SetBeta(beta);
@@ -411,19 +449,17 @@ void TArtRecoFragment::ReconstructData() {
 	  brho = frag->GetBrho();
 	}
 	  //std::cout << "toflength: " << toflength <<std::endl;  
-	  std::cout << "brho:" << brho <<std::endl;
+	  //std::cout << "brho:" << brho <<std::endl;
 	Double_t aoq = brho * clight / mnucleon / beta / gamma;
 	frag->SetAoQ(aoq);
 	//Double_t aoq_test = brho * clight / mnucleon / beta_test / gamma_test;
 	//frag->SetAoQ_test(aoq_test);
 	//Double_t aoq_test_2 = brho_test * clight / mnucleon / beta / gamma;
-	Double_t aoq_test_2 = brho * clight / mnucleon / beta / gamma;
+	Double_t aoq_test_2 = brho * clight / mnucleon / beta_test / gamma_test;
 	frag->SetAoQ_test(aoq_test_2);
 	Double_t aoq_orig = center_brho * clight / mnucleon / beta_test / gamma_test;
 	frag->SetAoQ_orig(aoq_orig);
-	std::cout << "aoq: " << aoq << std::endl;
-	std::cout << "aoq test 2: " << aoq_test_2 << std::endl;
-	std::cout << "aoq original: " << aoq_orig << std::endl;
+	std::cout << "Fragment information, fragZ:" << fragZ << "aoq: " << aoq << std::endl;
 	//std::cout << "fragZ: " << fragZ << std::endl;
 	//TArtCore::Info(__FILE__,"beta: %f , aoq: %f",beta,aoq);
       }

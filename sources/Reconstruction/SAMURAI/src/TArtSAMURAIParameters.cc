@@ -447,9 +447,12 @@ TArtNEBULAPlaPara *TArtSAMURAIParameters::ParseNEBULAPlaPara(TXMLNode *node)
     }else if(strcmp(node->GetNodeName(), "TUOff") == 0){
       Double_t tuoff = atof(node->GetText());
       para->SetTUOff(tuoff);
-    }else if(strcmp(node->GetNodeName(), "TUSlw") == 0){
-      Double_t tuslw = atof(node->GetText());
-      para->SetTUSlw(tuslw);
+    }else if(strcmp(node->GetNodeName(), "TUSlwA") == 0){
+      Double_t tuslwA = atof(node->GetText());
+      para->SetTUSlwA(tuslwA);
+    }else if(strcmp(node->GetNodeName(), "TUSlwB") == 0){
+      Double_t tuslwB = atof(node->GetText());
+      para->SetTUSlwB(tuslwB); 
     }else if(strcmp(node->GetNodeName(), "QUCal") == 0){
       Double_t qucal = atof(node->GetText());
       para->SetQUCal(qucal);
@@ -462,9 +465,12 @@ TArtNEBULAPlaPara *TArtSAMURAIParameters::ParseNEBULAPlaPara(TXMLNode *node)
     }else if(strcmp(node->GetNodeName(), "TDOff") == 0){
       Double_t tdoff = atof(node->GetText());
       para->SetTDOff(tdoff);
-    }else if(strcmp(node->GetNodeName(), "TDSlw") == 0){
-      Double_t tdslw = atof(node->GetText());
-      para->SetTDSlw(tdslw);
+    }else if(strcmp(node->GetNodeName(), "TDSlwA") == 0){
+      Double_t tdslwA = atof(node->GetText());
+      para->SetTDSlwA(tdslwA);
+    }else if(strcmp(node->GetNodeName(), "TDSlwB") == 0){
+      Double_t tdslwB = atof(node->GetText());
+      para->SetTDSlwB(tdslwB);
     }else if(strcmp(node->GetNodeName(), "QDCal") == 0){
       Double_t qdcal = atof(node->GetText());
       para->SetQDCal(qdcal);
@@ -1035,9 +1041,12 @@ TArtNEBULAPlaPara *TArtSAMURAIParameters::ParseNeuLANDVETOPlaPara(TXMLNode *node
     }else if(strcmp(node->GetNodeName(), "TUOff") == 0){
       Double_t tuoff = atof(node->GetText());
       para->SetTUOff(tuoff);
-    }else if(strcmp(node->GetNodeName(), "TUSlw") == 0){
-      Double_t tuslw = atof(node->GetText());
-      para->SetTUSlw(tuslw);
+    }else if(strcmp(node->GetNodeName(), "TUSlwA") == 0){
+      Double_t tuslwA = atof(node->GetText());
+      para->SetTUSlwA(tuslwA);
+    }else if(strcmp(node->GetNodeName(), "TUSlwB") == 0){
+      Double_t tuslwB = atof(node->GetText());
+      para->SetTUSlwB(tuslwB);
     }else if(strcmp(node->GetNodeName(), "QUCal") == 0){
       Double_t qucal = atof(node->GetText());
       para->SetQUCal(qucal);
@@ -1050,9 +1059,12 @@ TArtNEBULAPlaPara *TArtSAMURAIParameters::ParseNeuLANDVETOPlaPara(TXMLNode *node
     }else if(strcmp(node->GetNodeName(), "TDOff") == 0){
       Double_t tdoff = atof(node->GetText());
       para->SetTDOff(tdoff);
-    }else if(strcmp(node->GetNodeName(), "TDSlw") == 0){
-      Double_t tdslw = atof(node->GetText());
-      para->SetTDSlw(tdslw);
+    }else if(strcmp(node->GetNodeName(), "TDSlwA") == 0){
+      Double_t tdslwA = atof(node->GetText());
+      para->SetTDSlwA(tdslwA);
+    }else if(strcmp(node->GetNodeName(), "TDSlwB") == 0){
+      Double_t tdslwB = atof(node->GetText());
+      para->SetTDSlwB(tdslwB);
     }else if(strcmp(node->GetNodeName(), "QDCal") == 0){
       Double_t qdcal = atof(node->GetText());
       para->SetQDCal(qdcal);

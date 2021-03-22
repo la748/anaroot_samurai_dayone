@@ -230,8 +230,10 @@ void TArtCalibNEBULA::ReconstructData()
 
     Double_t tucal = turaw * para->GetTUCal() + para->GetTUOff();
     Double_t tdcal = tdraw * para->GetTDCal() + para->GetTDOff();
-    Double_t tuslw = tucal;
-    Double_t tdslw = tdcal;
+    //Double_t tuslw = tucal;
+    Double_t tuslw = tucal - (para->GetTUSlwB()/sqrt(qavecal) + para->GetTUSlwA());
+    //Double_t tdslw = tdcal;
+    Double_t tdslw = tdcal - (para->GetTDSlwB()/sqrt(qavecal) + para->GetTDSlwA());
     if(para->GetTUSlwLog(0) != 0 && para->GetTDSlwLog(0) != 0){
       double logquped = log(quped);
       double logqdped = log(qdped);
@@ -250,17 +252,18 @@ void TArtCalibNEBULA::ReconstructData()
 		para->GetTDSlwLog(3)*logqdped4 +
 		para->GetTDSlwLog(4)*logqdped4*logqdped);
     }else{
-      tuslw -= para->GetTUSlw()/sqrt(quped);
-      tdslw -= para->GetTDSlw()/sqrt(qdped);
+      tuslw -= para->GetTUSlwB()/sqrt(quped);
+      tdslw -= para->GetTDSlwB()/sqrt(qdped);
     }
     Double_t dtraw = tdraw - turaw;
     Double_t dtcal = tdcal - tucal;
     Double_t dtslw = tdslw - tuslw;
     Double_t taveraw = (turaw + tdraw)/2.;
     Double_t tavecal = (tucal + tdcal)/2 + para->GetTAveOff();
-    Double_t taveslw = (tuslw + tdslw)/2 + para->GetTAveOff();
-    Double_t poscal = dtcal * para->GetDTCal() + para->GetDTOff();
-    Double_t posslw = dtslw * para->GetDTCal() + para->GetDTOff();
+    Double_t taveslw = (tuslw + tdslw)/2 + para->GetTAveOff(); //original
+    Double_t poscal = dtcal * para->GetDTCal() + para->GetDTOff(); //removed to see if source of crash 19/03/21
+    Double_t posslw = dtslw * para->GetDTCal() + para->GetDTOff(); //removed to see if source of crash 19/03/21  
+    //Double_t y_pos = dtcal * para->GetPosY();
     
     Double_t tucalt0 = tucal - t0;
     Double_t tdcalt0 = tdcal - t0;
@@ -321,6 +324,7 @@ void TArtCalibNEBULA::ReconstructData()
     pla->SetTTOFGamma(ttofgamma);
     pla->SetTTOFNeutron(ttofneutron);
 
+    pla->SetYPos(poscal);
     pla->SetPosCal(poscal);
     pla->SetPosSlw(posslw);
     pla->SetPos(pos);
@@ -343,6 +347,10 @@ struct nebula{
   float qdr; //QDRaw
   float tur; //TURaw
   float tdr; //TDRaw
+  float tuc; //TUCal
+  float tdc; //TDCal
+  float tus; //TUSlew
+  float tds; //TDSlew
   int h; //hit
   bool ttrue; //time true
   float at; //ave time
@@ -351,17 +359,25 @@ struct nebula{
   }
   fNebula[NUMBEROFNEBULADETECTORS];
 //__________________________________________________________
-int CompareByTime(const void *element1, const void *element2) {
-  return((nebula*)element1)->at < ((nebula*)element2)->at? 1: -1;
+int CompareByTimeUp(const void *element1, const void *element2) {
+  return((nebula*)element1)->tuc < ((nebula*)element2)->tuc? 1: -1;
 }
 
 //__________________________________________________________
-void SortData(int count, nebula fNebula[]) {
-  qsort(fNebula,count,sizeof(nebula),CompareByTime);
+void SortDataUp(int count, nebula fNebula[]) {
+  qsort(fNebula,count,sizeof(nebula),CompareByTimeUp);
 }
-//__________________________________________________________ 
-void TArtCalibNEBULA::CalMultiplicity()
-{
+//__________________________________________________________
+int CompareByTimeDown(const void *element1, const void *element2) {
+  return((nebula*)element1)->tdc < ((nebula*)element2)->tdc? 1: -1;
+}
+
+//__________________________________________________________
+void SortDataDown(int count, nebula fNebula[]) {
+  qsort(fNebula,count,sizeof(nebula),CompareByTimeDown);
+}
+//__________________________________________________________  
+void TArtCalibNEBULA::CalMultiplicity(){
   Int_t fMultiplicity_N = 0;
   Int_t fMultiplicity_N1 = 0;
   Int_t fMultiplicity_N2 = 0;
@@ -388,8 +404,13 @@ void TArtCalibNEBULA::CalMultiplicity()
     fNebula[i].qdr         = pla->GetQDRaw();
     fNebula[i].tur         = pla->GetTURaw();
     fNebula[i].tdr         = pla->GetTDRaw();
+    fNebula[i].tuc         = pla->GetTUCal();
+    fNebula[i].tdc         = pla->GetTDCal();
+    fNebula[i].tus         = pla->GetTUSlw();
+    fNebula[i].tds         = pla->GetTDSlw();
     fNebula[i].h           = pla->GetHit();
-    fNebula[i].at          = pla->GetTAveCal();
+    //fNebula[i].at          = pla->GetTAveCal();
+    //fNebula[i].at          = pla->GetTAveSlw();
     
     fNEBULAFold++;
     if(fNebula[i].h == 15 && !fNebula[i].sublayer == 0){
@@ -478,107 +499,248 @@ void TArtCalibNEBULA::CalMultiplicity()
     //cout<<"Multiplicity: "<<pla->GetMultiplicity_N12()<<endl;
   }
 
-  float test_time_N11[NUMBEROFNEBULADETECTORS][2] = {{0}};
-  float test_time_N12[NUMBEROFNEBULADETECTORS][2] = {{0}};
-  float test_time_N21[NUMBEROFNEBULADETECTORS][2] = {{0}};
-  float test_time_N22[NUMBEROFNEBULADETECTORS][2] = {{0}};
-  
+  float test_time_UP_N11[NUMBEROFNEBULADETECTORS][2] = {{0}};
+  float test_time_DWN_N11[NUMBEROFNEBULADETECTORS][2] = {{0}};
+  float test_time_SLW_UP_N11[NUMBEROFNEBULADETECTORS][2] = {{0}};
+  float test_time_SLW_DWN_N11[NUMBEROFNEBULADETECTORS][2] = {{0}};
+  float test_time_UP_N12[NUMBEROFNEBULADETECTORS][2] = {{0}};
+  float test_time_DWN_N12[NUMBEROFNEBULADETECTORS][2] = {{0}};
+  float test_time_UP_N21[NUMBEROFNEBULADETECTORS][2] = {{0}};
+  float test_time_DWN_N21[NUMBEROFNEBULADETECTORS][2] = {{0}};
+  float test_time_UP_N22[NUMBEROFNEBULADETECTORS][2] = {{0}};
+  float test_time_DWN_N22[NUMBEROFNEBULADETECTORS][2] = {{0}};
+
   for(Int_t i=0;i<fNEBULAFold;++i){
-    TArtNEBULAPla* pla = GetNEBULAPla(i);   
+    TArtNEBULAPla* pla = GetNEBULAPla(i);
     if(pla->GetMultiplicity_N11() == 2 && fNebula[i].layer == 1 && fNebula[i].sublayer == 1){
-      SortData(fMultiplicity_N11,fNebula);
-      
+      SortDataUp(fMultiplicity_N11,fNebula);
+
       if(DetUsedForDT[fNebula[i].id] == true) continue;
-      test_time_N11[fMultiplicity_N11][0] = fNebula[i].at;
-      cout<<"ID_11_1: "<<fNebula[i].id<<"measured time: "<<fNebula[i].at<<"test time: "<<test_time_N11[fMultiplicity_N11][0]<<endl;
+      test_time_UP_N11[fMultiplicity_N11][0] = fNebula[i].tuc;
+      test_time_SLW_UP_N11[fMultiplicity_N11][0] = fNebula[i].tus;
+      cout<<"ID_U_11_1: "<<fNebula[i].id<<"measured UP time: "<<fNebula[i].tuc<<"test UP time: "<<test_time_UP_N11[fMultiplicity_N11][0]<<endl;
       DetUsedForDT[fNebula[i].id]=true;
       for(int j = i+1; j<pla->GetMultiplicity_N11(); j++){
 	if(fNebula[j].id == fNebula[i].id+1 || fNebula[j].id == fNebula[i].id-1){
-	  test_time_N11[fMultiplicity_N11][0] -= fNebula[j].at;
-	  cout<<"ID_11_2: "<<fNebula[j].id<<"measured time: "<<fNebula[j].at<<"test time: "<<test_time_N11[fMultiplicity_N11][0]<<endl;
+	  test_time_UP_N11[fMultiplicity_N11][0] -= fNebula[j].tuc;
+	  test_time_SLW_UP_N11[fMultiplicity_N11][0] -= fNebula[j].tuc;
+	  cout<<"ID_U_11_2: "<<fNebula[j].id<<"measured UP time: "<<fNebula[j].tuc<<"test UP time: "<<test_time_UP_N11[fMultiplicity_N11][0]<<endl;
 	  DetUsedForDT[fNebula[j].id]=true;
 	}
 	else{
-	  test_time_N11[fMultiplicity_N11][0] = -9999;
+	  test_time_UP_N11[fMultiplicity_N11][0] = -9999;
+	  test_time_SLW_UP_N11[fMultiplicity_N11][0] = -9999;
 	}
       }
-      pla->SetTestTime_N11(test_time_N11[fMultiplicity_N11][0]);
-      cout<<"test time 11: "<<pla->GetTestTime_N11()<<endl;
+      pla->SetTestTime_UP_N11(test_time_UP_N11[fMultiplicity_N11][0]);
+      pla->SetTestTime_SLW_UP_N11(test_time_SLW_UP_N11[fMultiplicity_N11][0]);
+      cout<<"test time up 11: "<<pla->GetTestTime_UP_N11()<<endl;
+      
     }
     else{
-      pla->SetTestTime_N11(-9999);
+      pla->SetTestTime_UP_N11(-9999);
+      pla->SetTestTime_SLW_UP_N11(-9999);
     }
-        
-    if(pla->GetMultiplicity_N12() == 2 && fNebula[i].layer == 1 && fNebula[i].sublayer == 2){
-      SortData(fMultiplicity_N12,fNebula);
+
+    for(int j=0;j<NUMBEROFNEBULADETECTORS;j++) {
+      DetUsedForDT[j] = false;
+    }
+
+    if(pla->GetMultiplicity_N11() == 2 && fNebula[i].layer == 1 && fNebula[i].sublayer == 1){
+      SortDataDown(fMultiplicity_N11,fNebula);
       
       if(DetUsedForDT[fNebula[i].id] == true) continue;
-      test_time_N12[fMultiplicity_N12][0] = fNebula[i].at;
-      cout<<"ID_12_1: "<<fNebula[i].id<<"measured time: "<<fNebula[i].at<<"test time: "<<test_time_N12[fMultiplicity_N12][0]<<endl;
+      test_time_DWN_N11[fMultiplicity_N11][0] = fNebula[i].tdc;
+      test_time_SLW_DWN_N11[fMultiplicity_N11][0] = fNebula[i].tds;
+      cout<<"ID_D_11_1: "<<fNebula[i].id<<"measured DWN time: "<<fNebula[i].tdc<<"test DWN time: "<<test_time_DWN_N11[fMultiplicity_N11][0]<<endl;
+      DetUsedForDT[fNebula[i].id]=true;
+      for(int j = i+1; j<pla->GetMultiplicity_N11(); j++){
+	if(fNebula[j].id == fNebula[i].id+1 || fNebula[j].id == fNebula[i].id-1){
+	  test_time_DWN_N11[fMultiplicity_N11][0] -= fNebula[j].tdc;
+	  test_time_SLW_DWN_N11[fMultiplicity_N11][0] -= fNebula[j].tdc;
+	  cout<<"ID_D_11_2: "<<fNebula[j].id<<"measured DWN time: "<<fNebula[j].tdc<<"test DWN time: "<<test_time_DWN_N11[fMultiplicity_N11][0]<<endl;
+	  DetUsedForDT[fNebula[j].id]=true;
+	}
+	else{
+	  test_time_DWN_N11[fMultiplicity_N11][0] = -9999;
+	  test_time_SLW_DWN_N11[fMultiplicity_N11][0] = -9999;
+	}
+      }
+      pla->SetTestTime_DWN_N11(test_time_DWN_N11[fMultiplicity_N11][0]);
+      pla->SetTestTime_SLW_DWN_N11(test_time_SLW_DWN_N11[fMultiplicity_N11][0]);
+      cout<<"test time dwn 11: "<<pla->GetTestTime_DWN_N11()<<endl;
+    }
+    else{
+      pla->SetTestTime_DWN_N11(-9999);
+      pla->SetTestTime_SLW_DWN_N11(-9999);
+    }
+  }
+
+  for(Int_t i=0;i<fNEBULAFold;++i){
+    TArtNEBULAPla* pla = GetNEBULAPla(i);
+    if(pla->GetMultiplicity_N12() == 2 && fNebula[i].layer == 1 && fNebula[i].sublayer == 2){
+      SortDataUp(fMultiplicity_N12,fNebula);
+
+      if(DetUsedForDT[fNebula[i].id] == true) continue;
+      test_time_UP_N12[fMultiplicity_N12][0] = fNebula[i].tuc;
+      cout<<"ID_U_12_1: "<<fNebula[i].id<<"measured UP time: "<<fNebula[i].tuc<<"test UP time: "<<test_time_UP_N12[fMultiplicity_N12][0]<<endl;
       DetUsedForDT[fNebula[i].id]=true;
       for(int j = i+1; j<pla->GetMultiplicity_N12(); j++){
 	if(fNebula[j].id == fNebula[i].id+1 || fNebula[j].id == fNebula[i].id-1){
-	  test_time_N12[fMultiplicity_N12][0] -= fNebula[j].at;
-	  cout<<"ID_12_2: "<<fNebula[j].id<<"measured time: "<<fNebula[j].at<<"test time: "<<test_time_N12[fMultiplicity_N12][0]<<endl;
+	  test_time_UP_N12[fMultiplicity_N12][0] -= fNebula[j].tuc;
+	  cout<<"ID_U_12_2: "<<fNebula[j].id<<"measured UP time: "<<fNebula[j].tuc<<"test UP time: "<<test_time_UP_N12[fMultiplicity_N12][0]<<endl;
 	  DetUsedForDT[fNebula[j].id]=true;
 	}
 	else{
-	  test_time_N12[fMultiplicity_N12][0] = -9999;
+	  test_time_UP_N12[fMultiplicity_N12][0] = -9999;
 	}
       }
-      pla->SetTestTime_N12(test_time_N12[fMultiplicity_N12][0]);
-      cout<<"test time 12: "<<pla->GetTestTime_N12()<<endl;
+      pla->SetTestTime_UP_N12(test_time_UP_N12[fMultiplicity_N12][0]);
+      cout<<"test time up 12: "<<pla->GetTestTime_UP_N12()<<endl;
+
     }
     else{
-      pla->SetTestTime_N12(-9999);
+      pla->SetTestTime_UP_N12(-9999);
     }
-        
-    if(pla->GetMultiplicity_N21() == 2 && fNebula[i].layer == 2 && fNebula[i].sublayer == 1){
-      SortData(fMultiplicity_N21,fNebula);
+
+    for(int j=0;j<NUMBEROFNEBULADETECTORS;j++) {
+      DetUsedForDT[j] = false;
+    }
+
+    if(pla->GetMultiplicity_N12() == 2 && fNebula[i].layer == 1 && fNebula[i].sublayer == 2){
+      SortDataDown(fMultiplicity_N12,fNebula);
 
       if(DetUsedForDT[fNebula[i].id] == true) continue;
-      test_time_N21[fMultiplicity_N21][0] = fNebula[i].at;
-      cout<<"ID_21_1: "<<fNebula[i].id<<"measured time: "<<fNebula[i].at<<"test time: "<<test_time_N21[fMultiplicity_N21][0]<<endl;
+      test_time_DWN_N12[fMultiplicity_N12][0] = fNebula[i].tdc;
+      cout<<"ID_D_12_1: "<<fNebula[i].id<<"measured DWN time: "<<fNebula[i].tdc<<"test DWN time: "<<test_time_DWN_N12[fMultiplicity_N12][0]<<endl;
+      DetUsedForDT[fNebula[i].id]=true;
+      for(int j = i+1; j<pla->GetMultiplicity_N12(); j++){
+	if(fNebula[j].id == fNebula[i].id+1 || fNebula[j].id == fNebula[i].id-1){
+	  test_time_DWN_N12[fMultiplicity_N12][0] -= fNebula[j].tdc;
+	  cout<<"ID_D_12_2: "<<fNebula[j].id<<"measured DWN time: "<<fNebula[j].tdc<<"test DWN time: "<<test_time_DWN_N12[fMultiplicity_N12][0]<<endl;
+	  DetUsedForDT[fNebula[j].id]=true;
+	}
+	else{
+	  test_time_DWN_N12[fMultiplicity_N12][0] = -9999;
+	}
+      }
+      pla->SetTestTime_DWN_N12(test_time_DWN_N12[fMultiplicity_N12][0]);
+      cout<<"test time dwn 12: "<<pla->GetTestTime_DWN_N12()<<endl;
+    }
+    else{
+      pla->SetTestTime_DWN_N12(-9999);
+    }
+  }
+  
+  for(Int_t i=0;i<fNEBULAFold;++i){
+    TArtNEBULAPla* pla = GetNEBULAPla(i);
+    if(pla->GetMultiplicity_N21() == 2 && fNebula[i].layer == 2 && fNebula[i].sublayer == 1){
+      SortDataUp(fMultiplicity_N21,fNebula);
+
+      if(DetUsedForDT[fNebula[i].id] == true) continue;
+      test_time_UP_N21[fMultiplicity_N21][0] = fNebula[i].tuc;
+      cout<<"ID_U_21_1: "<<fNebula[i].id<<"measured UP time: "<<fNebula[i].tuc<<"test UP time: "<<test_time_UP_N21[fMultiplicity_N21][0]<<endl;
       DetUsedForDT[fNebula[i].id]=true;
       for(int j = i+1; j<pla->GetMultiplicity_N21(); j++){
 	if(fNebula[j].id == fNebula[i].id+1 || fNebula[j].id == fNebula[i].id-1){
-	  test_time_N21[fMultiplicity_N21][0] -= fNebula[j].at;
-	  cout<<"ID_21_2: "<<fNebula[j].id<<"measured time: "<<fNebula[j].at<<"test time: "<<test_time_N21[fMultiplicity_N21][0]<<endl;
+	  test_time_UP_N21[fMultiplicity_N21][0] -= fNebula[j].tuc;
+	  cout<<"ID_U_21_2: "<<fNebula[j].id<<"measured UP time: "<<fNebula[j].tuc<<"test UP time: "<<test_time_UP_N21[fMultiplicity_N21][0]<<endl;
 	  DetUsedForDT[fNebula[j].id]=true;
 	}
 	else{
-	  test_time_N21[fMultiplicity_N21][0] = -9999;
+	  test_time_UP_N21[fMultiplicity_N21][0] = -9999;
 	}
       }
-      pla->SetTestTime_N21(test_time_N21[fMultiplicity_N21][0]);
-      cout<<"test time 21: "<<pla->GetTestTime_N21()<<endl;
+      pla->SetTestTime_UP_N21(test_time_UP_N21[fMultiplicity_N21][0]);
+      cout<<"test time up 21: "<<pla->GetTestTime_UP_N21()<<endl;
+      
     }
     else{
-      pla->SetTestTime_N21(-9999);
+      pla->SetTestTime_UP_N21(-9999);
     }
-    
+
+    for(int j=0;j<NUMBEROFNEBULADETECTORS;j++) {
+      DetUsedForDT[j] = false;
+    }
+
+    if(pla->GetMultiplicity_N21() == 2 && fNebula[i].layer == 2 && fNebula[i].sublayer == 1){
+      SortDataDown(fMultiplicity_N21,fNebula);
+      
+      if(DetUsedForDT[fNebula[i].id] == true) continue;
+      test_time_DWN_N21[fMultiplicity_N21][0] = fNebula[i].tdc;
+      cout<<"ID_D_21_1: "<<fNebula[i].id<<"measured DWN time: "<<fNebula[i].tdc<<"test DWN time: "<<test_time_DWN_N21[fMultiplicity_N21][0]<<endl;
+      DetUsedForDT[fNebula[i].id]=true;
+      for(int j = i+1; j<pla->GetMultiplicity_N21(); j++){
+	if(fNebula[j].id == fNebula[i].id+1 || fNebula[j].id == fNebula[i].id-1){
+	  test_time_DWN_N21[fMultiplicity_N21][0] -= fNebula[j].tdc;
+	  cout<<"ID_D_21_2: "<<fNebula[j].id<<"measured DWN time: "<<fNebula[j].tdc<<"test DWN time: "<<test_time_DWN_N21[fMultiplicity_N21][0]<<endl;
+	  DetUsedForDT[fNebula[j].id]=true;
+	}
+	else{
+	  test_time_DWN_N21[fMultiplicity_N21][0] = -9999;
+	}
+      }
+      pla->SetTestTime_DWN_N21(test_time_DWN_N21[fMultiplicity_N21][0]);
+      cout<<"test time dwn 21: "<<pla->GetTestTime_DWN_N21()<<endl;
+    }
+    else{
+      pla->SetTestTime_DWN_N21(-9999);
+    }
+  }
+
+  for(Int_t i=0;i<fNEBULAFold;++i){
+    TArtNEBULAPla* pla = GetNEBULAPla(i);
     if(pla->GetMultiplicity_N22() == 2 && fNebula[i].layer == 2 && fNebula[i].sublayer == 2){
-      SortData(fMultiplicity_N22,fNebula);
+      SortDataUp(fMultiplicity_N22,fNebula);
 
       if(DetUsedForDT[fNebula[i].id] == true) continue;
-      test_time_N22[fMultiplicity_N22][0] = fNebula[i].at;
-      cout<<"ID_22_1: "<<fNebula[i].id<<"measured time: "<<fNebula[i].at<<"test time: "<<test_time_N22[fMultiplicity_N22][0]<<endl;
+      test_time_UP_N22[fMultiplicity_N22][0] = fNebula[i].tuc;
+      cout<<"ID_U_22_1: "<<fNebula[i].id<<"measured UP time: "<<fNebula[i].tuc<<"test UP time: "<<test_time_UP_N22[fMultiplicity_N22][0]<<endl;
       DetUsedForDT[fNebula[i].id]=true;
       for(int j = i+1; j<pla->GetMultiplicity_N22(); j++){
 	if(fNebula[j].id == fNebula[i].id+1 || fNebula[j].id == fNebula[i].id-1){
-	  test_time_N22[fMultiplicity_N22][0] -= fNebula[j].at;
-	  cout<<"ID_22_2: "<<fNebula[j].id<<"measured time: "<<fNebula[j].at<<"test time: "<<test_time_N22[fMultiplicity_N22][0]<<endl;
+	  test_time_UP_N22[fMultiplicity_N22][0] -= fNebula[j].tuc;
+	  cout<<"ID_U_22_2: "<<fNebula[j].id<<"measured UP time: "<<fNebula[j].tuc<<"test UP time: "<<test_time_UP_N22[fMultiplicity_N22][0]<<endl;
 	  DetUsedForDT[fNebula[j].id]=true;
 	}
 	else{
-	  test_time_N22[fMultiplicity_N22][0] = -9999;
-	} 
+	  test_time_UP_N22[fMultiplicity_N22][0] = -9999;
+	}
       }
-      pla->SetTestTime_N22(test_time_N22[fMultiplicity_N22][0]);
-      cout<<"test time 22: "<<pla->GetTestTime_N22()<<endl;
+      pla->SetTestTime_UP_N22(test_time_UP_N22[fMultiplicity_N22][0]);
+      cout<<"test time up 22: "<<pla->GetTestTime_UP_N22()<<endl;
+
     }
     else{
-      pla->SetTestTime_N22(-9999);
+      pla->SetTestTime_UP_N22(-9999);
+    }
+
+    for(int j=0;j<NUMBEROFNEBULADETECTORS;j++) {
+      DetUsedForDT[j] = false;
+    }
+
+    if(pla->GetMultiplicity_N22() == 2 && fNebula[i].layer == 2 && fNebula[i].sublayer == 2){
+      SortDataDown(fMultiplicity_N22,fNebula);
+
+      if(DetUsedForDT[fNebula[i].id] == true) continue;
+      test_time_DWN_N22[fMultiplicity_N22][0] = fNebula[i].tdc;
+      cout<<"ID_D_22_1: "<<fNebula[i].id<<"measured DWN time: "<<fNebula[i].tdc<<"test DWN time: "<<test_time_DWN_N22[fMultiplicity_N22][0]<<endl;
+      DetUsedForDT[fNebula[i].id]=true;
+      for(int j = i+1; j<pla->GetMultiplicity_N22(); j++){
+	if(fNebula[j].id == fNebula[i].id+1 || fNebula[j].id == fNebula[i].id-1){
+	  test_time_DWN_N22[fMultiplicity_N22][0] -= fNebula[j].tdc;
+	  cout<<"ID_D_22_2: "<<fNebula[j].id<<"measured DWN time: "<<fNebula[j].tdc<<"test DWN time: "<<test_time_DWN_N22[fMultiplicity_N22][0]<<endl;
+	  DetUsedForDT[fNebula[j].id]=true;
+	}
+	else{
+	  test_time_DWN_N22[fMultiplicity_N22][0] = -9999;
+	}
+      }
+      pla->SetTestTime_DWN_N22(test_time_DWN_N22[fMultiplicity_N22][0]);
+      cout<<"test time dwn 22: "<<pla->GetTestTime_DWN_N22()<<endl;
+    }
+    else{
+      pla->SetTestTime_DWN_N22(-9999);
     }
   }
 }

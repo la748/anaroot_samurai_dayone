@@ -24,7 +24,8 @@ class TArtRecoTOF : public TArtReconstruction {
   void ClearData();
   void ReconstructData();
 
-  TArtTOF * DefineNewTOF(char *uplname, char *dplname, Double_t offset=0, Int_t mfpl=-1);
+  //TArtTOF * DefineNewTOF(char *uplname, char *dplname, Double_t offset=0, Int_t mfpl=-1); //original
+  TArtTOF * DefineNewTOF(char *uplname, char *dplname1, char *dplname2, Double_t offset=0, Int_t mfpl=-1); //new
 
   // function to access data container
   TClonesArray    * GetTOFArray(){return fTOFArray;}
@@ -32,7 +33,8 @@ class TArtRecoTOF : public TArtReconstruction {
   // get i-th object in array
   TArtTOF  * GetTOF(Int_t i);
   // looking for fpl object whose forward fpl-number is f_fpl and backward fpl-number is b_fpl. return NULL in the case of fail to find.
-  TArtTOF  * FindTOF(char *uplname, char *dplname);
+  //TArtTOF  * FindTOF(char *uplname, char *dplname); //original
+  TArtTOF  * FindTOF(char *uplname, char *dplname1, char *dplname2); //new
 
  protected:
   TClonesArray     * fTOFArray; //out
@@ -42,7 +44,9 @@ class TArtRecoTOF : public TArtReconstruction {
  private:
   TArtBigRIPSParameters * setup;
   std::vector <TArtPlastic*> fUpstreamPlaArrayBuffer;
-  std::vector <TArtPlastic*> fDownstreamPlaArrayBuffer;
+  //std::vector <TArtPlastic*> fDownstreamPlaArrayBuffer; //original
+  std::vector <TArtPlastic*> fDownstreamPlaArrayBuffer1; //new
+  std::vector <TArtPlastic*> fDownstreamPlaArrayBuffer2; //new
 
   ClassDef(TArtRecoTOF,1);
 

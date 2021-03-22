@@ -67,6 +67,8 @@ private:
   TArtStoreManager * sman;
 
   TArtPlastic * pla_tzero;
+  TArtPlastic * pla_t_one;
+  TArtPlastic * pla_t_two; 
   Double_t l_pla2target; // distance of tzero-pla to target
   std::map<UInt_t,Double_t> tof_offset; // tof offset
   Double_t BDCs_dist;  // distance between BDC centers

@@ -30,13 +30,21 @@ class TArtTOF : public TArtDataObject
   // calibration parameter
   virtual void SetUpstreamPlaName(char * val){upstream_plname=val;}
   virtual void SetUpstreamPlaFpl(Int_t val){upstream_plfpl=val;}
-  virtual void SetDownstreamPlaName(char * val){downstream_plname=val;}
-  virtual void SetDownstreamPlaFpl(Int_t val){downstream_plfpl=val;}
+  //virtual void SetDownstreamPlaName(char * val){downstream_plname=val;} //original
+  virtual void SetDownstreamPlaName1(char * val){downstream_plname1=val;} //new
+  virtual void SetDownstreamPlaName2(char * val){downstream_plname2=val;} //new
+  //virtual void SetDownstreamPlaFpl(Int_t val){downstream_plfpl=val;} //original
+  virtual void SetDownstreamPlaFpl1(Int_t val){downstream_plfpl1=val;} //new
+  virtual void SetDownstreamPlaFpl2(Int_t val){downstream_plfpl2=val;} //new
   virtual void SetTimeOffset(Double_t val){time_offset=val;}
   virtual TString * GetUpstreamPlaName(){return &upstream_plname;}
-  virtual TString * GetDownstreamPlaName(){return &downstream_plname;}
+  //virtual TString * GetDownstreamPlaName(){return &downstream_plname;} //original
+  virtual TString * GetDownstreamPlaName1(){return &downstream_plname1;} //new
+  virtual TString * GetDownstreamPlaName2(){return &downstream_plname2;} //new
   virtual Int_t GetUpstreamPlaFpl(){return upstream_plfpl;}
-  virtual Int_t GetDownstreamPlaFpl(){return downstream_plfpl;}
+  //virtual Int_t GetDownstreamPlaFpl(){return downstream_plfpl;} //original
+  virtual Int_t GetDownstreamPlaFpl1(){return downstream_plfpl1;} //new
+  virtual Int_t GetDownstreamPlaFpl2(){return downstream_plfpl2;} //new
   virtual Double_t GetTimeOffset(){return time_offset;}
 
  private:
@@ -52,9 +60,13 @@ class TArtTOF : public TArtDataObject
   Double_t dlength;
 
   TString   upstream_plname;
-  TString   downstream_plname;
+  //TString   downstream_plname; //original
+  TString   downstream_plname1; //new
+  TString   downstream_plname2; //original
   Int_t     upstream_plfpl;
-  Int_t     downstream_plfpl;
+  //Int_t     downstream_plfpl; //original
+  Int_t     downstream_plfpl1; //new
+  Int_t     downstream_plfpl2; //new
   Double_t  time_offset;
 
   ClassDef(TArtTOF,1);

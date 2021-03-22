@@ -215,7 +215,7 @@ void TArtRecoBeam::ClearData()   {
 void TArtRecoBeam::ReconstructData()   { // call after the raw data are loaded
 
   for(Int_t i=0;i<GetNumBeam();i++){
-
+  
     TArtBeam * beam = GetBeam(i);
     TArtRIPS * upstream_rips = fUpstreamRIPSArrayBuffer[i];
     TArtRIPS * downstream_rips = fDownstreamRIPSArrayBuffer[i];
